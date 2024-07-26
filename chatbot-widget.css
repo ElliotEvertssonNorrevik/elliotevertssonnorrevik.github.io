@@ -97,14 +97,14 @@
 }
 
 .chatbot-message.user {
-    background-color: white;
+    background-color: #FCBE08;
+    color: white;
     margin-left: 20%;
     align-self: flex-end;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .chatbot-message.bot {
-    background-color: #FFF9C4;
+    background-color: #f0f0f0;
     color: black;
     margin-right: 20%;
     align-self: flex-start;
@@ -174,49 +174,6 @@
 @keyframes chatbotLoading {
     0%, 80%, 100% { transform: scale(0); }
     40% { transform: scale(1.0); }
-}
-
-.chatbot-product-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-top: 12px;
-    overflow: hidden;
-    max-width: 272px;
-}
-
-.chatbot-product-card img {
-    width: 100%;
-    height: 192px;
-    object-fit: cover;
-}
-
-.chatbot-product-info {
-    padding: 16px;
-}
-
-.chatbot-product-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.chatbot-product-price {
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 12px;
-}
-
-.chatbot-product-button {
-    display: block;
-    width: 100%;
-    background-color: #FCBE08;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
 }
 
 .hidden {
