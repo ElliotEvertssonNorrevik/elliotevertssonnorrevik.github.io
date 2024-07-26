@@ -1,7 +1,7 @@
 (function() {
     function ChatbotWidget() {
         this.widget = null;
-        this.chatWindow = null;
+        this.chatContainer = null;
         this.messageList = null;
         this.inputField = null;
         this.apiEndpoint = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
@@ -24,7 +24,7 @@
     ChatbotWidget.prototype.init = function() {
         this.loadFonts();
         this.createWidgetButton();
-        this.createChatWindow();
+        this.createChatContainer();
         this.bindEvents();
         this.generateConversationId();
     };
@@ -58,11 +58,10 @@
         document.body.appendChild(this.widget);
     };
 
-    ChatbotWidget.prototype.createChatWindow = function() {
-        this.chatWindow = document.createElement('div');
-        this.chatWindow.id = 'chatbot-window';
-        this.chatWindow.className = 'hidden';
-        this.chatWindow.innerHTML = `
+    ChatbotWidget.prototype.createChatContainer = function() {
+        this.chatContainer = document.createElement('div');
+        this.chatContainer.id = 'chatbot-container';
+        this.chatContainer.innerHTML = `
             <div id="chatbot-header">
                 <div id="chatbot-header-content">
                     <img src="${this.config.logoUrl}" alt="Logo">
@@ -79,16 +78,16 @@
                 <button id="chatbot-send">Skicka</button>
             </div>
         `;
-        document.body.appendChild(this.chatWindow);
+        document.body.appendChild(this.chatContainer);
         
-        this.messageList = this.chatWindow.querySelector('#chatbot-messages');
-        this.inputField = this.chatWindow.querySelector('#chatbot-input');
+        this.messageList = this.chatContainer.querySelector('#chatbot-messages');
+        this.inputField = this.chatContainer.querySelector('#chatbot-input');
     };
 
     ChatbotWidget.prototype.bindEvents = function() {
         this.widget.querySelector('#chatbot-button').onclick = () => this.toggleChatWindow();
-        this.chatWindow.querySelector('#chatbot-close').onclick = () => this.toggleChatWindow();
-        this.chatWindow.querySelector('#chatbot-send').onclick = () => this.sendMessage();
+        this.chatContainer.querySelector('#chatbot-close').onclick = () => this.toggleChatWindow();
+        this.chatContainer.querySelector('#chatbot-send').onclick = () => this.sendMessage();
         this.inputField.onkeypress = (e) => {
             if (e.key === 'Enter') {
                 this.sendMessage();
@@ -97,9 +96,13 @@
     };
 
     ChatbotWidget.prototype.toggleChatWindow = function() {
-        this.chatWindow.classList.toggle('hidden');
-        if (!this.chatWindow.classList.contains('hidden') && !this.isInitialized) {
-            this.initializeChat();
+        if (this.chatContainer.style.display === 'none' || this.chatContainer.style.display === '') {
+            this.chatContainer.style.display = 'flex';
+            if (!this.isInitialized) {
+                this.initializeChat();
+            }
+        } else {
+            this.chatContainer.style.display = 'none';
         }
     };
 
