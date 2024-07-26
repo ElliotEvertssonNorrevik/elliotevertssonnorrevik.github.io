@@ -8,10 +8,13 @@
         this.config = {
             headerText: 'Happyflops AI',
             subHeaderText: 'Chatta med vår digitala assistent',
-            logoUrl: 'https://via.placeholder.com/24'
+            mainColor: '#f7e702',
+            secondaryColor: '#FFFFFF',
+            logoUrl: 'https://via.placeholder.com/48'
         };
         this.isInitialized = false;
         this.showFollowUp = false;
+        this.conversationId = null;
         
         this.init();
     }
@@ -20,6 +23,26 @@
         this.createWidgetButton();
         this.createChatWindow();
         this.bindEvents();
+        this.loadFonts();
+        this.generateConversationId();
+    };
+
+    ChatbotWidget.prototype.loadFonts = function() {
+        const link = document.createElement('link');
+        link.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+    };
+
+    ChatbotWidget.prototype.generateConversationId = function() {
+        this.conversationId = localStorage.getItem('conversationId');
+        if (!this.conversationId) {
+            this.conversationId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            localStorage.setItem('conversationId', this.conversationId);
+        }
     };
 
     ChatbotWidget.prototype.createWidgetButton = function() {
@@ -50,7 +73,7 @@
             </div>
             <div id="chatbot-messages"></div>
             <div id="chatbot-input-area">
-                <input type="text" id="chatbot-input" placeholder="Meddelande">
+                <input type="text" id="chatbot-input" placeholder="Skriv ett meddelande...">
                 <button id="chatbot-send">➤</button>
             </div>
         `;
@@ -97,12 +120,46 @@
         this.isInitialized = true;
     };
 
-    ChatbotWidget.prototype.sendMessage = function() {
+    ChatbotWidget.prototype.sendMessage = async function() {
         const message = this.inputField.value.trim();
         if (message) {
             this.addUserMessage(message);
             this.inputField.value = '';
-            this.getBotResponse(message);
+            const loadingMessage = this.addBotMessage("", true);
+            
+            try {
+                const response = await fetch(`${this.apiEndpoint}?question=${encodeURIComponent(message)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_id: this.conversationId
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.answer) {
+                    loadingMessage.textContent = data.answer;
+                    if (data.product_info) {
+                        this.addProductCard(data.product_info);
+                    }
+                    if (Math.random() < 0.5) {
+                        this.showFollowUpQuestion();
+                    }
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            } catch (error) {
+                console.error('Error:', error.message);
+                loadingMessage.textContent = 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se';
+            }
         }
     };
 
@@ -140,52 +197,9 @@
         return this.addMessage(message, 'bot', isLoading);
     };
 
-    ChatbotWidget.prototype.showInitialOptions = function() {
-        const optionsElement = document.createElement('div');
-        optionsElement.className = 'chatbot-options';
-        optionsElement.innerHTML = `
-            <button class="chatbot-option-button">Spåra min order</button>
-            <button class="chatbot-option-button">Retur</button>
-            <button class="chatbot-option-button">Storleksguide</button>
-        `;
-        this.messageList.appendChild(optionsElement);
-
-        optionsElement.querySelectorAll('.chatbot-option-button').forEach(button => {
-            button.onclick = () => this.handleOptionClick(button.textContent);
-        });
-    };
-
     ChatbotWidget.prototype.handleOptionClick = function(option) {
         this.addUserMessage(option);
-        this.getBotResponse(option);
-    };
-
-    ChatbotWidget.prototype.getBotResponse = function(message) {
-        const loadingMessage = this.addBotMessage("", true);
-        fetch(`${this.apiEndpoint}?question=${encodeURIComponent(message)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.answer) {
-                    loadingMessage.textContent = data.answer;
-                    if (data.product_info) {
-                        this.addProductCard(data.product_info);
-                    }
-                    if (Math.random() < 0.5) {
-                        this.showFollowUpQuestion();
-                    }
-                } else {
-                    throw new Error('Invalid response format');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error.message);
-                loadingMessage.textContent = 'Sorry, I encountered an error. Please try again later.';
-            });
+        this.sendMessage(option);
     };
 
     ChatbotWidget.prototype.addProductCard = function(product) {
