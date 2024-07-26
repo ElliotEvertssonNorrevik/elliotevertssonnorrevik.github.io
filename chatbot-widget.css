@@ -1,5 +1,5 @@
-/* simple-chatbot-widget.css */
-#simple-chatbot-widget {
+/* chatbot-widget.css */
+#chatbot-widget {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -11,7 +11,7 @@
     z-index: 1000;
 }
 
-#simple-chatbot-window {
+#chatbot-window {
     position: fixed;
     bottom: 80px;
     right: 20px;
@@ -24,32 +24,32 @@
     z-index: 1000;
 }
 
-#simple-chatbot-messages {
+#chatbot-messages {
     flex-grow: 1;
     overflow-y: auto;
     padding: 10px;
 }
 
-.simple-chatbot-message {
+.chatbot-message {
     margin-bottom: 10px;
     padding: 8px 12px;
     border-radius: 20px;
     max-width: 80%;
 }
 
-.simple-chatbot-message.user {
+.chatbot-message.user {
     background-color: #E3F2FD;
     align-self: flex-end;
     margin-left: 20%;
 }
 
-.simple-chatbot-message.bot {
+.chatbot-message.bot {
     background-color: #F1F1F1;
     align-self: flex-start;
     margin-right: 20%;
 }
 
-#simple-chatbot-window input {
+#chatbot-window input {
     width: 70%;
     padding: 10px;
     border: 1px solid #ddd;
@@ -57,7 +57,7 @@
     margin: 10px 5px;
 }
 
-#simple-chatbot-window button {
+#chatbot-window button {
     width: 20%;
     padding: 10px;
     background-color: #4CAF50;
