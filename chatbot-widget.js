@@ -8,7 +8,7 @@
         this.config = {
             headerText: 'Happyflops AI',
             subHeaderText: 'Chatta med vår digitala assistent',
-            logoUrl: 'https://via.placeholder.com/40'
+            logoUrl: 'https://via.placeholder.com/24'
         };
         this.isInitialized = false;
         this.showFollowUp = false;
@@ -50,8 +50,8 @@
             </div>
             <div id="chatbot-messages"></div>
             <div id="chatbot-input-area">
-                <input type="text" id="chatbot-input" placeholder="Skriv ett meddelande...">
-                <button id="chatbot-send">Skicka</button>
+                <input type="text" id="chatbot-input" placeholder="Meddelande">
+                <button id="chatbot-send">➤</button>
             </div>
         `;
         document.body.appendChild(this.chatWindow);
@@ -85,10 +85,13 @@
     ChatbotWidget.prototype.initializeChat = function() {
         this.addBotMessage("", true);
         setTimeout(() => {
-            this.updateLastBotMessage("Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Happyflops.");
+            this.updateLastBotMessage("Hej! 👋");
             setTimeout(() => {
-                this.addBotMessage("Vad kan jag hjälpa dig med idag?😊");
-                this.showInitialOptions();
+                this.addBotMessage("Mitt namn är Elliot och jag är din virtuella assistent här på Happyflops.");
+                setTimeout(() => {
+                    this.addBotMessage("Vad kan jag hjälpa dig med idag? 😊");
+                    this.showInitialOptions();
+                }, 1000);
             }, 1000);
         }, 1000);
         this.isInitialized = true;
@@ -199,7 +202,7 @@
         this.messageList.appendChild(productElement);
     };
 
-ChatbotWidget.prototype.showFollowUpQuestion = function() {
+    ChatbotWidget.prototype.showFollowUpQuestion = function() {
         setTimeout(() => {
             this.addBotMessage("Kan jag hjälpa dig med något mer?");
             const optionsElement = document.createElement('div');
@@ -222,7 +225,7 @@ ChatbotWidget.prototype.showFollowUpQuestion = function() {
             this.addBotMessage("Vad mer kan jag hjälpa dig med?");
             this.showInitialOptions();
         } else {
-            this.addBotMessage("Okej, tack för att du chattat med mig. Ha en bra dag!");
+            this.addBotMessage("Okej, tack för att du chattat med mig. Ha en bra dag! 😊");
         }
     };
 
