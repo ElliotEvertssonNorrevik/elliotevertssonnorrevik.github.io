@@ -8,10 +8,10 @@
         this.config = {
             headerText: 'Happyflops AI',
             subHeaderText: 'Chatta med vår digitala assistent',
-            mainColor: '#FCBE08',
-            secondaryColor: '#FFFFFF',
             logoUrl: 'https://via.placeholder.com/40'
         };
+        this.isInitialized = false;
+        this.showFollowUp = false;
         
         this.init();
     }
@@ -24,46 +24,46 @@
 
     ChatbotWidget.prototype.createWidgetButton = function() {
         this.widget = document.createElement('div');
-        this.widget.innerHTML = `<img src="${this.config.logoUrl}" alt="Chat" class="w-16 h-16 rounded-full">`;
-        this.widget.className = 'fixed bottom-5 right-5 w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:opacity-90 transition duration-200 cursor-pointer';
-        this.widget.style.backgroundColor = this.config.mainColor;
+        this.widget.id = 'chatbot-widget';
+        this.widget.innerHTML = `
+            <div id="chatbot-button">
+                <img src="${this.config.logoUrl}" alt="Chat">
+            </div>
+        `;
         document.body.appendChild(this.widget);
     };
 
     ChatbotWidget.prototype.createChatWindow = function() {
         this.chatWindow = document.createElement('div');
-        this.chatWindow.className = 'fixed bottom-5 right-5 w-96 h-[36rem] bg-white rounded-lg shadow-lg flex flex-col rounded-2xl hidden';
+        this.chatWindow.id = 'chatbot-window';
+        this.chatWindow.style.display = 'none';
         this.chatWindow.innerHTML = `
-            <div class="h-16 p-4 flex justify-between rounded-t-2xl" style="background-color: ${this.config.mainColor};">
-                <div class="flex items-center">
-                    <img src="${this.config.logoUrl}" alt="Logo" class="w-8 h-8 rounded-full mr-3">
+            <div id="chatbot-header">
+                <div id="chatbot-header-content">
+                    <img src="${this.config.logoUrl}" alt="Logo">
                     <div>
-                        <h1 class="text-lg font-bold text-white">${this.config.headerText}</h1>
-                        <p class="text-sm text-white">${this.config.subHeaderText}</p>
+                        <h1>${this.config.headerText}</h1>
+                        <p>${this.config.subHeaderText}</p>
                     </div>
                 </div>
-                <button class="text-white text-xl font-bold" id="close-chat">×</button>
+                <button id="chatbot-close">×</button>
             </div>
-            <div class="flex-grow overflow-hidden">
-                <div class="h-full overflow-y-auto p-4 bg-gray-50" id="chat-messages"></div>
-            </div>
-            <div class="p-2 bg-gray-100">
-                <div class="flex">
-                    <input type="text" id="chat-input" class="flex-1 border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" placeholder="Skriv ett meddelande...">
-                    <button id="send-message" class="bg-yellow-400 text-white px-4 py-2 rounded-r-lg transition duration-200 hover:bg-yellow-500">Skicka</button>
-                </div>
+            <div id="chatbot-messages"></div>
+            <div id="chatbot-input-area">
+                <input type="text" id="chatbot-input" placeholder="Skriv ett meddelande...">
+                <button id="chatbot-send">Skicka</button>
             </div>
         `;
         document.body.appendChild(this.chatWindow);
         
-        this.messageList = this.chatWindow.querySelector('#chat-messages');
-        this.inputField = this.chatWindow.querySelector('#chat-input');
+        this.messageList = this.chatWindow.querySelector('#chatbot-messages');
+        this.inputField = this.chatWindow.querySelector('#chatbot-input');
     };
 
     ChatbotWidget.prototype.bindEvents = function() {
-        this.widget.onclick = () => this.toggleChatWindow();
-        this.chatWindow.querySelector('#close-chat').onclick = () => this.toggleChatWindow();
-        this.chatWindow.querySelector('#send-message').onclick = () => this.sendMessage();
+        document.getElementById('chatbot-button').onclick = () => this.toggleChatWindow();
+        document.getElementById('chatbot-close').onclick = () => this.toggleChatWindow();
+        document.getElementById('chatbot-send').onclick = () => this.sendMessage();
         this.inputField.onkeypress = (e) => {
             if (e.key === 'Enter') {
                 this.sendMessage();
@@ -72,14 +72,26 @@
     };
 
     ChatbotWidget.prototype.toggleChatWindow = function() {
-        this.chatWindow.classList.toggle('hidden');
-        if (!this.chatWindow.classList.contains('hidden') && this.messageList.children.length === 0) {
-            this.addBotMessage("Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Happyflops.");
+        if (this.chatWindow.style.display === 'none') {
+            this.chatWindow.style.display = 'flex';
+            if (!this.isInitialized) {
+                this.initializeChat();
+            }
+        } else {
+            this.chatWindow.style.display = 'none';
+        }
+    };
+
+    ChatbotWidget.prototype.initializeChat = function() {
+        this.addBotMessage("", true);
+        setTimeout(() => {
+            this.updateLastBotMessage("Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Happyflops.");
             setTimeout(() => {
                 this.addBotMessage("Vad kan jag hjälpa dig med idag?😊");
                 this.showInitialOptions();
             }, 1000);
-        }
+        }, 1000);
+        this.isInitialized = true;
     };
 
     ChatbotWidget.prototype.sendMessage = function() {
@@ -91,37 +103,51 @@
         }
     };
 
-    ChatbotWidget.prototype.addMessage = function(message, sender) {
+    ChatbotWidget.prototype.addMessage = function(message, sender, isLoading = false) {
         const messageElement = document.createElement('div');
-        messageElement.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
-        messageElement.innerHTML = `
-            <div class="max-w-md px-4 py-2 rounded-lg ${sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200'}">
-                ${message}
-            </div>
-        `;
+        messageElement.className = `chatbot-message ${sender}`;
+        if (isLoading) {
+            messageElement.innerHTML = `
+                <div class="chatbot-loading">
+                    <div class="chatbot-loading-dot"></div>
+                    <div class="chatbot-loading-dot"></div>
+                    <div class="chatbot-loading-dot"></div>
+                </div>
+            `;
+        } else {
+            messageElement.textContent = message;
+        }
         this.messageList.appendChild(messageElement);
         this.messageList.scrollTop = this.messageList.scrollHeight;
+        return messageElement;
+    };
+
+    ChatbotWidget.prototype.updateLastBotMessage = function(message) {
+        const lastMessage = this.messageList.lastElementChild;
+        if (lastMessage && lastMessage.classList.contains('bot')) {
+            lastMessage.textContent = message;
+        }
     };
 
     ChatbotWidget.prototype.addUserMessage = function(message) {
         this.addMessage(message, 'user');
     };
 
-    ChatbotWidget.prototype.addBotMessage = function(message) {
-        this.addMessage(message, 'bot');
+    ChatbotWidget.prototype.addBotMessage = function(message, isLoading = false) {
+        return this.addMessage(message, 'bot', isLoading);
     };
 
     ChatbotWidget.prototype.showInitialOptions = function() {
         const optionsElement = document.createElement('div');
-        optionsElement.className = 'flex flex-wrap justify-start space-x-2 mt-2';
+        optionsElement.className = 'chatbot-options';
         optionsElement.innerHTML = `
-            <button class="option-button">Spåra min order</button>
-            <button class="option-button">Retur</button>
-            <button class="option-button">Storleksguide</button>
+            <button class="chatbot-option-button">Spåra min order</button>
+            <button class="chatbot-option-button">Retur</button>
+            <button class="chatbot-option-button">Storleksguide</button>
         `;
         this.messageList.appendChild(optionsElement);
 
-        optionsElement.querySelectorAll('.option-button').forEach(button => {
+        optionsElement.querySelectorAll('.chatbot-option-button').forEach(button => {
             button.onclick = () => this.handleOptionClick(button.textContent);
         });
     };
@@ -132,6 +158,7 @@
     };
 
     ChatbotWidget.prototype.getBotResponse = function(message) {
+        const loadingMessage = this.addBotMessage("", true);
         fetch(`${this.apiEndpoint}?question=${encodeURIComponent(message)}`)
             .then(response => {
                 if (!response.ok) {
@@ -141,15 +168,62 @@
             })
             .then(data => {
                 if (data && data.answer) {
-                    this.addBotMessage(data.answer);
+                    loadingMessage.textContent = data.answer;
+                    if (data.product_info) {
+                        this.addProductCard(data.product_info);
+                    }
+                    if (Math.random() < 0.5) {
+                        this.showFollowUpQuestion();
+                    }
                 } else {
                     throw new Error('Invalid response format');
                 }
             })
             .catch(error => {
                 console.error('Error:', error.message);
-                this.addBotMessage('Sorry, I encountered an error. Please try again later.');
+                loadingMessage.textContent = 'Sorry, I encountered an error. Please try again later.';
             });
+    };
+
+    ChatbotWidget.prototype.addProductCard = function(product) {
+        const productElement = document.createElement('div');
+        productElement.className = 'chatbot-product-card';
+        productElement.innerHTML = `
+            <img src="${product.imageUrl}" alt="${product.name}">
+            <div class="chatbot-product-info">
+                <div class="chatbot-product-name">${product.name}</div>
+                <div class="chatbot-product-price">${product.price} kr</div>
+                <a href="https://www.happyflops.se/products/${product.handle}" class="chatbot-product-button" target="_blank">Köp nu</a>
+            </div>
+        `;
+        this.messageList.appendChild(productElement);
+    };
+
+ChatbotWidget.prototype.showFollowUpQuestion = function() {
+        setTimeout(() => {
+            this.addBotMessage("Kan jag hjälpa dig med något mer?");
+            const optionsElement = document.createElement('div');
+            optionsElement.className = 'chatbot-options';
+            optionsElement.innerHTML = `
+                <button class="chatbot-option-button">Ja</button>
+                <button class="chatbot-option-button">Nej</button>
+            `;
+            this.messageList.appendChild(optionsElement);
+
+            optionsElement.querySelectorAll('.chatbot-option-button').forEach(button => {
+                button.onclick = () => this.handleFollowUpResponse(button.textContent);
+            });
+        }, 1000);
+    };
+
+    ChatbotWidget.prototype.handleFollowUpResponse = function(response) {
+        this.addUserMessage(response);
+        if (response === 'Ja') {
+            this.addBotMessage("Vad mer kan jag hjälpa dig med?");
+            this.showInitialOptions();
+        } else {
+            this.addBotMessage("Okej, tack för att du chattat med mig. Ha en bra dag!");
+        }
     };
 
     // Initialize the widget when the script loads
