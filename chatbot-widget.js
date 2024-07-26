@@ -1,6 +1,7 @@
 (function() {
     function ChatbotWidget() {
         this.widget = null;
+        this.chatButton = null;
         this.chatContainer = null;
         this.messageList = null;
         this.inputField = null;
@@ -50,32 +51,47 @@
     ChatbotWidget.prototype.createWidgetButton = function() {
         this.widget = document.createElement('div');
         this.widget.id = 'chatbot-widget';
-        this.widget.innerHTML = `
-            <div id="chatbot-button">
-                <img src="${this.config.logoUrl}" alt="Chat">
-            </div>
-        `;
+        this.widget.className = 'fixed bottom-5 right-5';
+        this.chatButton = document.createElement('button');
+        this.chatButton.className = 'w-20 h-20 rounded-full flex items-center justify-center shadow-lg hover:opacity-90 transition duration-200';
+        this.chatButton.style.backgroundColor = this.config.mainColor;
+        this.chatButton.innerHTML = `<img src="${this.config.logoUrl}" alt="Chat" class="w-20 h-20 rounded-full">`;
+        this.widget.appendChild(this.chatButton);
         document.body.appendChild(this.widget);
     };
 
     ChatbotWidget.prototype.createChatContainer = function() {
         this.chatContainer = document.createElement('div');
-        this.chatContainer.id = 'chatbot-container';
+        this.chatContainer.className = 'hidden w-[35rem] h-[45rem] bg-white rounded-lg shadow-lg flex flex-col rounded-2xl fixed bottom-5 right-5';
         this.chatContainer.innerHTML = `
-            <div id="chatbot-header">
-                <div id="chatbot-header-content">
-                    <img src="${this.config.logoUrl}" alt="Logo">
+            <div class="h-[5rem] p-4 flex justify-between rounded-t-2xl" style="background-color: ${this.config.mainColor}">
+                <div class="flex items-center">
+                    <img src="${this.config.logoUrl}" alt="Header" class="w-[3rem] h-[3rem] rounded-full mr-3">
                     <div>
-                        <h1>${this.config.headerText}</h1>
-                        <p>${this.config.subHeaderText}</p>
+                        <h1 class="text-xl font-bold text-white">${this.config.headerText}</h1>
+                        <p class="text-white">${this.config.subHeaderText}</p>
                     </div>
                 </div>
-                <button id="chatbot-close">×</button>
+                <button id="chatbot-close" class="text-white">×</button>
             </div>
-            <div id="chatbot-messages"></div>
-            <div id="chatbot-input-area">
-                <input type="text" id="chatbot-input" placeholder="Skriv ett meddelande...">
-                <button id="chatbot-send">Skicka</button>
+            <div class="flex-grow overflow-hidden">
+                <div id="chatbot-messages" class="h-full overflow-y-auto p-4 bg-gray-50"></div>
+            </div>
+            <div class="p-2 bg-gray">
+                <div class="flex">
+                    <input
+                        type="text"
+                        id="chatbot-input"
+                        class="flex-1 border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                        placeholder="Skriv ett meddelande..."
+                    >
+                    <button 
+                        id="chatbot-send"
+                        class="bg-yellow-400 text-white px-4 py-2 rounded-r-lg transition duration-200 hover:bg-yellow-500"
+                    >
+                        Skicka
+                    </button>
+                </div>
             </div>
         `;
         document.body.appendChild(this.chatContainer);
@@ -85,7 +101,7 @@
     };
 
     ChatbotWidget.prototype.bindEvents = function() {
-        this.widget.querySelector('#chatbot-button').onclick = () => this.toggleChatWindow();
+        this.chatButton.onclick = () => this.toggleChatWindow();
         this.chatContainer.querySelector('#chatbot-close').onclick = () => this.toggleChatWindow();
         this.chatContainer.querySelector('#chatbot-send').onclick = () => this.sendMessage();
         this.inputField.onkeypress = (e) => {
@@ -96,13 +112,17 @@
     };
 
     ChatbotWidget.prototype.toggleChatWindow = function() {
-        if (this.chatContainer.style.display === 'none' || this.chatContainer.style.display === '') {
-            this.chatContainer.style.display = 'flex';
+        if (this.chatContainer.classList.contains('hidden')) {
+            this.chatContainer.classList.remove('hidden');
+            this.chatContainer.classList.add('flex');
+            this.chatButton.classList.add('hidden');
             if (!this.isInitialized) {
                 this.initializeChat();
             }
         } else {
-            this.chatContainer.style.display = 'none';
+            this.chatContainer.classList.add('hidden');
+            this.chatContainer.classList.remove('flex');
+            this.chatButton.classList.remove('hidden');
         }
     };
 
@@ -118,6 +138,7 @@
         }, 700);
         this.isInitialized = true;
     };
+
 
     ChatbotWidget.prototype.sendMessage = async function() {
         const message = this.inputField.value.trim();
