@@ -67,27 +67,22 @@
         }
     };
 
-    SimpleChatbotWidget.prototype.addMessage = function(message, sender) {
-        const messageElement = document.createElement('div');
-        messageElement.className = `simple-chatbot-message ${sender}`;
-        messageElement.innerText = message;
-        this.messageList.appendChild(messageElement);
-        this.messageList.scrollTop = this.messageList.scrollHeight;
-    };
-
     SimpleChatbotWidget.prototype.getBotResponse = function(message) {
-        const url = `https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger?question=${encodeURIComponent(message)}`;
-        
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                this.addMessage(data.answer, 'bot');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                this.addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
-            });
-    };
-
-    window.SimpleChatbotWidget = new SimpleChatbotWidget();
-})();
+    const url = `https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger?question=${encodeURIComponent(message)}`;
+    
+    console.log('Sending request to:', url);
+    
+    fetch(url)
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Received data:', data);
+            this.addMessage(data.answer, 'bot');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            this.addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
+        });
+};
