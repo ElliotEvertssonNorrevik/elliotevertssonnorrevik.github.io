@@ -4,22 +4,15 @@
         this.chatWindow = null;
         this.messageList = null;
         this.inputField = null;
+        this.apiEndpoint = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
         
         this.init();
     }
 
     ChatbotWidget.prototype.init = function() {
-        this.loadStylesheet();
         this.createWidgetButton();
         this.createChatWindow();
         this.bindEvents();
-    };
-
-    ChatbotWidget.prototype.loadStylesheet = function() {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://elliotevertssonnorrevik.github.io/chatbot-widget.css';
-        document.head.appendChild(link);
     };
 
     ChatbotWidget.prototype.createWidgetButton = function() {
@@ -83,9 +76,7 @@
     };
 
     ChatbotWidget.prototype.getBotResponse = function(message) {
-        const url = `https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger?question=${encodeURIComponent(message)}`;
-        
-        fetch(url)
+        fetch(`${this.apiEndpoint}?question=${encodeURIComponent(message)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -105,5 +96,8 @@
             });
     };
 
-    window.ChatbotWidget = new ChatbotWidget();
+    // Automatically initialize the widget when the script loads
+    window.addEventListener('load', function() {
+        new ChatbotWidget();
+    });
 })();
