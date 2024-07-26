@@ -9,11 +9,7 @@
             headerText: 'Happyflops AI',
             subHeaderText: 'Chatta med vår digitala assistent',
             mainColor: '#FCBE08',
-            secondaryColor: '#FFFFFF',
-            font: 'Roboto',
-            launch_avatar: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png',
-            header_image: 'https://i.ibb.co/gTSR93f/s348hq3b.png',
-            banner_image: ''
+            logoUrl: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png'
         };
         this.isInitialized = false;
         this.showFollowUp = false;
@@ -53,55 +49,34 @@
 
     ChatbotWidget.prototype.createWidgetButton = function() {
         this.widget = document.createElement('div');
-        this.widget.className = 'fixed bottom-5 right-5';
+        this.widget.id = 'chatbot-widget';
         this.widget.innerHTML = `
-            <button class="w-20 h-20 rounded-full flex items-center justify-center shadow-lg hover:opacity-90 transition duration-200" style="background-color: ${this.config.mainColor}">
-                <img src="${this.config.launch_avatar}" alt="Launch Avatar" class="w-20 h-20 rounded-full" />
-            </button>
+            <div id="chatbot-button">
+                <img src="${this.config.logoUrl}" alt="Chat">
+            </div>
         `;
         document.body.appendChild(this.widget);
     };
 
     ChatbotWidget.prototype.createChatWindow = function() {
         this.chatWindow = document.createElement('div');
-        this.chatWindow.className = 'fixed bottom-5 right-5 w-[35rem] h-[45rem] bg-white rounded-lg shadow-lg flex flex-col rounded-2xl hidden';
+        this.chatWindow.id = 'chatbot-window';
+        this.chatWindow.className = 'hidden';
         this.chatWindow.innerHTML = `
-            <div class="h-[5rem] p-4 flex justify-between rounded-t-2xl" style="background-color: ${this.config.mainColor}">
-                <div class="flex items-center">
-                    <img src="${this.config.header_image}" alt="Header" class="w-[3rem] h-[3rem] rounded-full mr-3" />
+            <div id="chatbot-header">
+                <div id="chatbot-header-content">
+                    <img src="${this.config.logoUrl}" alt="Logo">
                     <div>
-                        <h1 class="text-xl font-bold text-white">${this.config.headerText}</h1>
-                        <p class="text-white">${this.config.subHeaderText}</p>
+                        <h1>${this.config.headerText}</h1>
+                        <p>${this.config.subHeaderText}</p>
                     </div>
                 </div>
-                <button class="text-white" id="chatbot-close">×</button>
+                <button id="chatbot-close">×</button>
             </div>
-            <div class="flex-grow overflow-hidden">
-                <div class="h-full overflow-y-auto p-4 bg-gray-50" id="chatbot-messages">
-                    <div class="sticky bg-gray-50 z-10 pb-4">
-                        <div class="flex flex-col items-center mb-16 mt-16 transition-opacity duration-300">
-                            <img src="${this.config.header_image}" alt="Chatbot Avatar" class="w-[5rem] h-[5rem] mb-2 rounded-full" />
-                            <h1 class="text-xl font-bold text-black">${this.config.headerText}</h1>
-                            <p class="text-black">${this.config.subHeaderText}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-2 bg-gray">
-                <div class="flex">
-                    <input
-                        type="text"
-                        id="chatbot-input"
-                        class="flex-1 border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                        placeholder="Skriv ett meddelande..."
-                    />
-                    <button 
-                        id="chatbot-send"
-                        class="bg-yellow-400 text-white px-4 py-2 rounded-r-lg transition duration-200 hover:bg-yellow-500"
-                    >
-                        Skicka
-                    </button>
-                </div>
+            <div id="chatbot-messages"></div>
+            <div id="chatbot-input-area">
+                <input type="text" id="chatbot-input" placeholder="Skriv ett meddelande...">
+                <button id="chatbot-send">Skicka</button>
             </div>
         `;
         document.body.appendChild(this.chatWindow);
@@ -111,7 +86,7 @@
     };
 
     ChatbotWidget.prototype.bindEvents = function() {
-        this.widget.querySelector('button').onclick = () => this.toggleChatWindow();
+        this.widget.querySelector('#chatbot-button').onclick = () => this.toggleChatWindow();
         this.chatWindow.querySelector('#chatbot-close').onclick = () => this.toggleChatWindow();
         this.chatWindow.querySelector('#chatbot-send').onclick = () => this.sendMessage();
         this.inputField.onkeypress = (e) => {
@@ -173,10 +148,6 @@
                 
                 this.isLoading = false;
                 this.updateLastBotMessage(data.answer);
-                
-                if (data.product_info) {
-                    this.addProductCard(data.product_info);
-                }
                 
                 if (Math.random() < 0.5) {
                     this.showFollowUpQuestion();
@@ -245,61 +216,37 @@
         }, 800);
     };
 
-    ChatbotWidget.prototype.addProductCard = function(product) {
-        const productElement = `
-            <div class="bg-white rounded-lg shadow-md overflow-hidden max-w-xs mb-4 mt-4">
-                ${product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name}" class="w-[17rem] h-[12rem] object-cover" />` : ''}
-                <div class="p-4">
-                    <h3 class="font-semibold text-lg mb-1">${product.name}</h3>
-                    <p class="text-gray-600 text-base font-medium mb-3">${product.price} kr</p>
-                    <a 
-                        href="https://www.happyflops.se/products/${product.handle}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="block w-full bg-yellow-400 text-white py-2 px-4 rounded-md text-center text-lg font-bold hover:bg-yellow-500 transition duration-200"
-                    >
-                        Köp nu
-                    </a>
-                </div>
-            </div>
-        `;
-        this.messageList.insertAdjacentHTML('beforeend', productElement);
-    };
-
     ChatbotWidget.prototype.renderMessages = function() {
         this.messageList.innerHTML = this.messages.map((message, index) => `
-            <div class="flex flex-col ${message.isBot ? 'items-start' : 'items-end'} mb-4">
-                <div class="max-w-md px-4 py-2 rounded-lg ${message.isBot ? 'bg-yellow-100' : 'bg-white'} shadow">
-                    ${message.isLoading 
-                        ? `<div class="flex space-x-2">
-                            <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                            <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                            <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
-                           </div>`
-                        : message.text
-                    }
-                </div>
-                ${(this.showInitialOptions && index === this.messages.length - 1 && message.isBot) 
-                    ? this.renderOptions(['Spåra min order', 'Retur', 'Storleksguide'])
-                    : ''
-                }
-                ${(this.showFollowUp && index === this.messages.length - 1 && message.isBot)
-                    ? this.renderOptions(['Ja', 'Nej'])
-                    : ''
+            <div class="chatbot-message ${message.isBot ? 'bot' : 'user'}">
+                ${message.isLoading 
+                    ? `<div class="chatbot-loading">
+                        <div class="chatbot-loading-dot"></div>
+                        <div class="chatbot-loading-dot"></div>
+                        <div class="chatbot-loading-dot"></div>
+                       </div>`
+                    : message.text
                 }
             </div>
+            ${(this.showInitialOptions && index === this.messages.length - 1 && message.isBot) 
+                ? this.renderOptions(['Spåra min order', 'Retur', 'Storleksguide'])
+                : ''
+            }
+            ${(this.showFollowUp && index === this.messages.length - 1 && message.isBot)
+                ? this.renderOptions(['Ja', 'Nej'])
+                : ''
+            }
         `).join('');
         this.messageList.scrollTop = this.messageList.scrollHeight;
     };
 
     ChatbotWidget.prototype.renderOptions = function(options) {
         return `
-            <div class="flex flex-wrap space-x-2 mt-2">
+            <div class="chatbot-options">
                 ${options.map(option => `
                     <button
                         onclick="chatbotWidget.handleOptionClick('${option}')"
-                        class="w-auto h-10 text-black px-4 py-2 rounded-2xl hover:bg-yellow-200 transition duration-200 border border-yellow-500 mb-2"
-                        style="background-color: #FCFBE8; border-color: #D9CC3C;">
+                        class="chatbot-option-button">
                         ${option}
                     </button>
                 `).join('')}
