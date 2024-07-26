@@ -82,16 +82,25 @@
         
         console.log('Sending request to:', url);
         
-        fetch(url)
+        fetch(url, {
+            method: 'GET',
+            mode: 'cors', // This line is important for CORS requests
+            headers: {
+                'Accept': 'application/json',
+            },
+        })
             .then(response => {
                 console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json();
+                return response.text(); // Use text() instead of json() to see the raw response
             })
-            .then(data => {
-                console.log('Received data:', data);
+            .then(text => {
+                console.log('Received raw response:', text);
+                const data = JSON.parse(text);
+                console.log('Parsed data:', data);
                 if (data && data.answer) {
                     this.addMessage(data.answer, 'bot');
                 } else {
@@ -101,6 +110,7 @@
             .catch(error => {
                 console.error('Error:', error.message);
                 this.addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
+                this.addMessage(`Debug info: ${error.message}`, 'bot');
             });
     };
 
