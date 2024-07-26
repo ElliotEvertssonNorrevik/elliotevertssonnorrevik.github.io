@@ -1,4 +1,3 @@
-// chatbot-widget.js
 (function() {
     function ChatbotWidget() {
         this.widget = null;
@@ -10,10 +9,17 @@
     }
 
     ChatbotWidget.prototype.init = function() {
-        console.log('Initializing ChatbotWidget');
+        this.loadStylesheet();
         this.createWidgetButton();
         this.createChatWindow();
         this.bindEvents();
+    };
+
+    ChatbotWidget.prototype.loadStylesheet = function() {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://elliotevertssonnorrevik.github.io/chatbot-widget.css';
+        document.head.appendChild(link);
     };
 
     ChatbotWidget.prototype.createWidgetButton = function() {
@@ -62,7 +68,6 @@
     ChatbotWidget.prototype.sendMessage = function() {
         const message = this.inputField.value.trim();
         if (message) {
-            console.log('Sending message:', message);
             this.addMessage(message, 'user');
             this.inputField.value = '';
             this.getBotResponse(message);
@@ -80,27 +85,14 @@
     ChatbotWidget.prototype.getBotResponse = function(message) {
         const url = `https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger?question=${encodeURIComponent(message)}`;
         
-        console.log('Sending request to:', url);
-        
-        fetch(url, {
-            method: 'GET',
-            mode: 'cors', // This line is important for CORS requests
-            headers: {
-                'Accept': 'application/json',
-            },
-        })
+        fetch(url)
             .then(response => {
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.text(); // Use text() instead of json() to see the raw response
+                return response.json();
             })
-            .then(text => {
-                console.log('Received raw response:', text);
-                const data = JSON.parse(text);
-                console.log('Parsed data:', data);
+            .then(data => {
                 if (data && data.answer) {
                     this.addMessage(data.answer, 'bot');
                 } else {
@@ -110,7 +102,6 @@
             .catch(error => {
                 console.error('Error:', error.message);
                 this.addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
-                this.addMessage(`Debug info: ${error.message}`, 'bot');
             });
     };
 
