@@ -87,7 +87,8 @@
                     >
                     <button 
                         id="chatbot-send"
-                        class="bg-yellow-400 text-white px-4 py-2 rounded-r-lg transition duration-200 hover:bg-yellow-500"
+                        class="bg-yellow-400 text-white font-bold py-2 px-4 rounded-r-lg hover:opacity-90 transition duration-200"
+                        style="background-color: ${this.config.mainColor}"
                     >
                         Skicka
                     </button>
@@ -95,188 +96,139 @@
             </div>
         `;
         document.body.appendChild(this.chatContainer);
-        
         this.messageList = this.chatContainer.querySelector('#chatbot-messages');
         this.inputField = this.chatContainer.querySelector('#chatbot-input');
     };
 
-    ChatbotWidget.prototype.bindEvents = function() {
-        this.chatButton.onclick = () => this.toggleChatWindow();
-        this.chatContainer.querySelector('#chatbot-close').onclick = () => this.toggleChatWindow();
-        this.chatContainer.querySelector('#chatbot-send').onclick = () => this.sendMessage();
-        this.inputField.onkeypress = (e) => {
-            if (e.key === 'Enter') {
-                this.sendMessage();
-            }
-        };
-    };
-
-    ChatbotWidget.prototype.toggleChatWindow = function() {
+    ChatbotWidget.prototype.toggleChat = function() {
         if (this.chatContainer.classList.contains('hidden')) {
             this.chatContainer.classList.remove('hidden');
-            this.chatContainer.classList.add('flex');
             this.chatButton.classList.add('hidden');
             if (!this.isInitialized) {
-                this.initializeChat();
+                this.fetchAndDisplayMessages();
+                this.isInitialized = true;
             }
         } else {
             this.chatContainer.classList.add('hidden');
-            this.chatContainer.classList.remove('flex');
             this.chatButton.classList.remove('hidden');
         }
     };
 
-    ChatbotWidget.prototype.initializeChat = function() {
-        this.addBotMessage("", true);
-        setTimeout(() => {
-            this.updateLastBotMessage("Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Happyflops.");
-            setTimeout(() => {
-                this.addBotMessage("Vad kan jag hjälpa dig med idag?😊");
-                this.showInitialOptions = true;
-                this.renderMessages();
-            }, 1000);
-        }, 700);
-        this.isInitialized = true;
-    };
-
-
-    ChatbotWidget.prototype.sendMessage = async function() {
-        const message = this.inputField.value.trim();
-        if (message) {
-            this.addUserMessage(message);
-            this.inputField.value = '';
-            this.showInitialOptions = false;
-            this.renderMessages();
-            
-            this.isLoading = true;
-            this.addBotMessage("", true);
-            this.renderMessages();
-
-            try {
-                const response = await fetch(`${this.apiEndpoint}?question=${encodeURIComponent(message)}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        conversation_id: this.conversationId
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                this.isLoading = false;
-                this.updateLastBotMessage(data.answer);
-                
-                if (Math.random() < 0.5) {
-                    this.showFollowUpQuestion();
-                }
-            } catch (error) {
-                console.error('Error:', error.message);
-                this.isLoading = false;
-                this.updateLastBotMessage("Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se");
+    ChatbotWidget.prototype.bindEvents = function() {
+        this.chatButton.addEventListener('click', () => this.toggleChat());
+        this.chatContainer.querySelector('#chatbot-close').addEventListener('click', () => this.toggleChat());
+        this.chatContainer.querySelector('#chatbot-send').addEventListener('click', () => this.handleUserMessage());
+        this.inputField.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.handleUserMessage();
             }
-            
-            this.renderMessages();
-        }
+        });
     };
 
-    ChatbotWidget.prototype.addMessage = function(message, isBot, isLoading = false) {
-        this.messages.push({ text: message, isBot, isLoading });
+    ChatbotWidget.prototype.handleUserMessage = function() {
+        const messageText = this.inputField.value.trim();
+        if (!messageText) return;
+        this.addMessage('user', messageText);
+        this.inputField.value = '';
+        this.scrollToBottom();
+        this.sendMessageToServer(messageText);
     };
 
-    ChatbotWidget.prototype.updateLastBotMessage = function(message) {
-        const lastBotMessage = this.messages.slice().reverse().find(msg => msg.isBot);
-        if (lastBotMessage) {
-            lastBotMessage.text = message;
-            lastBotMessage.isLoading = false;
-        }
+    ChatbotWidget.prototype.addMessage = function(sender, text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chatbot-message ${sender === 'user' ? 'user' : 'bot'}`;
+        messageDiv.textContent = text;
+        this.messageList.appendChild(messageDiv);
+        this.messages.push({ sender, text });
+        this.scrollToBottom();
     };
 
-    ChatbotWidget.prototype.addUserMessage = function(message) {
-        this.addMessage(message, false);
-    };
-
-    ChatbotWidget.prototype.addBotMessage = function(message, isLoading = false) {
-        this.addMessage(message, true, isLoading);
-    };
-
-    ChatbotWidget.prototype.showFollowUpQuestion = function() {
-        setTimeout(() => {
-            this.addBotMessage("Kan jag hjälpa dig med något mer?");
-            this.showFollowUp = true;
-            this.renderMessages();
-        }, 1000);
-    };
-
-    ChatbotWidget.prototype.handleOptionClick = function(option) {
-        if (option === 'Ja' || option === 'Nej') {
-            this.handleFollowUpResponse(option === 'Ja');
-        } else {
-            this.sendMessage(option);
-        }
-    };
-
-    ChatbotWidget.prototype.handleFollowUpResponse = function(isYes) {
-        this.addUserMessage(isYes ? "Ja" : "Nej");
-        this.showFollowUp = false;
-        
-        this.addBotMessage("", true);
-        this.renderMessages();
-
-        setTimeout(() => {
-            this.updateLastBotMessage(isYes 
-                ? "Vad mer kan jag hjälpa dig med?" 
-                : "Okej, tack för att du chattat med mig. Ha en bra dag!");
-            if (isYes) {
-                this.showInitialOptions = true;
-            }
-            this.renderMessages();
-        }, 800);
-    };
-
-    ChatbotWidget.prototype.renderMessages = function() {
-        this.messageList.innerHTML = this.messages.map((message, index) => `
-            <div class="chatbot-message ${message.isBot ? 'bot' : 'user'}">
-                ${message.isLoading 
-                    ? `<div class="chatbot-loading">
-                        <div class="chatbot-loading-dot"></div>
-                        <div class="chatbot-loading-dot"></div>
-                        <div class="chatbot-loading-dot"></div>
-                       </div>`
-                    : message.text
-                }
-            </div>
-            ${(this.showInitialOptions && index === this.messages.length - 1 && message.isBot) 
-                ? this.renderOptions(['Spåra min order', 'Retur', 'Storleksguide'])
-                : ''
-            }
-            ${(this.showFollowUp && index === this.messages.length - 1 && message.isBot)
-                ? this.renderOptions(['Ja', 'Nej'])
-                : ''
-            }
-        `).join('');
+    ChatbotWidget.prototype.scrollToBottom = function() {
         this.messageList.scrollTop = this.messageList.scrollHeight;
     };
 
-    ChatbotWidget.prototype.renderOptions = function(options) {
-        return `
-            <div class="chatbot-options">
-                ${options.map(option => `
-                    <button
-                        onclick="chatbotWidget.handleOptionClick('${option}')"
-                        class="chatbot-option-button">
-                        ${option}
-                    </button>
-                `).join('')}
-            </div>
-        `;
+    ChatbotWidget.prototype.sendMessageToServer = function(message) {
+        if (this.isLoading) return;
+        this.isLoading = true;
+        this.addLoadingDots();
+        const payload = {
+            conversationId: this.conversationId,
+            userMessage: message,
+            messages: this.messages
+        };
+        fetch(this.apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            this.removeLoadingDots();
+            this.isLoading = false;
+            if (data && data.responseMessage) {
+                this.addMessage('bot', data.responseMessage);
+                if (data.followUpMessages && data.followUpMessages.length) {
+                    this.showFollowUpOptions(data.followUpMessages);
+                }
+            }
+        })
+        .catch(() => {
+            this.removeLoadingDots();
+            this.isLoading = false;
+            this.addMessage('bot', 'Tyvärr, något gick fel. Försök igen.');
+        });
     };
 
-    window.chatbotWidget = new ChatbotWidget();
+    ChatbotWidget.prototype.addLoadingDots = function() {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'chatbot-loading';
+        loadingDiv.innerHTML = `
+            <div class="chatbot-loading-dot"></div>
+            <div class="chatbot-loading-dot"></div>
+            <div class="chatbot-loading-dot"></div>
+        `;
+        loadingDiv.id = 'chatbot-loading';
+        this.messageList.appendChild(loadingDiv);
+        this.scrollToBottom();
+    };
+
+    ChatbotWidget.prototype.removeLoadingDots = function() {
+        const loadingDiv = this.chatContainer.querySelector('#chatbot-loading');
+        if (loadingDiv) {
+            this.messageList.removeChild(loadingDiv);
+        }
+    };
+
+    ChatbotWidget.prototype.showFollowUpOptions = function(options) {
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'chatbot-options';
+        options.forEach(option => {
+            const button = document.createElement('button');
+            button.className = 'chatbot-option-button';
+            button.textContent = option;
+            button.addEventListener('click', () => {
+                this.handleUserMessage(option);
+                optionsDiv.remove();
+            });
+            optionsDiv.appendChild(button);
+        });
+        this.messageList.appendChild(optionsDiv);
+        this.scrollToBottom();
+    };
+
+    ChatbotWidget.prototype.fetchAndDisplayMessages = function() {
+        const storedMessages = localStorage.getItem('chatbotMessages');
+        if (storedMessages) {
+            this.messages = JSON.parse(storedMessages);
+            this.messages.forEach(msg => this.addMessage(msg.sender, msg.text));
+        } else {
+            this.addMessage('bot', 'Hej! Hur kan jag hjälpa dig idag?');
+        }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+        new ChatbotWidget();
+    });
 })();
