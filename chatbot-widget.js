@@ -152,20 +152,27 @@
   }
 
   function formatMessage(message) {
-  // Regex för URLs
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    // Regex för URLs med text i hakparenteser
+    const urlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
+    // Regex för vanliga URLs
+    const plainUrlRegex = /(\b(?:https?:\/\/|www\.)[^\s]+\b)/gi;
     // Regex för e-postadresser
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
   
-    // Ersätt URLs med klickbara länkar
-    message = message.replace(urlRegex, function(url) {
+    // Ersätt URLs med text i hakparenteser
+    message = message.replace(urlRegex, function(match, text, url) {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    });
+  
+    // Ersätt vanliga URLs
+    message = message.replace(plainUrlRegex, function(url) {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
   
     // Ersätt e-postadresser med klickbara mailto-länkar
     message = message.replace(emailRegex, function(email) {
       return `<a href="mailto:${email}" class="email">${email}</a>`;
-  });
+    });
 
   return message;
 }
