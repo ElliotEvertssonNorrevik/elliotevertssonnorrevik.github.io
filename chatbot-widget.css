@@ -27,7 +27,7 @@
 }
 
 .happyflops-chat-window {
-  width: 540px; /* Ökad bredd från 300px till 350px */
+  width: 540px;
   height: 700px;
   background-color: #fff;
   border-radius: 15px;
@@ -81,8 +81,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 0; /* Ökad padding från 15px till 30px för att skapa mer mellanrum */
+  padding: 30px 10px; /* Lägg till höger och vänster padding */
   background-color: #fff;
+  /* Ta bort position: sticky om det finns */
 }
 
 .happyflops-logo {
@@ -94,6 +95,13 @@
 .happyflops-logo-text {
   text-align: center;
   margin-top: 15px; /* Ökad margin-top från 5px till 15px för att skapa mer mellanrum */
+}
+
+.happyflops-scrollable-content {
+  overflow-y: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .happyflops-logo-text h2 {
@@ -108,15 +116,15 @@
 .happyflops-messages-container {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 10px;
-  background-color: #fff; /* Bakgrundsfärg för meddelanden */
+  padding: 0; /* Ändrat från 10px till 0 */
+  background-color: #fff;
 }
 
 .happyflops-messages-wrapper {
   display: flex;
   flex-direction: column;
+  padding: 10px; /* Lägg till padding här istället */
 }
-
 
 
 .happyflops-message {
