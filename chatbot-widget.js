@@ -162,7 +162,7 @@
   
     const logoText = document.createElement('div');
     logoText.className = 'happyflops-logo-text';
-    logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
+    logoText.innerHTML = <h2>${config.headerText}</h2><p>${config.subHeaderText}</p>;
   
     logoContainer.appendChild(logo);
     logoContainer.appendChild(logoText);
@@ -195,17 +195,17 @@
   
     // Ersätt URLs med text i hakparenteser
     message = message.replace(urlRegex, function(match, text, url) {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+      return <a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>;
     });
   
     // Ersätt vanliga URLs
     message = message.replace(plainUrlRegex, function(url) {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+      return <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>;
     });
   
     // Ersätt e-postadresser med klickbara mailto-länkar
     message = message.replace(emailRegex, function(email) {
-      return `<a href="mailto:${email}" class="email">${email}</a>`;
+      return <a href="mailto:${email}" class="email">${email}</a>;
     });
 
   return message;
@@ -214,7 +214,7 @@
 // Uppdatera createMessageElement funktionen
 function createMessageElement(message) {
   const messageElement = document.createElement('div');
-  messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+  messageElement.className = happyflops-message ${message.isBot ? 'bot' : 'user'};
 
   const textElement = document.createElement('div');
   textElement.className = 'happyflops-message-text';
@@ -312,7 +312,7 @@ function sendMessage(text) {
     addMessage('', true, true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
+      const response = await fetch(${API_BASE_URL}?question=${encodeURIComponent(question)});
       const data = await response.json();
       const answer = data.answer;
 
