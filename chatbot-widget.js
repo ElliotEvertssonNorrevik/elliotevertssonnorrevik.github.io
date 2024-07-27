@@ -177,7 +177,7 @@
     const messagesWrapper = document.createElement('div');
     messagesWrapper.className = 'happyflops-messages-wrapper';
     
-    // Remove the logo creation here to avoid duplication
+    // Ta bort logotypen här för att undvika dubbletter
     // const logoContainer = createChatLogo();
     // messagesWrapper.appendChild(logoContainer);
   
@@ -185,6 +185,7 @@
   
     return container;
   }
+
 
 
   function formatMessage(message) {
