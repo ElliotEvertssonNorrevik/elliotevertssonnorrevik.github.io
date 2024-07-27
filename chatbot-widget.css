@@ -177,60 +177,136 @@
 }
 
 .happyflops-option-button {
-  background-color: #FCFBE8;
-  border: 1px solid #D9CC3C;
+  background-color: #fff;
+  border: 1px solid #FCBE08;
   color: #000;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 20px;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .happyflops-option-button:hover {
-  background-color: #f0edd0;
+  background-color: #FFF9C4;
 }
 
-.happyflops-product-card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  overflow: hidden;
-  margin-top: 10px;
+.happyflops-loading-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
 }
 
-.happyflops-product-image {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
+.happyflops-loading-dots div {
+  width: 8px;
+  height: 8px;
+  background-color: #888;
+  border-radius: 50%;
+  margin: 0 3px;
+  animation: happyflops-bounce 0.6s infinite alternate;
 }
 
-.happyflops-product-info {
-  padding: 10px;
+.happyflops-loading-dots div:nth-child(2) {
+  animation-delay: 0.2s;
 }
 
-.happyflops-product-info h3 {
-  margin: 0 0 5px 0;
+.happyflops-loading-dots div:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes happyflops-bounce {
+  to {
+    opacity: 0.3;
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+/* Adjustments to match the image exactly */
+.happyflops-chat-window {
+  width: 300px;
+  height: 500px;
+  border-radius: 15px;
+}
+
+.happyflops-chat-header {
+  padding: 10px 15px;
+}
+
+.happyflops-header-image {
+  width: 25px;
+  height: 25px;
+}
+
+.happyflops-header-text h1 {
   font-size: 16px;
 }
 
-.happyflops-product-info p {
-  margin: 0 0 10px 0;
-  font-size: 14px;
-  color: #666;
+.happyflops-header-text p {
+  font-size: 11px;
 }
 
-.happyflops-buy-button {
-  display: inline-block;
-  background-color: #FCBE08;
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 14px;
-  transition: background-color 0.2s;
+.happyflops-logo-container {
+  padding: 15px 0;
 }
 
-.happyflops-buy-button:hover {
-  background-color: #e0a800;
+.happyflops-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.happyflops-logo-text h2 {
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.happyflops-logo-text p {
+  font-size: 12px;
+}
+
+.happyflops-messages-container {
+  padding: 10px;
+}
+
+.happyflops-message {
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.3;
+  border-radius: 15px;
+}
+
+.happyflops-message.bot {
+  background-color: #FFF9C4;
+}
+
+.happyflops-initial-options {
+  margin-top: 10px;
+}
+
+.happyflops-option-button {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.happyflops-input-area {
+  padding: 8px;
+}
+
+.happyflops-input {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+.happyflops-send-button {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 3px;
+}
+
+/* Emoji support */
+.happyflops-message-text img.emoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 .05em 0 .1em;
+  vertical-align: -0.1em;
 }
