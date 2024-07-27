@@ -151,20 +151,44 @@
     return container;
   }
 
-  function createMessageElement(message) {
-    const messageElement = document.createElement('div');
-    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+  function formatMessage(message) {
+  // Regex för URLs
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    // Regex för e-postadresser
+    const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
+  
+    // Ersätt URLs med klickbara länkar
+    message = message.replace(urlRegex, function(url) {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+  
+    // Ersätt e-postadresser med klickbara mailto-länkar
+    message = message.replace(emailRegex, function(email) {
+      return `<a href="mailto:${email}" class="email">${email}</a>`;
+  });
 
-    const textElement = document.createElement('div');
-    textElement.className = 'happyflops-message-text';
-    textElement.innerHTML = message.isLoading
-      ? '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>'
-      : message.text;
+  return message;
+}
 
-    messageElement.appendChild(textElement);
+// Uppdatera createMessageElement funktionen
+function createMessageElement(message) {
+  const messageElement = document.createElement('div');
+  messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
 
-    return messageElement;
+  const textElement = document.createElement('div');
+  textElement.className = 'happyflops-message-text';
+  
+  if (message.isLoading) {
+    textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
+  } else {
+    // Använd formatMessage funktionen här
+    textElement.innerHTML = formatMessage(message.text);
   }
+
+  messageElement.appendChild(textElement);
+
+  return messageElement;
+}
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
