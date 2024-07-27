@@ -176,10 +176,9 @@
   
     const messagesWrapper = document.createElement('div');
     messagesWrapper.className = 'happyflops-messages-wrapper';
-    
-    // Ta bort logotypen här för att undvika dubbletter
-    // const logoContainer = createChatLogo();
-    // messagesWrapper.appendChild(logoContainer);
+  
+    const logoContainer = createChatLogo();
+    messagesWrapper.appendChild(logoContainer);
   
     container.appendChild(messagesWrapper);
   
