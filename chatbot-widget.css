@@ -27,8 +27,8 @@
 }
 
 .happyflops-chat-window {
-  width: 350px; /* Ökad bredd från 300px till 350px */
-  height: 500px;
+  width: 540px; /* Ökad bredd från 300px till 350px */
+  height: 700px;
   background-color: #fff;
   border-radius: 15px;
   overflow: hidden;
