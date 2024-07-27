@@ -1,5 +1,6 @@
+/* https://elliotevertssonnorrevik.github.io/chatbot-widget.css */
 #happyflops-chatbot {
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 .happyflops-launch-button {
@@ -28,7 +29,7 @@
 
 .happyflops-chat-window {
   width: 350px;
-  height: 500px;
+  height: 550px;
   background-color: #fff;
   border-radius: 10px;
   overflow: hidden;
@@ -42,6 +43,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #FCBE08;
 }
 
 .happyflops-header-content {
@@ -50,9 +52,8 @@
 }
 
 .happyflops-header-image {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 30px;
+  height: 30px;
   margin-right: 10px;
 }
 
@@ -63,7 +64,7 @@
 }
 
 .happyflops-header-text p {
-  color: rgba(255, 255, 255, 0.8);
+  color: #fff;
   font-size: 12px;
   margin: 0;
 }
@@ -76,11 +77,40 @@
   cursor: pointer;
 }
 
+.happyflops-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  background-color: #f8f8f8;
+}
+
+.happyflops-logo {
+  width: 60px;
+  height: 60px;
+}
+
+.happyflops-logo-text {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.happyflops-logo-text h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.happyflops-logo-text p {
+  font-size: 14px;
+  margin: 5px 0 0;
+  color: #666;
+}
+
 .happyflops-messages-container {
   flex-grow: 1;
   overflow-y: auto;
   padding: 15px;
-  background-color: #f5f5f5;
+  background-color: #fff;
 }
 
 .happyflops-messages-wrapper {
@@ -111,7 +141,7 @@
 .happyflops-input-area {
   display: flex;
   padding: 10px;
-  background-color: #fff;
+  background-color: #f8f8f8;
   border-top: 1px solid #eee;
 }
 
@@ -126,7 +156,7 @@
 
 .happyflops-send-button {
   border: none;
-  border-radius: 20px;
+  border-radius: 5px;
   padding: 8px 15px;
   color: #fff;
   font-size: 14px;
@@ -136,37 +166,6 @@
 
 .happyflops-send-button:hover {
   opacity: 0.9;
-}
-
-.happyflops-loading-dots {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 20px;
-}
-
-.happyflops-loading-dots div {
-  width: 8px;
-  height: 8px;
-  background-color: #888;
-  border-radius: 50%;
-  margin: 0 3px;
-  animation: happyflops-bounce 0.6s infinite alternate;
-}
-
-.happyflops-loading-dots div:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.happyflops-loading-dots div:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes happyflops-bounce {
-  to {
-    opacity: 0.3;
-    transform: translate3d(0, -4px, 0);
-  }
 }
 
 .happyflops-initial-options {
