@@ -64,17 +64,23 @@
   function createChatWindow() {
     const chatWindow = document.createElement('div');
     chatWindow.className = 'happyflops-chat-window';
-
+  
     const header = createChatHeader();
+    const scrollableContent = document.createElement('div');
+    scrollableContent.className = 'happyflops-scrollable-content';
+    
     const logo = createChatLogo();
     const messagesContainer = createMessagesContainer();
+    
+    scrollableContent.appendChild(logo);
+    scrollableContent.appendChild(messagesContainer);
+    
     const inputArea = createInputArea();
-
+  
     chatWindow.appendChild(header);
-    chatWindow.appendChild(logo);
-    chatWindow.appendChild(messagesContainer);
+    chatWindow.appendChild(scrollableContent);
     chatWindow.appendChild(inputArea);
-
+  
     return chatWindow;
   }
 
