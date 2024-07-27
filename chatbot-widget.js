@@ -148,13 +148,105 @@
 
     const textElement = document.createElement('div');
     textElement.className = 'happyflops-message-text';
-    textElement.innerHTML = message.isLoading
-      ? '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>'
-      : message.text;
+    
+    if (message.isLoading) {
+      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
+    } else {
+      textElement.innerHTML = linkify(message.text);
+    }
 
     messageElement.appendChild(textElement);
 
+    if (message.isBot && !message.isLoading) {
+      if (showInitialOptions && messages.length <= 2) {
+        const optionsElement = createInitialOptions();
+        messageElement.appendChild(optionsElement);
+      } else if (showFollowUp) {
+        const followUpElement = createFollowUpOptions();
+        messageElement.appendChild(followUpElement);
+      }
+    }
+
+    if (message.product) {
+      const productElement = createProductElement(message.product);
+      messageElement.appendChild(productElement);
+    }
+
     return messageElement;
+  }
+
+  function linkify(text) {
+    const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    return text.replace(urlRegex, function(url) {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="happyflops-link">${url}</a>`;
+    });
+  }
+
+  function createInitialOptions() {
+    const optionsElement = document.createElement('div');
+    optionsElement.className = 'happyflops-initial-options';
+
+    const options = ['Spåra min order', 'Retur', 'Storleksguide'];
+    options.forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      button.className = 'happyflops-option-button';
+      button.addEventListener('click', () => sendMessage(option));
+      optionsElement.appendChild(button);
+    });
+
+    return optionsElement;
+  }
+
+  function createFollowUpOptions() {
+    const optionsElement = document.createElement('div');
+    optionsElement.className = 'happyflops-followup-options';
+
+    ['Ja', 'Nej'].forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      button.className = 'happyflops-option-button';
+      button.addEventListener('click', () => handleFollowUpResponse(option === 'Ja'));
+      optionsElement.appendChild(button);
+    });
+
+    return optionsElement;
+  }
+
+  function createProductElement(product) {
+    const productElement = document.createElement('div');
+    productElement.className = 'happyflops-product-card';
+
+    if (product.imageUrl) {
+      const img = document.createElement('img');
+      img.src = product.imageUrl;
+      img.alt = product.name;
+      img.className = 'happyflops-product-image';
+      productElement.appendChild(img);
+    }
+
+    const productInfo = document.createElement('div');
+    productInfo.className = 'happyflops-product-info';
+
+    const name = document.createElement('h3');
+    name.textContent = product.name;
+    productInfo.appendChild(name);
+
+    const price = document.createElement('p');
+    price.textContent = `${product.price} kr`;
+    productInfo.appendChild(price);
+
+    const buyButton = document.createElement('a');
+    buyButton.href = `https://www.happyflops.se/products/${product.handle}`;
+    buyButton.textContent = 'Köp nu';
+    buyButton.className = 'happyflops-buy-button';
+    buyButton.target = '_blank';
+    buyButton.rel = 'noopener noreferrer';
+    productInfo.appendChild(buyButton);
+
+    productElement.appendChild(productInfo);
+
+    return productElement;
   }
 
   function createInputArea() {
@@ -226,6 +318,17 @@
     } finally {
       isLoading = false;
     }
+  }
+
+  function handleFollowUpResponse(isYes) {
+    addMessage(isYes ? 'Ja' : 'Nej', false);
+    showFollowUp = false;
+    if (isYes) {
+      addMessage('Vad mer kan jag hjälpa dig med?', true);
+    } else {
+      addMessage('Okej, tack för att du chattat med mig. Ha en bra dag!', true);
+    }
+    updateChatWindow();
   }
 
   function updateChatWindow() {
