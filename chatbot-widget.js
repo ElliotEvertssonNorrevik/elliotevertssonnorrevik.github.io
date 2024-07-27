@@ -12,7 +12,8 @@
     headerText: 'Happyflops AI',
     subHeaderText: 'Chatta med vår digitala assistent',
     mainColor: '#FCBE08',
-    logoUrl: 'https://i.ibb.co/gTSR93f/s348hq3b.png', // Replace with actual logo URL
+    logoUrl: 'https://i.ibb.co/gTSR93f/s348hq3b.png',
+    launchAvatarUrl: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png'
   };
 
   function createChatbotUI() {
@@ -47,8 +48,8 @@
     button.style.backgroundColor = config.mainColor;
     
     const img = document.createElement('img');
-    img.src = config.logoUrl;
-    img.alt = 'Launch Avatar';
+    img.src = config.launchAvatarUrl;
+    img.alt = 'Chat Avatar';
     img.className = 'happyflops-launch-avatar';
     
     button.appendChild(img);
@@ -57,7 +58,7 @@
       renderChatbot();
       initializeChat();
     });
-
+  
     return button;
   }
 
