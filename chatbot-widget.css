@@ -2,6 +2,54 @@
   font-family: 'Roboto', sans-serif;
 }
 
+.happyflops-initial-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: center;
+}
+
+.happyflops-option-button {
+  background-color: #FCFBE8;
+  border: 1px solid #D9CC3C;
+  color: #000;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.happyflops-option-button:hover {
+  background-color: #f0edd0;
+}
+
+.happyflops-messages-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.happyflops-message {
+  max-width: 80%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.happyflops-message.bot {
+  align-self: flex-start;
+  background-color: #FFF9C4;
+}
+
+.happyflops-message.user {
+  align-self: flex-end;
+  background-color: #E3F2FD;
+  color: #000;
+}
+
 .happyflops-launch-button {
   width: 60px;
   height: 60px;
