@@ -226,27 +226,45 @@ function createMessageElement(message) {
   function createInputArea() {
     const inputArea = document.createElement('div');
     inputArea.className = 'happyflops-input-area';
-
+  
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
-
+  
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
     sendButton.className = 'happyflops-send-button';
     sendButton.style.backgroundColor = config.mainColor;
+  
+    const handleSendMessage = () => {
+      const message = input.value.trim();
+      if (message !== '') {
+        sendMessage(message);
+        input.value = ''; // Tömmer inputfältet efter att meddelandet skickats
+      }
+    };
 
-    sendButton.addEventListener('click', () => sendMessage(input.value));
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendMessage(input.value);
-    });
+  sendButton.addEventListener('click', handleSendMessage);
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  });
 
-    inputArea.appendChild(input);
-    inputArea.appendChild(sendButton);
+  inputArea.appendChild(input);
+  inputArea.appendChild(sendButton);
 
-    return inputArea;
-  }
+  return inputArea;
+}
+
+function sendMessage(text) {
+  if (text.trim() === '' || isLoading) return;
+
+  addMessage(text, false);
+  showInitialOptions = false;
+  fetchBotResponse(text);
+}
 
   function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
