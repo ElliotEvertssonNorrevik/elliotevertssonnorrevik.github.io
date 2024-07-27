@@ -30,7 +30,7 @@
 .happyflops-chat-window {
   width: 300px;
   height: 500px;
-  background-color: #fff;
+  background-color: #fff; /* Hela chatfönstret är vitt */
   border-radius: 15px;
   overflow: hidden;
   display: flex;
@@ -43,7 +43,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #FCBE08;
+  background-color: #FCBE08; /* Huvudrubrikens bakgrundsfärg */
 }
 
 .happyflops-header-content {
@@ -83,7 +83,7 @@
   flex-direction: column;
   align-items: center;
   padding: 15px 0;
-  background-color: #f8f8f8;
+  background-color: #fff; /* Bakgrundsfärg för logotypen */
 }
 
 .happyflops-logo {
@@ -110,7 +110,7 @@
   flex-grow: 1;
   overflow-y: auto;
   padding: 10px;
-  background-color: #fff;
+  background-color: #fff; /* Bakgrundsfärg för meddelanden */
 }
 
 .happyflops-messages-wrapper {
@@ -129,19 +129,19 @@
 
 .happyflops-message.bot {
   align-self: flex-start;
-  background-color: #FFF9C4;
+  background-color: #FFF9C4; /* Bakgrundsfärg för bot-meddelanden */
 }
 
 .happyflops-message.user {
   align-self: flex-end;
-  background-color: #E3F2FD;
+  background-color: #E3F2FD; /* Bakgrundsfärg för användar-meddelanden */
   color: #000;
 }
 
 .happyflops-input-area {
   display: flex;
   padding: 8px;
-  background-color: #f8f8f8;
+  background-color: #fff; /* Bakgrundsfärg för input-området */
   border-top: 1px solid #eee;
 }
 
@@ -177,7 +177,7 @@
 }
 
 .happyflops-option-button {
-  background-color: #fff;
+  background-color: #fff; /* Bakgrundsfärg för initiala alternativ */
   border: 1px solid #FCBE08;
   color: #000;
   padding: 6px 12px;
