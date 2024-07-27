@@ -237,3 +237,23 @@
   margin: 0 .05em 0 .1em;
   vertical-align: -0.1em;
 }
+
+
+.happyflops-message a {
+  color: #0066cc; /* Blue color for links */
+  text-decoration: underline;
+  word-break: break-word; /* Allows long URLs to wrap */
+}
+
+.happyflops-message.user a {
+  color: #ffffff; /* White color for links in user messages */
+}
+
+.happyflops-message a:hover {
+  text-decoration: none; /* Remove underline on hover */
+}
+
+/* Style for email addresses */
+.happyflops-message .email {
+  font-style: italic;
+}
