@@ -1,4 +1,3 @@
-/* https://elliotevertssonnorrevik.github.io/chatbot-widget.css */
 #happyflops-chatbot {
   font-family: Arial, sans-serif;
 }
@@ -28,9 +27,9 @@
 }
 
 .happyflops-chat-window {
-  width: 300px;
+  width: 350px; /* Ökad bredd från 300px till 350px */
   height: 500px;
-  background-color: #fff; /* Hela chatfönstret är vitt */
+  background-color: #fff;
   border-radius: 15px;
   overflow: hidden;
   display: flex;
@@ -43,7 +42,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #FCBE08; /* Huvudrubrikens bakgrundsfärg */
+  background-color: #FCBE08;
 }
 
 .happyflops-header-content {
@@ -54,7 +53,7 @@
 .happyflops-header-image {
   width: 25px;
   height: 25px;
-  border-radius: 50%; /* Gör header-bilden cirkulär */
+  border-radius: 50%;
   margin-right: 10px;
 }
 
@@ -82,19 +81,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 15px 0;
-  background-color: #fff; /* Bakgrundsfärg för logotypen */
+  padding: 30px 0; /* Ökad padding från 15px till 30px för att skapa mer mellanrum */
+  background-color: #fff;
 }
 
 .happyflops-logo {
   width: 40px;
   height: 40px;
-  border-radius: 50%; /* Gör logotypen cirkulär */
+  border-radius: 50%;
 }
 
 .happyflops-logo-text {
   text-align: center;
-  margin-top: 5px;
+  margin-top: 15px; /* Ökad margin-top från 5px till 15px för att skapa mer mellanrum */
 }
 
 .happyflops-logo-text h2 {
