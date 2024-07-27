@@ -54,6 +54,7 @@
 .happyflops-header-image {
   width: 30px;
   height: 30px;
+  border-radius: 50%;
   margin-right: 10px;
 }
 
@@ -88,6 +89,7 @@
 .happyflops-logo {
   width: 60px;
   height: 60px;
+  border-radius: 50%;
 }
 
 .happyflops-logo-text {
