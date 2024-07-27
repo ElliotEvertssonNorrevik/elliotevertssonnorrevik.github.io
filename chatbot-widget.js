@@ -1,3 +1,4 @@
+// https://elliotevertssonnorrevik.github.io/chatbot-widget.js
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
 
@@ -133,7 +134,6 @@
 
     container.appendChild(messagesWrapper);
 
-    // Render existing messages
     messages.forEach(message => {
       const messageElement = createMessageElement(message);
       messagesWrapper.appendChild(messageElement);
@@ -145,15 +145,20 @@
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
-  
+
     const textElement = document.createElement('div');
     textElement.className = 'happyflops-message-text';
     textElement.innerHTML = message.isLoading
       ? '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>'
       : message.text;
-  
+
     messageElement.appendChild(textElement);
-  
+
+    if (message.product) {
+      const productElement = createProductElement(message.product);
+      messageElement.appendChild(productElement);
+    }
+
     return messageElement;
   }
 
@@ -166,22 +171,11 @@
       const button = document.createElement('button');
       button.textContent = option;
       button.className = 'happyflops-option-button';
-      button.addEventListener('click', () => sendMessage(option));
-      optionsElement.appendChild(button);
-    });
-
-    return optionsElement;
-  }
-
-  function createFollowUpOptions() {
-    const optionsElement = document.createElement('div');
-    optionsElement.className = 'happyflops-followup-options';
-
-    ['Ja', 'Nej'].forEach(option => {
-      const button = document.createElement('button');
-      button.textContent = option;
-      button.className = 'happyflops-option-button';
-      button.addEventListener('click', () => handleFollowUpResponse(option === 'Ja'));
+      button.addEventListener('click', () => {
+        sendMessage(option);
+        showInitialOptions = false;
+        updateChatWindow();
+      });
       optionsElement.appendChild(button);
     });
 
@@ -253,6 +247,7 @@
     if (text.trim() === '' || isLoading) return;
 
     addMessage(text, false);
+    showInitialOptions = false;
     fetchBotResponse(text);
   }
 
@@ -295,17 +290,6 @@
     }
   }
 
-  function handleFollowUpResponse(isYes) {
-    addMessage(isYes ? 'Ja' : 'Nej', false);
-    showFollowUp = false;
-    if (isYes) {
-      addMessage('Vad mer kan jag hjälpa dig med?', true);
-    } else {
-      addMessage('Okej, tack för att du chattat med mig. Ha en bra dag!', true);
-    }
-    updateChatWindow();
-  }
-
   function updateChatWindow() {
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
@@ -315,8 +299,7 @@
         messagesWrapper.appendChild(messageElement);
       });
       
-      // Lägg till initialvalsknapparna separat efter meddelandena
-      if (showInitialOptions && messages.length >= 2) {
+      if (showInitialOptions) {
         const optionsElement = createInitialOptions();
         messagesWrapper.appendChild(optionsElement);
       }
@@ -337,10 +320,8 @@
     }
   }
 
-  // Initialize the chatbot
   createChatbotUI();
 
-  // Expose a global function to open the chat
   window.openHappyflopsChat = function() {
     isChatOpen = true;
     renderChatbot();
