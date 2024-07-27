@@ -150,26 +150,26 @@
 
 .happyflops-input-area {
   display: flex;
-  padding: 8px;
-  background-color: #fff; /* Bakgrundsfärg för input-området */
+  padding: 10px;
+  background-color: #fff;
   border-top: 1px solid #eee;
 }
 
 .happyflops-input {
   flex-grow: 1;
-  border: 1px solid #ddd;
+  border: none;
+  background-color: #f0f0f0;
   border-radius: 20px;
   padding: 10px 15px;
   font-size: 14px;
   margin-right: 10px;
 }
 
-
 .happyflops-send-button {
   border: none;
-  border-radius: 3px;
+  border-radius: 20px;
   padding: 10px 20px;
-  background-color: #FCBE08; /* Samma gula färg som header */
+  background-color: #FCBE08;
   color: #fff;
   font-size: 14px;
   font-weight: bold;
