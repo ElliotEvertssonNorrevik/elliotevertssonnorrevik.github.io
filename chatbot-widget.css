@@ -1,108 +1,106 @@
-#happyflops-chatbot {
-  font-family: Arial, sans-serif;
-}
-
-.happyflops-launch-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: none;
+/* Uppdaterade stilar för knapparna */
+.happyflops-option-button {
+  background-color: #fff5d4; /* Ljusgul bakgrund */
+  border: 1px solid #FCBE08; /* Gul kantlinje */
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  transition: opacity 0.2s;
+  transition: background-color 0.2s;
+  font-weight: 500; /* Lite tjockare text */
 }
 
-.happyflops-launch-button:hover {
+.happyflops-option-button:hover {
+  background-color: #FCBE08; /* Mörkare gul vid hover */
+}
+
+/* Uppdaterad stil för skicka-knappen */
+.happyflops-send-button {
+  border: none;
+  border-radius: 3px;
+  padding: 10px 20px;
+  background-color: #FCBE08; /* Samma gula färg som header */
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.happyflops-send-button:hover {
   opacity: 0.9;
 }
 
-.happyflops-launch-avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.happyflops-chat-window {
-  width: 350px; /* Ökad bredd från 300px till 350px */
-  height: 500px;
-  background-color: #fff;
-  border-radius: 15px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.happyflops-chat-header {
+/* Uppdaterad stil för input-fältet */
+.happyflops-input {
+  flex-grow: 1;
+  border: 1px solid #ddd;
+  border-radius: 20px;
   padding: 10px 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #FCBE08;
-}
-
-.happyflops-header-content {
-  display: flex;
-  align-items: center;
-}
-
-.happyflops-header-image {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
+  font-size: 14px;
   margin-right: 10px;
 }
 
-.happyflops-header-text h1 {
+/* Justera container för knappar */
+.happyflops-initial-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: flex-start; /* Ändrad från center till flex-start */
+  padding: 0 15px; /* Lägg till padding för att matcha meddelandenas placering */
+}
+
+/* Justera meddelandenas stil */
+.happyflops-message {
+  max-width: 80%;
+  margin-bottom: 10px;
+  padding: 10px 15px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.happyflops-message.bot {
+  align-self: flex-start;
+  background-color: #fff5d4; /* Ljusgul bakgrund för botmeddelanden */
+  color: #000;
+}
+
+.happyflops-message.user {
+  align-self: flex-end;
+  background-color: #FCBE08; /* Gul bakgrund för användarmeddelanden */
   color: #fff;
-  font-size: 16px;
-  margin: 0;
+}
+
+/* Justera header-stilen */
+.happyflops-chat-header {
+  padding: 15px 20px;
+}
+
+.happyflops-header-text h1 {
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .happyflops-header-text p {
-  color: #fff;
-  font-size: 11px;
-  margin: 0;
+  font-size: 12px;
 }
 
-.happyflops-close-button {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.happyflops-logo-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 30px 0; /* Ökad padding från 15px till 30px för att skapa mer mellanrum */
-  background-color: #fff;
-}
-
+/* Justera logotypens stil */
 .happyflops-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
-
-.happyflops-logo-text {
-  text-align: center;
-  margin-top: 15px; /* Ökad margin-top från 5px till 15px för att skapa mer mellanrum */
+  width: 50px;
+  height: 50px;
 }
 
 .happyflops-logo-text h2 {
-  font-size: 16px;
-  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .happyflops-logo-text p {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .happyflops-messages-container {
