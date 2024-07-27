@@ -69,12 +69,13 @@
     const header = createChatHeader();
     const scrollableContent = document.createElement('div');
     scrollableContent.className = 'happyflops-scrollable-content';
-  
-    // Only include the messages container here, without the logo
-    const messagesContainer = createMessagesContainer(); 
-  
+    
+    const logo = createChatLogo();
+    const messagesContainer = createMessagesContainer();
+    
+    scrollableContent.appendChild(logo);
     scrollableContent.appendChild(messagesContainer);
-  
+    
     const inputArea = createInputArea();
   
     chatWindow.appendChild(header);
@@ -175,16 +176,14 @@
   
     const messagesWrapper = document.createElement('div');
     messagesWrapper.className = 'happyflops-messages-wrapper';
-    
-    // Remove the logo creation here to avoid duplication
-    // const logoContainer = createChatLogo();
-    // messagesWrapper.appendChild(logoContainer);
+  
+    const logoContainer = createChatLogo();
+    messagesWrapper.appendChild(logoContainer);
   
     container.appendChild(messagesWrapper);
   
     return container;
   }
-
 
   function formatMessage(message) {
     // Regex för URLs med text i hakparenteser
