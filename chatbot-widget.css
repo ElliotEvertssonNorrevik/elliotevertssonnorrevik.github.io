@@ -3,6 +3,7 @@
   font-family: Arial, sans-serif;
 }
 
+
 .happyflops-launch-button {
   width: 60px;
   height: 60px;
@@ -111,6 +112,11 @@
   overflow-y: auto;
   padding: 15px;
   background-color: #fff;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 .happyflops-messages-wrapper {
