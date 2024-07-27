@@ -128,25 +128,9 @@
     const container = document.createElement('div');
     container.className = 'happyflops-messages-container';
 
-    const avatarContainer = document.createElement('div');
-    avatarContainer.className = 'happyflops-avatar-container';
-    
-    const avatarImage = document.createElement('img');
-    avatarImage.src = config.header_image;
-    avatarImage.alt = 'Chatbot Avatar';
-    avatarImage.className = 'happyflops-avatar-image';
-
-    const avatarText = document.createElement('p');
-    avatarText.textContent = config.headerText;
-    avatarText.className = 'happyflops-avatar-text';
-
-    avatarContainer.appendChild(avatarImage);
-    avatarContainer.appendChild(avatarText);
-
     const messagesWrapper = document.createElement('div');
     messagesWrapper.className = 'happyflops-messages-wrapper';
 
-    container.appendChild(avatarContainer);
     container.appendChild(messagesWrapper);
 
     // Render existing messages
@@ -178,6 +162,11 @@
         const followUpElement = createFollowUpOptions();
         messageElement.appendChild(followUpElement);
       }
+    }
+
+    if (message.product) {
+      const productElement = createProductElement(message.product);
+      messageElement.appendChild(productElement);
     }
 
     return messageElement;
@@ -214,30 +203,40 @@
     return optionsElement;
   }
 
-  function handleFollowUpResponse(isYes) {
-    addMessage(isYes ? 'Ja' : 'Nej', false);
-    showFollowUp = false;
-    if (isYes) {
-      addMessage('Vad mer kan jag hjälpa dig med?', true);
-    } else {
-      addMessage('Okej, tack för att du chattat med mig. Ha en bra dag!', true);
+  function createProductElement(product) {
+    const productElement = document.createElement('div');
+    productElement.className = 'happyflops-product-card';
+
+    if (product.imageUrl) {
+      const img = document.createElement('img');
+      img.src = product.imageUrl;
+      img.alt = product.name;
+      img.className = 'happyflops-product-image';
+      productElement.appendChild(img);
     }
-    updateChatWindow();
-  }
 
-  function createMessageElement(message) {
-    const messageElement = document.createElement('div');
-    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+    const productInfo = document.createElement('div');
+    productInfo.className = 'happyflops-product-info';
 
-    const textElement = document.createElement('div');
-    textElement.className = 'happyflops-message-text';
-    textElement.innerHTML = message.isLoading
-      ? '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>'
-      : message.text;
+    const name = document.createElement('h3');
+    name.textContent = product.name;
+    productInfo.appendChild(name);
 
-    messageElement.appendChild(textElement);
+    const price = document.createElement('p');
+    price.textContent = `${product.price} kr`;
+    productInfo.appendChild(price);
 
-    return messageElement;
+    const buyButton = document.createElement('a');
+    buyButton.href = `https://www.happyflops.se/products/${product.handle}`;
+    buyButton.textContent = 'Köp nu';
+    buyButton.className = 'happyflops-buy-button';
+    buyButton.target = '_blank';
+    buyButton.rel = 'noopener noreferrer';
+    productInfo.appendChild(buyButton);
+
+    productElement.appendChild(productInfo);
+
+    return productElement;
   }
 
   function createInputArea() {
@@ -309,6 +308,17 @@
     } finally {
       isLoading = false;
     }
+  }
+
+  function handleFollowUpResponse(isYes) {
+    addMessage(isYes ? 'Ja' : 'Nej', false);
+    showFollowUp = false;
+    if (isYes) {
+      addMessage('Vad mer kan jag hjälpa dig med?', true);
+    } else {
+      addMessage('Okej, tack för att du chattat med mig. Ha en bra dag!', true);
+    }
+    updateChatWindow();
   }
 
   function updateChatWindow() {
