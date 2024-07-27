@@ -85,6 +85,30 @@
     return chatWindow;
   }
 
+  function updateChatWindow() {
+    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+    if (messagesWrapper) {
+      // Behåll logotypen och texten
+      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
+      messagesWrapper.innerHTML = '';
+      if (logoContainer) {
+        messagesWrapper.appendChild(logoContainer);
+      }
+      
+      messages.forEach(message => {
+        const messageElement = createMessageElement(message);
+        messagesWrapper.appendChild(messageElement);
+      });
+      
+      if (showInitialOptions) {
+        const optionsElement = createInitialOptions();
+        messagesWrapper.appendChild(optionsElement);
+      }
+      
+      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+    }
+  }
+
   function createChatHeader() {
     const header = document.createElement('div');
     header.className = 'happyflops-chat-header';
@@ -130,31 +154,34 @@
   function createChatLogo() {
     const logoContainer = document.createElement('div');
     logoContainer.className = 'happyflops-logo-container';
-
+  
     const logo = document.createElement('img');
     logo.src = config.logoUrl;
     logo.alt = 'Happyflops Logo';
     logo.className = 'happyflops-logo';
-
+  
     const logoText = document.createElement('div');
     logoText.className = 'happyflops-logo-text';
     logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
-
+  
     logoContainer.appendChild(logo);
     logoContainer.appendChild(logoText);
-
+  
     return logoContainer;
   }
 
   function createMessagesContainer() {
     const container = document.createElement('div');
     container.className = 'happyflops-messages-container';
-
+  
     const messagesWrapper = document.createElement('div');
     messagesWrapper.className = 'happyflops-messages-wrapper';
-
+  
+    const logoContainer = createChatLogo();
+    messagesWrapper.appendChild(logoContainer);
+  
     container.appendChild(messagesWrapper);
-
+  
     return container;
   }
 
@@ -304,23 +331,6 @@ function sendMessage(text) {
     }
   }
 
-  function updateChatWindow() {
-    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
-    if (messagesWrapper) {
-      messagesWrapper.innerHTML = '';
-      messages.forEach(message => {
-        const messageElement = createMessageElement(message);
-        messagesWrapper.appendChild(messageElement);
-      });
-      
-      if (showInitialOptions) {
-        const optionsElement = createInitialOptions();
-        messagesWrapper.appendChild(optionsElement);
-      }
-      
-      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
-    }
-  }
 
   function initializeChat() {
     if (!isInitialized) {
