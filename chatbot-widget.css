@@ -51,8 +51,8 @@
 }
 
 .happyflops-header-image {
-  width: 25px;
-  height: 25px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   margin-right: 10px;
 }
@@ -94,7 +94,7 @@
 
 .happyflops-logo-text {
   text-align: center;
-  margin-top: 15px; /* Ökad margin-top från 5px till 15px för att skapa mer mellanrum */
+  margin-top: 3px; /* Ökad margin-top från 5px till 15px för att skapa mer mellanrum */
 }
 
 .happyflops-scrollable-content {
