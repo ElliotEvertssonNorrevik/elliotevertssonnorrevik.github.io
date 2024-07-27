@@ -15,8 +15,66 @@
   transition: opacity 0.2s;
 }
 
+.happyflops-messages-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 15px;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+}
+
+.happyflops-avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.happyflops-avatar-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.happyflops-avatar-text {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.happyflops-messages-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .happyflops-launch-button:hover {
   opacity: 0.9;
+}
+
+
+.happyflops-initial-options,
+.happyflops-followup-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.happyflops-option-button {
+  background-color: #FCFBE8;
+  border: 1px solid #D9CC3C;
+  color: #000;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.happyflops-option-button:hover {
+  background-color: #f0edd0;
 }
 
 .happyflops-launch-avatar {
