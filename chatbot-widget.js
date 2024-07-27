@@ -17,8 +17,8 @@
     secondaryColor: '#FFFFFF',
     font: 'Roboto',
     launch_avatar: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png',
-    header_image: 'https://i.ibb.co/gTSR93f/s348hq3b.png',
-    banner_image: 'https://i.ibb.co/gTSR93f/s348hq3b.png'
+    header_image: 'https://i.ibb.co/x7MjbfC/s348hq3b.png',
+    banner_image: 'https://i.ibb.co/x7MjbfC/s348hq3b.png'
   };
 
   function createChatbotUI() {
