@@ -155,7 +155,7 @@
     // Regex för URLs med text i hakparenteser
     const urlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
     // Regex för vanliga URLs
-    const plainUrlRegex = /(\b(?:https?:\/\/|www\.)[^\s]+\b)/gi;
+    const plainUrlRegex = /(https?:\/\/[^\s]+)/g;
     // Regex för e-postadresser
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
   
