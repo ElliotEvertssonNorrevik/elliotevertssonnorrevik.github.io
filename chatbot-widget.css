@@ -41,7 +41,6 @@
 .happyflops-chat-header {
   padding: 10px 15px;
   display: flex;
-  border-radius: 15px;
   justify-content: space-between;
   align-items: center;
   background-color: #FCBE08;
@@ -116,6 +115,7 @@
   margin: 5px 0 0;
 }
 
+
 .happyflops-messages-container {
   flex-grow: 1;
   overflow-y: auto;
@@ -128,6 +128,7 @@
   flex-direction: column;
   padding: 10px;
 }
+
 
 .happyflops-message {
   max-width: 80%;
