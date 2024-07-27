@@ -128,9 +128,25 @@
     const container = document.createElement('div');
     container.className = 'happyflops-messages-container';
 
+    const avatarContainer = document.createElement('div');
+    avatarContainer.className = 'happyflops-avatar-container';
+    
+    const avatarImage = document.createElement('img');
+    avatarImage.src = config.header_image;
+    avatarImage.alt = 'Chatbot Avatar';
+    avatarImage.className = 'happyflops-avatar-image';
+
+    const avatarText = document.createElement('p');
+    avatarText.textContent = config.headerText;
+    avatarText.className = 'happyflops-avatar-text';
+
+    avatarContainer.appendChild(avatarImage);
+    avatarContainer.appendChild(avatarText);
+
     const messagesWrapper = document.createElement('div');
     messagesWrapper.className = 'happyflops-messages-wrapper';
 
+    container.appendChild(avatarContainer);
     container.appendChild(messagesWrapper);
 
     // Render existing messages
@@ -140,6 +156,73 @@
     });
 
     return container;
+  }
+
+  function createMessageElement(message) {
+    const messageElement = document.createElement('div');
+    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+
+    const textElement = document.createElement('div');
+    textElement.className = 'happyflops-message-text';
+    textElement.innerHTML = message.isLoading
+      ? '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>'
+      : message.text;
+
+    messageElement.appendChild(textElement);
+
+    if (message.isBot && !message.isLoading) {
+      if (showInitialOptions && messages.length <= 2) {
+        const optionsElement = createInitialOptions();
+        messageElement.appendChild(optionsElement);
+      } else if (showFollowUp) {
+        const followUpElement = createFollowUpOptions();
+        messageElement.appendChild(followUpElement);
+      }
+    }
+
+    return messageElement;
+  }
+
+  function createInitialOptions() {
+    const optionsElement = document.createElement('div');
+    optionsElement.className = 'happyflops-initial-options';
+
+    const options = ['Spåra min order', 'Retur', 'Storleksguide'];
+    options.forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      button.className = 'happyflops-option-button';
+      button.addEventListener('click', () => sendMessage(option));
+      optionsElement.appendChild(button);
+    });
+
+    return optionsElement;
+  }
+
+  function createFollowUpOptions() {
+    const optionsElement = document.createElement('div');
+    optionsElement.className = 'happyflops-followup-options';
+
+    ['Ja', 'Nej'].forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      button.className = 'happyflops-option-button';
+      button.addEventListener('click', () => handleFollowUpResponse(option === 'Ja'));
+      optionsElement.appendChild(button);
+    });
+
+    return optionsElement;
+  }
+
+  function handleFollowUpResponse(isYes) {
+    addMessage(isYes ? 'Ja' : 'Nej', false);
+    showFollowUp = false;
+    if (isYes) {
+      addMessage('Vad mer kan jag hjälpa dig med?', true);
+    } else {
+      addMessage('Okej, tack för att du chattat med mig. Ha en bra dag!', true);
+    }
+    updateChatWindow();
   }
 
   function createMessageElement(message) {
