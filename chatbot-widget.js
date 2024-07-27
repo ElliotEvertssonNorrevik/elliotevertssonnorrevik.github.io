@@ -145,30 +145,15 @@
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
-
+  
     const textElement = document.createElement('div');
     textElement.className = 'happyflops-message-text';
     textElement.innerHTML = message.isLoading
       ? '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>'
       : message.text;
-
+  
     messageElement.appendChild(textElement);
-
-    if (message.isBot && !message.isLoading) {
-      if (showInitialOptions && messages.length <= 2) {
-        const optionsElement = createInitialOptions();
-        messageElement.appendChild(optionsElement);
-      } else if (showFollowUp) {
-        const followUpElement = createFollowUpOptions();
-        messageElement.appendChild(followUpElement);
-      }
-    }
-
-    if (message.product) {
-      const productElement = createProductElement(message.product);
-      messageElement.appendChild(productElement);
-    }
-
+  
     return messageElement;
   }
 
@@ -329,6 +314,13 @@
         const messageElement = createMessageElement(message);
         messagesWrapper.appendChild(messageElement);
       });
+      
+      // Lägg till initialvalsknapparna separat efter meddelandena
+      if (showInitialOptions && messages.length >= 2) {
+        const optionsElement = createInitialOptions();
+        messagesWrapper.appendChild(optionsElement);
+      }
+      
       messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
   }
