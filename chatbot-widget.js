@@ -67,19 +67,11 @@
     chatWindow.className = 'happyflops-chat-window';
   
     const header = createChatHeader();
-    const scrollableContent = document.createElement('div');
-    scrollableContent.className = 'happyflops-scrollable-content';
-    
-    const logo = createChatLogo();
     const messagesContainer = createMessagesContainer();
-    
-    scrollableContent.appendChild(logo);
-    scrollableContent.appendChild(messagesContainer);
-    
     const inputArea = createInputArea();
   
     chatWindow.appendChild(header);
-    chatWindow.appendChild(scrollableContent);
+    chatWindow.appendChild(messagesContainer);
     chatWindow.appendChild(inputArea);
   
     return chatWindow;
@@ -88,12 +80,11 @@
   function updateChatWindow() {
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
-      // Behåll logotypen och texten
-      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
       messagesWrapper.innerHTML = '';
-      if (logoContainer) {
-        messagesWrapper.appendChild(logoContainer);
-      }
+      
+      // Lägg till logotyp och text endast en gång
+      const logoContainer = createChatLogo();
+      messagesWrapper.appendChild(logoContainer);
       
       messages.forEach(message => {
         const messageElement = createMessageElement(message);
@@ -108,6 +99,7 @@
       messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
   }
+
 
   function createChatHeader() {
     const header = document.createElement('div');
@@ -162,7 +154,7 @@
   
     const logoText = document.createElement('div');
     logoText.className = 'happyflops-logo-text';
-    logoText.innerHTML = <h2>${config.headerText}</h2><p>${config.subHeaderText}</p>;
+    logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
   
     logoContainer.appendChild(logo);
     logoContainer.appendChild(logoText);
@@ -176,9 +168,6 @@
   
     const messagesWrapper = document.createElement('div');
     messagesWrapper.className = 'happyflops-messages-wrapper';
-  
-    const logoContainer = createChatLogo();
-    messagesWrapper.appendChild(logoContainer);
   
     container.appendChild(messagesWrapper);
   
