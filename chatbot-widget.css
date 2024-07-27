@@ -1,18 +1,22 @@
-/* https://elliotevertssonnorrevik.github.io/chatbot-widget.css */
 #happyflops-chatbot {
   font-family: Arial, sans-serif;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  height: 450px;
+  z-index: 1000;
 }
 
 .happyflops-chat-window {
-  width: 300px;
-  height: 450px;
+  width: 100%;
+  height: 100%;
   background-color: #fff;
   border-radius: 15px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  position: relative;
 }
 
 .happyflops-chat-header {
@@ -21,6 +25,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 60px;
+  box-sizing: border-box;
 }
 
 .happyflops-header-content {
@@ -29,15 +35,19 @@
 }
 
 .happyflops-header-image {
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
   margin-right: 10px;
   object-fit: contain;
 }
 
+.happyflops-header-text {
+  flex-grow: 1;
+}
+
 .happyflops-header-text h1 {
   color: #fff;
-  font-size: 18px;
+  font-size: 16px;
   margin: 0;
 }
 
@@ -53,6 +63,8 @@
   color: #fff;
   font-size: 20px;
   cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
 }
 
 .happyflops-messages-container {
@@ -74,9 +86,9 @@
   border-radius: 20px;
   padding: 8px 15px;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
-/* Yellow accent in the corner */
 .happyflops-chat-window::after {
   content: '';
   position: absolute;
@@ -90,7 +102,6 @@
   pointer-events: none;
 }
 
-/* Hide scrollbar for clean look */
 .happyflops-messages-container::-webkit-scrollbar {
   display: none;
 }
@@ -100,10 +111,11 @@
   scrollbar-width: none;
 }
 
-/* Ensure images don't overflow their containers */
-img {
+/* Strict control for all images within the chat */
+#happyflops-chatbot img {
   max-width: 100%;
-  height: auto;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .happyflops-messages-wrapper {
