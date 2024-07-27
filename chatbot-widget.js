@@ -1,6 +1,6 @@
-// chatbot-widget.js
+// https://elliotevertssonnorrevik.github.io/chatbot-widget.js
 (function() {
-  const API_BASE_URL = 'http://localhost:3009';
+  const API_BASE_URL = 'http://localhost:3009'; // You may need to update this URL
 
   let config = {
     headerText: 'Happyflops AI',
@@ -68,6 +68,7 @@
           sendMessage(document.getElementById('chat-input').value, true);
         }
       });
+      scrollToBottom();
     } else {
       document.getElementById('chat-open-btn').addEventListener('click', () => {
         isChatOpen = true;
@@ -157,7 +158,7 @@
     return `
       <div class="message-options">
         ${['Spåra min order', 'Retur', 'Storleksguide'].map(option => `
-          <button onclick="handleOptionClick('${option}')">${option}</button>
+          <button onclick="happyflopsChatWidget.handleOptionClick('${option}')">${option}</button>
         `).join('')}
       </div>
     `;
@@ -167,7 +168,7 @@
     return `
       <div class="message-options">
         ${['Ja', 'Nej'].map(option => `
-          <button onclick="handleOptionClick('${option}')">${option}</button>
+          <button onclick="happyflopsChatWidget.handleOptionClick('${option}')">${option}</button>
         `).join('')}
       </div>
     `;
@@ -250,7 +251,9 @@
 
   function scrollToBottom() {
     const chatMessages = document.getElementById('chat-messages');
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    if (chatMessages) {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
   }
 
   function initializeChat() {
@@ -275,9 +278,19 @@
     }, 700);
   }
 
-  // Initialize
-  fetchConfig();
+  function init() {
+    fetchConfig();
+    if (!conversationId) {
+      conversationId = generateUUID();
+      localStorage.setItem('conversationId', conversationId);
+    }
+  }
+
+  // Initialize the widget
+  init();
 
   // Expose necessary functions to global scope
-  window.handleOptionClick = handleOptionClick;
+  window.happyflopsChatWidget = {
+    handleOptionClick: handleOptionClick
+  };
 })();
