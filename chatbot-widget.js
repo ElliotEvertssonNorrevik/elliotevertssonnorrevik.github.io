@@ -352,31 +352,6 @@ function updateChatWindow() {
   console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
 }
   
-  function updateChatWindow() {
-    console.log('Updating chat window');
-    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
-    if (messagesWrapper) {
-      // Retain the logo and text
-      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
-      messagesWrapper.innerHTML = '';
-      if (logoContainer) {
-        messagesWrapper.appendChild(logoContainer);
-      }
-      
-      messages.forEach(message => {
-        const messageElement = createMessageElement(message);
-        messagesWrapper.appendChild(messageElement);
-      });
-      
-      if (showInitialOptions) {
-        const optionsElement = createInitialOptions();
-        messagesWrapper.appendChild(optionsElement);
-      }
-      
-      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
-    }
-    console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
-  }
 
   function initializeChat() {
     if (!isInitialized) {
