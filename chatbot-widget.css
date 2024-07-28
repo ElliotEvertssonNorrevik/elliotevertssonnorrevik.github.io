@@ -247,18 +247,17 @@
   vertical-align: -0.1em;
 }
 
-/* Updated styles for links */
-.happyflops-message-text a {
+.happyflops-message a {
   color: #0066cc;
   text-decoration: underline;
   word-break: break-word;
 }
 
-.happyflops-message.user .happyflops-message-text a {
+.happyflops-message.user a {
   color: #ffffff;
 }
 
-.happyflops-message-text a:hover {
+.happyflops-message a:hover {
   text-decoration: none;
 }
 
