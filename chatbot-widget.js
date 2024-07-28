@@ -1,4 +1,4 @@
-// https://elliotevertssonnorrevik.github.io/chatbot-widget.js
+// https://elliotevertssonnorrevik.github.io/chatbot-widget.js 
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
 
@@ -7,7 +7,6 @@
   let isChatOpen = false;
   let isLoading = false;
   let showInitialOptions = false;
-  let showFollowUp = false;
   
   const config = {
     headerText: 'Happyflops AI',
@@ -154,9 +153,18 @@
     return container;
   }
 
+  function unescapeHTML(text) {
+    console.log('Unescaping HTML:', text); // Debug log
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    const unescaped = textarea.value;
+    console.log('Unescaped result:', unescaped); // Debug log
+    return unescaped;
+  }
+  
   function formatMessage(message) {
     console.log('Formatting message:', message);
-
+  
     // Regex for Markdown-style links: [text](url)
     const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
     
@@ -165,11 +173,12 @@
       console.log('Replacing Markdown link:', match, 'with HTML link');
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
-
+  
     console.log('Formatted message:', message);
     return message;
   }
 
+  
   function createMessageElement(message) {
     console.log('Creating message element for:', message);
     const messageElement = document.createElement('div');
@@ -189,44 +198,11 @@
     }
   
     messageElement.appendChild(textElement);
-
-    if (!message.isLoading && message.isBot && showFollowUp) {
-      const followUpButtons = createFollowUpButtons();
-      messageElement.appendChild(followUpButtons);
-    }
   
     console.log('Created message element:', messageElement.outerHTML);
     return messageElement;
   }
 
-  function createFollowUpButtons() {
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.className = 'happyflops-follow-up-buttons';
-
-    const yesButton = document.createElement('button');
-    yesButton.textContent = 'Ja';
-    yesButton.onclick = () => handleFollowUpResponse(true);
-
-    const noButton = document.createElement('button');
-    noButton.textContent = 'Nej';
-    noButton.onclick = () => handleFollowUpResponse(false);
-
-    buttonsContainer.appendChild(yesButton);
-    buttonsContainer.appendChild(noButton);
-
-    return buttonsContainer;
-  }
-
-  function handleFollowUpResponse(isYes) {
-    showFollowUp = false;
-    addMessage(isYes ? 'Ja' : 'Nej', false);
-    
-    if (isYes) {
-      sendMessage('Vad mer kan jag hjälpa dig med?');
-    } else {
-      sendMessage('Okej, tack för att du chattat med mig. Ha en bra dag!');
-    }
-  }
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
@@ -283,33 +259,36 @@
     return inputArea;
   }
 
-  async function sendMessage(text, isUserMessage = false) {
+  function sendMessage(text) {
+    console.log('Sending message:', text); // Debug log
     if (text.trim() === '' || isLoading) return;
 
-    if (isUserMessage) {
-      addMessage(text, false);
-      showInitialOptions = false;
-    }
+    addMessage(text, false);
+    showInitialOptions = false;
+    fetchBotResponse(text);
+  }
 
+  function addMessage(text, isBot, isLoading = false) {
+    console.log('Adding message:', { text, isBot, isLoading }); // Debug log
+    messages.push({ text, isBot, isLoading });
+    updateChatWindow();
+  }
+
+  async function fetchBotResponse(question) {
+    console.log('Fetching bot response for:', question);
     isLoading = true;
     addMessage('', true, true);
-
+  
     try {
-      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(text)}`);
+      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
       const data = await response.json();
+      console.log('Raw API response:', data);
+  
       const answer = data.answer;
-
+      console.log('Extracted answer:', answer);
+  
       messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
       updateChatWindow();
-
-      // Check if we should show a follow-up question
-      if (!answer.includes('?') && Math.random() < 0.5) {
-        setTimeout(() => {
-          addMessage('Kan jag hjälpa dig med något mer?', true);
-          showFollowUp = true;
-          updateChatWindow();
-        }, 800);
-      }
     } catch (error) {
       console.error('Error fetching bot response:', error);
       messages[messages.length - 1] = { 
@@ -323,37 +302,55 @@
     }
   }
 
-  function addMessage(text, isBot, isLoading = false) {
-    console.log('Adding message:', { text, isBot, isLoading });
-    messages.push({ text, isBot, isLoading });
-    updateChatWindow();
+  
+  function createMessageElement(message) {
+    console.log('Creating message element for:', message);
+    const messageElement = document.createElement('div');
+    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+  
+    const textElement = document.createElement('div');
+    textElement.className = 'happyflops-message-text';
+    
+    if (message.isLoading) {
+      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
+    } else if (message.isBot) {
+      const formattedMessage = formatMessage(message.text);
+      console.log('Formatted bot message:', formattedMessage);
+      textElement.innerHTML = formattedMessage;
+    } else {
+      textElement.textContent = message.text;
+    }
+
+    messageElement.appendChild(textElement);
+  
+    console.log('Created message element:', messageElement.outerHTML);
+    return messageElement;
   }
 
-  function updateChatWindow() {
-    console.log('Updating chat window');
-    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
-    if (messagesWrapper) {
-      // Retain the logo and text
-      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
-      messagesWrapper.innerHTML = '';
-      if (logoContainer) {
-        messagesWrapper.appendChild(logoContainer);
-      }
-      
-      messages.forEach(message => {
-        const messageElement = createMessageElement(message);
-        messagesWrapper.appendChild(messageElement);
-      });
-      
-      if (showInitialOptions) {
-        const optionsElement = createInitialOptions();
-        messagesWrapper.appendChild(optionsElement);
-      }
-      
-      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+  function createMessageElement(message) {
+    console.log('Creating message element for:', message);
+    const messageElement = document.createElement('div');
+    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+  
+    const textElement = document.createElement('div');
+    textElement.className = 'happyflops-message-text';
+    
+    if (message.isLoading) {
+      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
+    } else if (message.isBot) {
+      const formattedMessage = formatMessage(message.text);
+      console.log('Formatted bot message:', formattedMessage);
+      textElement.innerHTML = formattedMessage;
+    } else {
+      textElement.textContent = message.text;
     }
-    console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
+  
+    messageElement.appendChild(textElement);
+  
+    console.log('Created message element:', messageElement.outerHTML);
+    return messageElement;
   }
+  
 
   function initializeChat() {
     if (!isInitialized) {
@@ -374,4 +371,6 @@
     renderChatbot();
     initializeChat();
   };
+
+  console.log('Chatbot script loaded and initialized'); // Debug log
 })();
