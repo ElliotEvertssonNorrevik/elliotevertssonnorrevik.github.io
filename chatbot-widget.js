@@ -1,3 +1,4 @@
+// https://elliotevertssonnorrevik.github.io/chatbot-widget.js
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
 
@@ -11,8 +12,7 @@
     headerText: 'Happyflops AI',
     subHeaderText: 'Chatta med vår digitala assistent',
     mainColor: '#FCBE08',
-    logoUrl: 'https://i.ibb.co/gTSR93f/s348hq3b.png',
-    launchAvatarUrl: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png'
+    logoUrl: 'https://i.ibb.co/gTSR93f/s348hq3b.png', // Replace with actual logo URL
   };
 
   function createChatbotUI() {
@@ -47,8 +47,8 @@
     button.style.backgroundColor = config.mainColor;
     
     const img = document.createElement('img');
-    img.src = config.launchAvatarUrl;
-    img.alt = 'Chat Avatar';
+    img.src = config.logoUrl;
+    img.alt = 'Launch Avatar';
     img.className = 'happyflops-launch-avatar';
     
     button.appendChild(img);
@@ -57,7 +57,7 @@
       renderChatbot();
       initializeChat();
     });
-  
+
     return button;
   }
 
@@ -82,30 +82,6 @@
     chatWindow.appendChild(inputArea);
   
     return chatWindow;
-  }
-
-  function updateChatWindow() {
-    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
-    if (messagesWrapper) {
-      // Behåll logotypen och texten
-      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
-      messagesWrapper.innerHTML = '';
-      if (logoContainer) {
-        messagesWrapper.appendChild(logoContainer);
-      }
-      
-      messages.forEach(message => {
-        const messageElement = createMessageElement(message);
-        messagesWrapper.appendChild(messageElement);
-      });
-      
-      if (showInitialOptions) {
-        const optionsElement = createInitialOptions();
-        messagesWrapper.appendChild(optionsElement);
-      }
-      
-      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
-    }
   }
 
   function createChatHeader() {
@@ -153,34 +129,31 @@
   function createChatLogo() {
     const logoContainer = document.createElement('div');
     logoContainer.className = 'happyflops-logo-container';
-  
+
     const logo = document.createElement('img');
     logo.src = config.logoUrl;
     logo.alt = 'Happyflops Logo';
     logo.className = 'happyflops-logo';
-  
+
     const logoText = document.createElement('div');
     logoText.className = 'happyflops-logo-text';
-    logoText.innerHTML = <h2>${config.headerText}</h2><p>${config.subHeaderText}</p>;
-  
+    logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
+
     logoContainer.appendChild(logo);
     logoContainer.appendChild(logoText);
-  
+
     return logoContainer;
   }
 
   function createMessagesContainer() {
     const container = document.createElement('div');
     container.className = 'happyflops-messages-container';
-  
+
     const messagesWrapper = document.createElement('div');
     messagesWrapper.className = 'happyflops-messages-wrapper';
-  
-    const logoContainer = createChatLogo();
-    messagesWrapper.appendChild(logoContainer);
-  
+
     container.appendChild(messagesWrapper);
-  
+
     return container;
   }
 
@@ -194,17 +167,17 @@
   
     // Ersätt URLs med text i hakparenteser
     message = message.replace(urlRegex, function(match, text, url) {
-      return <a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>;
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
   
     // Ersätt vanliga URLs
     message = message.replace(plainUrlRegex, function(url) {
-      return <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>;
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
   
     // Ersätt e-postadresser med klickbara mailto-länkar
     message = message.replace(emailRegex, function(email) {
-      return <a href="mailto:${email}" class="email">${email}</a>;
+      return `<a href="mailto:${email}" class="email">${email}</a>`;
     });
 
   return message;
@@ -213,7 +186,7 @@
 // Uppdatera createMessageElement funktionen
 function createMessageElement(message) {
   const messageElement = document.createElement('div');
-  messageElement.className = happyflops-message ${message.isBot ? 'bot' : 'user'};
+  messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
 
   const textElement = document.createElement('div');
   textElement.className = 'happyflops-message-text';
@@ -311,7 +284,7 @@ function sendMessage(text) {
     addMessage('', true, true);
 
     try {
-      const response = await fetch(${API_BASE_URL}?question=${encodeURIComponent(question)});
+      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
       const data = await response.json();
       const answer = data.answer;
 
@@ -330,6 +303,23 @@ function sendMessage(text) {
     }
   }
 
+  function updateChatWindow() {
+    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+    if (messagesWrapper) {
+      messagesWrapper.innerHTML = '';
+      messages.forEach(message => {
+        const messageElement = createMessageElement(message);
+        messagesWrapper.appendChild(messageElement);
+      });
+      
+      if (showInitialOptions) {
+        const optionsElement = createInitialOptions();
+        messagesWrapper.appendChild(optionsElement);
+      }
+      
+      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+    }
+  }
 
   function initializeChat() {
     if (!isInitialized) {
