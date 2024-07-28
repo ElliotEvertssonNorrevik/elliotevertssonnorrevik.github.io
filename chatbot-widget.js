@@ -141,6 +141,7 @@
     return logoContainer;
   }
 
+  
   function createMessagesContainer() {
     const container = document.createElement('div');
     container.className = 'happyflops-messages-container';
@@ -184,7 +185,7 @@
   
     return message;
   }
-// Uppdatera createMessageElement funktionen
+
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
@@ -195,7 +196,7 @@
     if (message.isLoading) {
       textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
     } else {
-      // Använd formatMessage funktionen här
+      // Use the formatMessage function here
       textElement.innerHTML = formatMessage(message.text);
     }
   
