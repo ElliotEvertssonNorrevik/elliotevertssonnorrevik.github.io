@@ -1,3 +1,4 @@
+
 // https://elliotevertssonnorrevik.github.io/chatbot-widget.js
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
@@ -15,6 +16,8 @@
     logoUrl: 'https://i.ibb.co/gTSR93f/s348hq3b.png',
     launchAvatarUrl: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png'
   };
+
+
 
   function createChatbotUI() {
     const chatbotContainer = document.createElement('div');
@@ -153,50 +156,51 @@
     return container;
   }
 
+  
   function formatMessage(message) {
+    // Regex for URLs with text in square brackets
     const urlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
+    // Regex for plain URLs
     const plainUrlRegex = /(https?:\/\/[^\s]+)/g;
+    // Regex for email addresses
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
-
-    let htmlMessage = message;
-    let plainMessage = message;
-
+  
     // Replace URLs with text in square brackets
-    htmlMessage = htmlMessage.replace(urlRegex, function(match, text, url) {
-      plainMessage = plainMessage.replace(match, text);
+    message = message.replace(urlRegex, function(match, text, url) {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
-
+  
     // Replace plain URLs
-    htmlMessage = htmlMessage.replace(plainUrlRegex, function(url) {
+    message = message.replace(plainUrlRegex, function(url) {
+      // Avoid replacing URLs that were already replaced
       if (url.startsWith('<a href=')) return url;
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
-
-    // Replace email addresses
-    htmlMessage = htmlMessage.replace(emailRegex, function(email) {
+  
+    // Replace email addresses with clickable mailto links
+    message = message.replace(emailRegex, function(email) {
       return `<a href="mailto:${email}" class="email">${email}</a>`;
     });
-
-    return { html: htmlMessage, text: plainMessage };
+  
+    return message;
   }
-
+// Uppdatera createMessageElement funktionen
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
-
+  
     const textElement = document.createElement('div');
     textElement.className = 'happyflops-message-text';
     
     if (message.isLoading) {
       textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
     } else {
-      const formattedMessage = formatMessage(message.text);
-      textElement.innerHTML = formattedMessage.html;
-      textElement.setAttribute('data-plain-text', formattedMessage.text);
+      // Använd formatMessage funktionen här
+      textElement.innerHTML = formatMessage(message.text);
     }
-
+  
     messageElement.appendChild(textElement);
+  
     return messageElement;
   }
 
@@ -238,22 +242,30 @@
       const message = input.value.trim();
       if (message !== '') {
         sendMessage(message);
-        input.value = '';
+        input.value = ''; // Tömmer inputfältet efter att meddelandet skickats
       }
     };
 
-    sendButton.addEventListener('click', handleSendMessage);
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        handleSendMessage();
-      }
-    });
+  sendButton.addEventListener('click', handleSendMessage);
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  });
 
-    inputArea.appendChild(input);
-    inputArea.appendChild(sendButton);
+  inputArea.appendChild(input);
+  inputArea.appendChild(sendButton);
 
-    return inputArea;
-  }
+  return inputArea;
+}
+
+function sendMessage(text) {
+  if (text.trim() === '' || isLoading) return;
+
+  addMessage(text, false);
+  showInitialOptions = false;
+  fetchBotResponse(text);
+}
 
   function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
@@ -278,7 +290,6 @@
       const answer = data.answer;
 
       messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
-      showInitialOptions = true;
       updateChatWindow();
     } catch (error) {
       console.error('Error fetching bot response:', error);
@@ -296,22 +307,22 @@
   function updateChatWindow() {
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
-      // Keep the logo and text
+      // Behåll logotypen och texten
       const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
       messagesWrapper.innerHTML = '';
       if (logoContainer) {
         messagesWrapper.appendChild(logoContainer);
       }
       
-      messages.forEach((message, index) => {
+      messages.forEach(message => {
         const messageElement = createMessageElement(message);
         messagesWrapper.appendChild(messageElement);
-        
-        if (index === messages.length - 1 && message.isBot && showInitialOptions) {
-          const optionsElement = createInitialOptions();
-          messagesWrapper.appendChild(optionsElement);
-        }
       });
+      
+      if (showInitialOptions) {
+        const optionsElement = createInitialOptions();
+        messagesWrapper.appendChild(optionsElement);
+      }
       
       messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
