@@ -167,19 +167,19 @@
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
   
     // Replace URLs with text in square brackets
-    message = message.replace(urlRegex, function(match, text, url) {
+    message = message.replace(urlRegex, (match, text, url) => {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
   
     // Replace plain URLs
-    message = message.replace(plainUrlRegex, function(url) {
+    message = message.replace(plainUrlRegex, (url) => {
       // Avoid replacing URLs that were already replaced
       if (url.startsWith('<a href=')) return url;
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
   
     // Replace email addresses with clickable mailto links
-    message = message.replace(emailRegex, function(email) {
+    message = message.replace(emailRegex, (email) => {
       return `<a href="mailto:${email}" class="email">${email}</a>`;
     });
   
