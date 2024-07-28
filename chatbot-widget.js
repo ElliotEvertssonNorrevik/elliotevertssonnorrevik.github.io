@@ -69,19 +69,11 @@
     chatWindow.className = 'happyflops-chat-window';
   
     const header = createChatHeader();
-    const scrollableContent = document.createElement('div');
-    scrollableContent.className = 'happyflops-scrollable-content';
-    
-    const logo = createChatLogo();
     const messagesContainer = createMessagesContainer();
-    
-    scrollableContent.appendChild(logo);
-    scrollableContent.appendChild(messagesContainer);
-    
     const inputArea = createInputArea();
   
     chatWindow.appendChild(header);
-    chatWindow.appendChild(scrollableContent);
+    chatWindow.appendChild(messagesContainer);
     chatWindow.appendChild(inputArea);
   
     return chatWindow;
@@ -132,31 +124,34 @@
   function createChatLogo() {
     const logoContainer = document.createElement('div');
     logoContainer.className = 'happyflops-logo-container';
-
+  
     const logo = document.createElement('img');
     logo.src = config.logoUrl;
     logo.alt = 'Happyflops Logo';
     logo.className = 'happyflops-logo';
-
+  
     const logoText = document.createElement('div');
     logoText.className = 'happyflops-logo-text';
     logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
-
+  
     logoContainer.appendChild(logo);
     logoContainer.appendChild(logoText);
-
+  
     return logoContainer;
   }
 
   function createMessagesContainer() {
     const container = document.createElement('div');
     container.className = 'happyflops-messages-container';
-
+  
     const messagesWrapper = document.createElement('div');
     messagesWrapper.className = 'happyflops-messages-wrapper';
-
+  
+    const logoContainer = createChatLogo();
+    messagesWrapper.appendChild(logoContainer);
+  
     container.appendChild(messagesWrapper);
-
+  
     return container;
   }
 
@@ -187,24 +182,24 @@
 }
 
 // Uppdatera createMessageElement funktionen
-function createMessageElement(message) {
-  const messageElement = document.createElement('div');
-  messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
-
-  const textElement = document.createElement('div');
-  textElement.className = 'happyflops-message-text';
+  function createMessageElement(message) {
+    const messageElement = document.createElement('div');
+    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
   
-  if (message.isLoading) {
-    textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
-  } else {
-    // Använd formatMessage funktionen här
-    textElement.innerHTML = formatMessage(message.text);
+    const textElement = document.createElement('div');
+    textElement.className = 'happyflops-message-text';
+    
+    if (message.isLoading) {
+      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
+    } else {
+      // Använd formatMessage funktionen här
+      textElement.innerHTML = formatMessage(message.text);
+    }
+  
+    messageElement.appendChild(textElement);
+  
+    return messageElement;
   }
-
-  messageElement.appendChild(textElement);
-
-  return messageElement;
-}
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
@@ -309,7 +304,13 @@ function sendMessage(text) {
   function updateChatWindow() {
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
+      // Behåll logotypen och texten
+      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
       messagesWrapper.innerHTML = '';
+      if (logoContainer) {
+        messagesWrapper.appendChild(logoContainer);
+      }
+      
       messages.forEach(message => {
         const messageElement = createMessageElement(message);
         messagesWrapper.appendChild(messageElement);
