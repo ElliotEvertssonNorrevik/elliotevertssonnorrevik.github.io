@@ -6,8 +6,8 @@
   let isInitialized = false;
   let isChatOpen = false;
   let isLoading = false;
-  let showFollowUp = false;
   let showInitialOptions = false;
+  let showFollowUp = false;
   
   const config = {
     headerText: 'Happyflops AI',
@@ -179,7 +179,6 @@
     return message;
   }
 
-  
   function createMessageElement(message) {
     console.log('Creating message element for:', message);
     const messageElement = document.createElement('div');
@@ -203,7 +202,6 @@
     console.log('Created message element:', messageElement.outerHTML);
     return messageElement;
   }
-
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
@@ -261,16 +259,17 @@
   }
 
   function sendMessage(text) {
-    console.log('Sending message:', text); // Debug log
+    console.log('Sending message:', text);
     if (text.trim() === '' || isLoading) return;
 
     addMessage(text, false);
     showInitialOptions = false;
+    showFollowUp = false;
     fetchBotResponse(text);
   }
 
   function addMessage(text, isBot, isLoading = false) {
-    console.log('Adding message:', { text, isBot, isLoading }); // Debug log
+    console.log('Adding message:', { text, isBot, isLoading });
     messages.push({ text, isBot, isLoading });
     updateChatWindow();
   }
@@ -315,30 +314,6 @@
     }
   }
 
-function createMessageElement(message) {
-  console.log('Creating message element for:', message);
-  const messageElement = document.createElement('div');
-  messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
-
-  const textElement = document.createElement('div');
-  textElement.className = 'happyflops-message-text';
-  
-  if (message.isLoading) {
-    textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
-  } else if (message.isBot) {
-    const formattedMessage = formatMessage(message.text);
-    console.log('Formatted bot message:', formattedMessage);
-    textElement.innerHTML = formattedMessage;
-  } else {
-    textElement.textContent = message.text;
-  }
-
-  messageElement.appendChild(textElement);
-
-  console.log('Created message element:', messageElement.outerHTML);
-  return messageElement;
-}
-
   function handleFollowUpResponse(isYes) {
     addMessage(isYes ? "Ja" : "Nej", false);
     setTimeout(() => {
@@ -351,7 +326,6 @@ function createMessageElement(message) {
     }, 500);
   }
 
-  
   function updateChatWindow() {
     console.log('Updating chat window');
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
@@ -367,6 +341,11 @@ function createMessageElement(message) {
         const messageElement = createMessageElement(message);
         messagesWrapper.appendChild(messageElement);
       });
+      
+      if (showInitialOptions) {
+        const optionsElement = createInitialOptions();
+        messagesWrapper.appendChild(optionsElement);
+      }
       
       if (showFollowUp) {
         const followUpElement = document.createElement('div');
@@ -391,7 +370,6 @@ function createMessageElement(message) {
     }
     console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
   }
-  
 
   function initializeChat() {
     if (!isInitialized) {
@@ -413,5 +391,5 @@ function createMessageElement(message) {
     initializeChat();
   };
 
-  console.log('Chatbot script loaded and initialized'); // Debug log
+  console.log('Chatbot script loaded and initialized');
 })();
