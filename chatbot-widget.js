@@ -162,6 +162,8 @@
     const plainUrlRegex = /(https?:\/\/[^\s]+)/g;
     // Regex för e-postadresser
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
+    // Regex för emojis
+    const emojiRegex = /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g;
   
     // Ersätt URLs med text i hakparenteser
     message = message.replace(urlRegex, function(match, text, url) {
@@ -177,12 +179,20 @@
     message = message.replace(emailRegex, function(email) {
       return `<a href="mailto:${email}" class="email">${email}</a>`;
     });
-
-  return message;
-}
+  
+    // Wrap emojis in a span for potential styling
+    message = message.replace(emojiRegex, function(match) {
+      return `<span class="emoji">${match}</span>`;
+    });
+  
+    return message;
+  }
 
 // Uppdatera createMessageElement funktionen
-  function createMessageElement(message) {
+  function createMessageElement(message, showOptions = false) {
+    const messageGroup = document.createElement('div');
+    messageGroup.className = 'happyflops-message-group';
+  
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
   
@@ -192,14 +202,16 @@
     if (message.isLoading) {
       textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
     } else {
-      // Använd formatMessage funktionen här
       textElement.innerHTML = formatMessage(message.text);
     }
   
     messageElement.appendChild(textElement);
+    messageGroup.appendChild(messageElement);
   
-    return messageElement;
-  }
+    if (showOptions && message.isBot) {
+      const optionsElement = createInitialOptions();
+      messageGroup.appendChild(optionsElement);
+    }
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
