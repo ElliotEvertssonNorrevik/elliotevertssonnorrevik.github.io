@@ -163,21 +163,18 @@
   }
   
   function formatMessage(message) {
-    console.log('Formatting message:', message); // Debug log
-
-    // Unescape any HTML entities first
-    message = unescapeHTML(message);
-
+    console.log('Formatting message:', message);
+  
+    // Do not unescape HTML here, as we're assuming the input is already in the correct format
+  
     // Regex for URLs with text in square brackets
     const urlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
     // Regex for plain URLs
     const plainUrlRegex = /(https?:\/\/[^\s]+)/g;
-    // Regex for email addresses
-    const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
-  
+    
     // Replace URLs with text in square brackets
     message = message.replace(urlRegex, (match, text, url) => {
-      console.log('Replacing bracketed URL:', match, 'with:', `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`); // Debug log
+      console.log('Replacing bracketed URL:', match, 'with:', `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`);
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
   
@@ -185,22 +182,17 @@
     message = message.replace(plainUrlRegex, (url) => {
       // Avoid replacing URLs that were already replaced
       if (url.startsWith('<a href=')) return url;
-      console.log('Replacing plain URL:', url, 'with:', `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`); // Debug log
+      console.log('Replacing plain URL:', url, 'with:', `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
   
-    // Replace email addresses with clickable mailto links
-    message = message.replace(emailRegex, (email) => {
-      console.log('Replacing email:', email, 'with:', `<a href="mailto:${email}" class="email">${email}</a>`); // Debug log
-      return `<a href="mailto:${email}" class="email">${email}</a>`;
-    });
-  
-    console.log('Formatted message:', message); // Debug log
+    console.log('Formatted message:', message);
     return message;
   }
 
+  
   function createMessageElement(message) {
-    console.log('Creating message element for:', message); // Debug log
+    console.log('Creating message element for:', message);
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
   
@@ -211,18 +203,20 @@
       textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
     } else if (message.isBot) {
       // Use innerHTML for bot messages to render formatted links
-      textElement.innerHTML = formatMessage(message.text);
-      console.log('Bot message HTML:', textElement.innerHTML); // Debug log
+      const formattedMessage = formatMessage(message.text);
+      console.log('Formatted bot message:', formattedMessage);
+      textElement.innerHTML = formattedMessage;
     } else {
-      // Use innerText for user messages to prevent XSS
-      textElement.innerText = message.text;
+      // Use textContent for user messages to prevent XSS
+      textElement.textContent = message.text;
     }
   
     messageElement.appendChild(textElement);
   
-    console.log('Created message element:', messageElement.outerHTML); // Debug log
+    console.log('Created message element:', messageElement.outerHTML);
     return messageElement;
   }
+
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
@@ -295,16 +289,17 @@
   }
 
   async function fetchBotResponse(question) {
-    console.log('Fetching bot response for:', question); // Debug log
+    console.log('Fetching bot response for:', question);
     isLoading = true;
     addMessage('', true, true);
-
+  
     try {
       const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
       const data = await response.json();
       const answer = data.answer;
-      console.log('Raw bot response:', answer); // Debug log
-
+      console.log('Raw bot response:', answer);
+  
+      // Do not escape HTML here
       messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
       updateChatWindow();
     } catch (error) {
@@ -320,11 +315,12 @@
     }
   }
 
+  
   function updateChatWindow() {
-    console.log('Updating chat window'); // Debug log
+    console.log('Updating chat window');
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
-      // Behåll logotypen och texten
+      // Retain the logo and text
       const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
       messagesWrapper.innerHTML = '';
       if (logoContainer) {
@@ -343,7 +339,7 @@
       
       messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
-    console.log('Chat window updated, current messages:', messages); // Debug log
+    console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
   }
 
   function initializeChat() {
