@@ -154,15 +154,6 @@
     return container;
   }
 
-  function unescapeHTML(text) {
-    console.log('Unescaping HTML:', text); // Debug log
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = text;
-    const unescaped = textarea.value;
-    console.log('Unescaped result:', unescaped); // Debug log
-    return unescaped;
-  }
-  
   function formatMessage(message) {
     console.log('Formatting message:', message);
   
@@ -205,7 +196,7 @@
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
-    optionsElement.className = 'happyflops-initial-options';
+    optionsElement.className = 'happyflops-options happyflops-initial-options';
 
     const options = ['Spåra min order', 'Retur', 'Storleksguide'];
     options.forEach(option => {
@@ -221,6 +212,26 @@
     });
 
     return optionsElement;
+  }
+
+  function createFollowUpOptions() {
+    const followUpElement = document.createElement('div');
+    followUpElement.className = 'happyflops-options happyflops-follow-up-options';
+    
+    const yesButton = document.createElement('button');
+    yesButton.textContent = 'Ja';
+    yesButton.className = 'happyflops-option-button';
+    yesButton.addEventListener('click', () => handleFollowUpResponse(true));
+    
+    const noButton = document.createElement('button');
+    noButton.textContent = 'Nej';
+    noButton.className = 'happyflops-option-button';
+    noButton.addEventListener('click', () => handleFollowUpResponse(false));
+    
+    followUpElement.appendChild(yesButton);
+    followUpElement.appendChild(noButton);
+    
+    return followUpElement;
   }
 
   function createInputArea() {
@@ -337,33 +348,26 @@
         messagesWrapper.appendChild(logoContainer);
       }
       
+      let lastBotMessageElement = null;
+      
       messages.forEach(message => {
         const messageElement = createMessageElement(message);
         messagesWrapper.appendChild(messageElement);
+        if (message.isBot) {
+          lastBotMessageElement = messageElement;
+        }
       });
       
-      if (showInitialOptions) {
-        const optionsElement = createInitialOptions();
-        messagesWrapper.appendChild(optionsElement);
-      }
-      
-      if (showFollowUp) {
-        const followUpElement = document.createElement('div');
-        followUpElement.className = 'happyflops-initial-options';
+      if (lastBotMessageElement) {
+        if (showInitialOptions) {
+          const optionsElement = createInitialOptions();
+          lastBotMessageElement.appendChild(optionsElement);
+        }
         
-        const yesButton = document.createElement('button');
-        yesButton.textContent = 'Ja';
-        yesButton.className = 'happyflops-option-button';
-        yesButton.addEventListener('click', () => handleFollowUpResponse(true));
-        
-        const noButton = document.createElement('button');
-        noButton.textContent = 'Nej';
-        noButton.className = 'happyflops-option-button';
-        noButton.addEventListener('click', () => handleFollowUpResponse(false));
-        
-        followUpElement.appendChild(yesButton);
-        followUpElement.appendChild(noButton);
-        messagesWrapper.appendChild(followUpElement);
+        if (showFollowUp) {
+          const followUpElement = createFollowUpOptions();
+          lastBotMessageElement.appendChild(followUpElement);
+        }
       }
       
       messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
