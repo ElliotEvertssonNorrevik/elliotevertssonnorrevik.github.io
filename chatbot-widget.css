@@ -272,3 +272,8 @@
 .happyflops-message .email {
   font-style: italic;
 }
+
+.happyflops-message .emoji {
+  display: inline-block;
+  vertical-align: middle;
+}
