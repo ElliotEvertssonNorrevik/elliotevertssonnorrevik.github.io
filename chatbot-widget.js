@@ -1,4 +1,3 @@
-
 // https://elliotevertssonnorrevik.github.io/chatbot-widget.js
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
@@ -16,8 +15,6 @@
     logoUrl: 'https://i.ibb.co/gTSR93f/s348hq3b.png',
     launchAvatarUrl: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png'
   };
-
-
 
   function createChatbotUI() {
     const chatbotContainer = document.createElement('div');
@@ -141,7 +138,6 @@
     return logoContainer;
   }
 
-  
   function createMessagesContainer() {
     const container = document.createElement('div');
     container.className = 'happyflops-messages-container';
@@ -157,8 +153,16 @@
     return container;
   }
 
+  function unescapeHTML(text) {
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    return textarea.value;
+  }
   
   function formatMessage(message) {
+    // Unescape any HTML entities first
+    message = unescapeHTML(message);
+
     // Regex for URLs with text in square brackets
     const urlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
     // Regex for plain URLs
@@ -195,9 +199,12 @@
     
     if (message.isLoading) {
       textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
-    } else {
-      // Use the formatMessage function here
+    } else if (message.isBot) {
+      // Use innerHTML for bot messages to render formatted links
       textElement.innerHTML = formatMessage(message.text);
+    } else {
+      // Use innerText for user messages to prevent XSS
+      textElement.innerText = message.text;
     }
   
     messageElement.appendChild(textElement);
@@ -247,26 +254,18 @@
       }
     };
 
-  sendButton.addEventListener('click', handleSendMessage);
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  });
+    sendButton.addEventListener('click', handleSendMessage);
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleSendMessage();
+      }
+    });
 
-  inputArea.appendChild(input);
-  inputArea.appendChild(sendButton);
+    inputArea.appendChild(input);
+    inputArea.appendChild(sendButton);
 
-  return inputArea;
-}
-
-function sendMessage(text) {
-  if (text.trim() === '' || isLoading) return;
-
-  addMessage(text, false);
-  showInitialOptions = false;
-  fetchBotResponse(text);
-}
+    return inputArea;
+  }
 
   function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
