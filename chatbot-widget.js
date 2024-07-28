@@ -16,8 +16,6 @@
     launchAvatarUrl: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png'
   };
 
-
-
   function createChatbotUI() {
     const chatbotContainer = document.createElement('div');
     chatbotContainer.id = 'happyflops-chatbot';
@@ -156,31 +154,23 @@
   }
 
   function formatMessage(message) {
-    // Regex för URLs med text i hakparenteser
     const urlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
-    // Regex för vanliga URLs
     const plainUrlRegex = /(https?:\/\/[^\s]+)/g;
-    // Regex för e-postadresser
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
-    // Regex för emojis
     const emojiRegex = /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g;
   
-    // Ersätt URLs med text i hakparenteser
     message = message.replace(urlRegex, function(match, text, url) {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
   
-    // Ersätt vanliga URLs
     message = message.replace(plainUrlRegex, function(url) {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
   
-    // Ersätt e-postadresser med klickbara mailto-länkar
     message = message.replace(emailRegex, function(email) {
       return `<a href="mailto:${email}" class="email">${email}</a>`;
     });
   
-    // Wrap emojis in a span for potential styling
     message = message.replace(emojiRegex, function(match) {
       return `<span class="emoji">${match}</span>`;
     });
@@ -188,7 +178,6 @@
     return message;
   }
 
-// Uppdatera createMessageElement funktionen
   function createMessageElement(message, showOptions = false) {
     const messageGroup = document.createElement('div');
     messageGroup.className = 'happyflops-message-group';
@@ -212,6 +201,9 @@
       const optionsElement = createInitialOptions();
       messageGroup.appendChild(optionsElement);
     }
+  
+    return messageGroup;
+  }
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
@@ -251,30 +243,22 @@
       const message = input.value.trim();
       if (message !== '') {
         sendMessage(message);
-        input.value = ''; // Tömmer inputfältet efter att meddelandet skickats
+        input.value = '';
       }
     };
 
-  sendButton.addEventListener('click', handleSendMessage);
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  });
+    sendButton.addEventListener('click', handleSendMessage);
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleSendMessage();
+      }
+    });
 
-  inputArea.appendChild(input);
-  inputArea.appendChild(sendButton);
+    inputArea.appendChild(input);
+    inputArea.appendChild(sendButton);
 
-  return inputArea;
-}
-
-function sendMessage(text) {
-  if (text.trim() === '' || isLoading) return;
-
-  addMessage(text, false);
-  showInitialOptions = false;
-  fetchBotResponse(text);
-}
+    return inputArea;
+  }
 
   function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
@@ -299,6 +283,7 @@ function sendMessage(text) {
       const answer = data.answer;
 
       messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
+      showInitialOptions = true;
       updateChatWindow();
     } catch (error) {
       console.error('Error fetching bot response:', error);
@@ -316,22 +301,17 @@ function sendMessage(text) {
   function updateChatWindow() {
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
-      // Behåll logotypen och texten
       const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
       messagesWrapper.innerHTML = '';
       if (logoContainer) {
         messagesWrapper.appendChild(logoContainer);
       }
       
-      messages.forEach(message => {
-        const messageElement = createMessageElement(message);
+      messages.forEach((message, index) => {
+        const isLastMessage = index === messages.length - 1;
+        const messageElement = createMessageElement(message, isLastMessage && showInitialOptions);
         messagesWrapper.appendChild(messageElement);
       });
-      
-      if (showInitialOptions) {
-        const optionsElement = createInitialOptions();
-        messagesWrapper.appendChild(optionsElement);
-      }
       
       messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
