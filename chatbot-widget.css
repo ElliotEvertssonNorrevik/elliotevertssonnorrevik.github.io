@@ -91,9 +91,7 @@
   align-items: center;
   padding: 30px 10px;
   background-color: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 1;
+  margin-bottom: 20px;
 }
 
 .happyflops-logo {
@@ -104,7 +102,7 @@
 
 .happyflops-logo-text {
   text-align: center;
-  margin-top: 3px;
+  margin-top: 10px;
 }
 
 .happyflops-logo-text h2 {
@@ -114,6 +112,7 @@
 
 .happyflops-logo-text p {
   font-size: 12px;
+  margin: 5px 0 0;
 }
 
 .happyflops-messages-container {
