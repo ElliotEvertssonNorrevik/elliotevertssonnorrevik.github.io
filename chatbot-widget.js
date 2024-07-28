@@ -218,18 +218,13 @@
     const followUpElement = document.createElement('div');
     followUpElement.className = 'happyflops-options happyflops-follow-up-options';
     
-    const yesButton = document.createElement('button');
-    yesButton.textContent = 'Ja';
-    yesButton.className = 'happyflops-option-button';
-    yesButton.addEventListener('click', () => handleFollowUpResponse(true));
-    
-    const noButton = document.createElement('button');
-    noButton.textContent = 'Nej';
-    noButton.className = 'happyflops-option-button';
-    noButton.addEventListener('click', () => handleFollowUpResponse(false));
-    
-    followUpElement.appendChild(yesButton);
-    followUpElement.appendChild(noButton);
+    ['Ja', 'Nej'].forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      button.className = 'happyflops-option-button';
+      button.addEventListener('click', () => handleFollowUpResponse(option === 'Ja'));
+      followUpElement.appendChild(button);
+    });
     
     return followUpElement;
   }
@@ -348,27 +343,24 @@
         messagesWrapper.appendChild(logoContainer);
       }
       
-      let lastBotMessageElement = null;
-      
       messages.forEach(message => {
         const messageElement = createMessageElement(message);
         messagesWrapper.appendChild(messageElement);
+        
         if (message.isBot) {
-          lastBotMessageElement = messageElement;
+          if (showInitialOptions && messages.indexOf(message) === messages.length - 1) {
+            const optionsElement = createInitialOptions();
+            messageElement.appendChild(optionsElement);
+            showInitialOptions = false;
+          }
+          
+          if (showFollowUp && messages.indexOf(message) === messages.length - 1) {
+            const followUpElement = createFollowUpOptions();
+            messageElement.appendChild(followUpElement);
+            showFollowUp = false;
+          }
         }
       });
-      
-      if (lastBotMessageElement) {
-        if (showInitialOptions) {
-          const optionsElement = createInitialOptions();
-          lastBotMessageElement.appendChild(optionsElement);
-        }
-        
-        if (showFollowUp) {
-          const followUpElement = createFollowUpOptions();
-          lastBotMessageElement.appendChild(followUpElement);
-        }
-      }
       
       messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
