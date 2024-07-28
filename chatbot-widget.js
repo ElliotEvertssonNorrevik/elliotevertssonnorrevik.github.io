@@ -165,24 +165,12 @@
   function formatMessage(message) {
     console.log('Formatting message:', message);
   
-    // Do not unescape HTML here, as we're assuming the input is already in the correct format
-  
-    // Regex for URLs with text in square brackets
-    const urlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
-    // Regex for plain URLs
-    const plainUrlRegex = /(https?:\/\/[^\s]+)/g;
+    // Regex for URLs
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
     
-    // Replace URLs with text in square brackets
-    message = message.replace(urlRegex, (match, text, url) => {
-      console.log('Replacing bracketed URL:', match, 'with:', `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`);
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-    });
-  
-    // Replace plain URLs
-    message = message.replace(plainUrlRegex, (url) => {
-      // Avoid replacing URLs that were already replaced
-      if (url.startsWith('<a href=')) return url;
-      console.log('Replacing plain URL:', url, 'with:', `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
+    // Replace URLs with anchor tags
+    message = message.replace(urlRegex, (url) => {
+      console.log('Replacing URL:', url);
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
   
@@ -202,12 +190,10 @@
     if (message.isLoading) {
       textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
     } else if (message.isBot) {
-      // Use innerHTML for bot messages to render formatted links
       const formattedMessage = formatMessage(message.text);
       console.log('Formatted bot message:', formattedMessage);
       textElement.innerHTML = formattedMessage;
     } else {
-      // Use textContent for user messages to prevent XSS
       textElement.textContent = message.text;
     }
   
@@ -296,10 +282,11 @@
     try {
       const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
       const data = await response.json();
-      const answer = data.answer;
-      console.log('Raw bot response:', answer);
+      console.log('Raw API response:', data);
   
-      // Do not escape HTML here
+      const answer = data.answer;
+      console.log('Extracted answer:', answer);
+  
       messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
       updateChatWindow();
     } catch (error) {
@@ -314,7 +301,6 @@
       isLoading = false;
     }
   }
-
   
   function updateChatWindow() {
     console.log('Updating chat window');
