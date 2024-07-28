@@ -275,81 +275,82 @@
   }
 
   async function fetchBotResponse(question) {
-    console.log('Fetching bot response for:', question);
-    isLoading = true;
-    addMessage('', true, true);
+  console.log('Fetching bot response for:', question);
+  isLoading = true;
+  addMessage('', true, true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
+    const data = await response.json();
+    console.log('Raw API response:', data);
+
+    const answer = data.answer;
+    console.log('Extracted answer:', answer);
+
+    messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
+    updateChatWindow();
+  } catch (error) {
+    console.error('Error fetching bot response:', error);
+    messages[messages.length - 1] = { 
+      text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
+      isBot: true, 
+      isLoading: false 
+    };
+    updateChatWindow();
+  } finally {
+    isLoading = false;
+  }
+}
+
+function createMessageElement(message) {
+  console.log('Creating message element for:', message);
+  const messageElement = document.createElement('div');
+  messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+
+  const textElement = document.createElement('div');
+  textElement.className = 'happyflops-message-text';
   
-    try {
-      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
-      const data = await response.json();
-      console.log('Raw API response:', data);
-  
-      const answer = data.answer;
-      console.log('Extracted answer:', answer);
-  
-      messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
-      updateChatWindow();
-    } catch (error) {
-      console.error('Error fetching bot response:', error);
-      messages[messages.length - 1] = { 
-        text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
-        isBot: true, 
-        isLoading: false 
-      };
-      updateChatWindow();
-    } finally {
-      isLoading = false;
-    }
+  if (message.isLoading) {
+    textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
+  } else if (message.isBot) {
+    const formattedMessage = formatMessage(message.text);
+    console.log('Formatted bot message:', formattedMessage);
+    textElement.innerHTML = formattedMessage;
+  } else {
+    textElement.textContent = message.text;
   }
 
-  
-  function createMessageElement(message) {
-    console.log('Creating message element for:', message);
-    const messageElement = document.createElement('div');
-    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
-  
-    const textElement = document.createElement('div');
-    textElement.className = 'happyflops-message-text';
+  messageElement.appendChild(textElement);
+
+  console.log('Created message element:', messageElement.outerHTML);
+  return messageElement;
+}
+
+function updateChatWindow() {
+  console.log('Updating chat window');
+  const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+  if (messagesWrapper) {
+    // Retain the logo and text
+    const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
+    messagesWrapper.innerHTML = '';
+    if (logoContainer) {
+      messagesWrapper.appendChild(logoContainer);
+    }
     
-    if (message.isLoading) {
-      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
-    } else if (message.isBot) {
-      const formattedMessage = formatMessage(message.text);
-      console.log('Formatted bot message:', formattedMessage);
-      textElement.innerHTML = formattedMessage;
-    } else {
-      textElement.textContent = message.text;
-    }
-
-    messageElement.appendChild(textElement);
-  
-    console.log('Created message element:', messageElement.outerHTML);
-    return messageElement;
-  }
-
-  function createMessageElement(message) {
-    console.log('Creating message element for:', message);
-    const messageElement = document.createElement('div');
-    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
-  
-    const textElement = document.createElement('div');
-    textElement.className = 'happyflops-message-text';
+    messages.forEach(message => {
+      const messageElement = createMessageElement(message);
+      messagesWrapper.appendChild(messageElement);
+    });
     
-    if (message.isLoading) {
-      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
-    } else if (message.isBot) {
-      const formattedMessage = formatMessage(message.text);
-      console.log('Formatted bot message:', formattedMessage);
-      textElement.innerHTML = formattedMessage;
-    } else {
-      textElement.textContent = message.text;
+    if (showInitialOptions) {
+      const optionsElement = createInitialOptions();
+      messagesWrapper.appendChild(optionsElement);
     }
-  
-    messageElement.appendChild(textElement);
-  
-    console.log('Created message element:', messageElement.outerHTML);
-    return messageElement;
+    
+    messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
   }
+  console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
+}
   
 
   function initializeChat() {
