@@ -64,19 +64,28 @@
     return button;
   }
 
-  function createChatWindow() {
-    const chatWindow = document.createElement('div');
-    chatWindow.className = 'happyflops-chat-window';
-  
-    const header = createChatHeader();
-    const messagesContainer = createMessagesContainer();
-    const inputArea = createInputArea();
-  
-    chatWindow.appendChild(header);
-    chatWindow.appendChild(messagesContainer);
-    chatWindow.appendChild(inputArea);
-  
-    return chatWindow;
+  function updateChatWindow() {
+    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+    if (messagesWrapper) {
+      // Keep the logo and text
+      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
+      messagesWrapper.innerHTML = '';
+      if (logoContainer) {
+        messagesWrapper.appendChild(logoContainer);
+      }
+      
+      messages.forEach((message, index) => {
+        const messageElement = createMessageElement(message);
+        messagesWrapper.appendChild(messageElement);
+        
+        if (index === messages.length - 1 && message.isBot && showInitialOptions) {
+          const optionsElement = createInitialOptions();
+          messagesWrapper.appendChild(optionsElement);
+        }
+      });
+      
+      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+    }
   }
 
   function createChatHeader() {
@@ -157,33 +166,34 @@
 
   
   function formatMessage(message) {
-    // Regex for URLs with text in square brackets
     const urlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
-    // Regex for plain URLs
     const plainUrlRegex = /(https?:\/\/[^\s]+)/g;
-    // Regex for email addresses
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
   
+    let htmlMessage = message;
+    let plainMessage = message;
+  
     // Replace URLs with text in square brackets
-    message = message.replace(urlRegex, function(match, text, url) {
+    htmlMessage = htmlMessage.replace(urlRegex, function(match, text, url) {
+      plainMessage = plainMessage.replace(match, text);
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
   
     // Replace plain URLs
-    message = message.replace(plainUrlRegex, function(url) {
-      // Avoid replacing URLs that were already replaced
+    htmlMessage = htmlMessage.replace(plainUrlRegex, function(url) {
       if (url.startsWith('<a href=')) return url;
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
   
-    // Replace email addresses with clickable mailto links
-    message = message.replace(emailRegex, function(email) {
+    // Replace email addresses
+    htmlMessage = htmlMessage.replace(emailRegex, function(email) {
       return `<a href="mailto:${email}" class="email">${email}</a>`;
     });
   
-    return message;
+    return { html: htmlMessage, text: plainMessage };
   }
-// Uppdatera createMessageElement funktionen
+  
+  // Uppdatera createMessageElement funktionen
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
@@ -194,12 +204,12 @@
     if (message.isLoading) {
       textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
     } else {
-      // Använd formatMessage funktionen här
-      textElement.innerHTML = formatMessage(message.text);
+      const formattedMessage = formatMessage(message.text);
+      textElement.innerHTML = formattedMessage.html;
+      textElement.setAttribute('data-plain-text', formattedMessage.text);
     }
   
     messageElement.appendChild(textElement);
-  
     return messageElement;
   }
 
