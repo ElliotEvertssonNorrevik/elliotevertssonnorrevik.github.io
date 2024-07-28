@@ -6,6 +6,7 @@
   let isInitialized = false;
   let isChatOpen = false;
   let isLoading = false;
+  let showFollowUp = false;
   let showInitialOptions = false;
   
   const config = {
@@ -275,32 +276,44 @@
   }
 
   async function fetchBotResponse(question) {
-  console.log('Fetching bot response for:', question);
-  isLoading = true;
-  addMessage('', true, true);
+    console.log('Fetching bot response for:', question);
+    isLoading = true;
+    addMessage('', true, true);
 
-  try {
-    const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
-    const data = await response.json();
-    console.log('Raw API response:', data);
+    try {
+      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
+      const data = await response.json();
+      console.log('Raw API response:', data);
 
-    const answer = data.answer;
-    console.log('Extracted answer:', answer);
+      const answer = data.answer;
+      console.log('Extracted answer:', answer);
 
-    messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
-    updateChatWindow();
-  } catch (error) {
-    console.error('Error fetching bot response:', error);
-    messages[messages.length - 1] = { 
-      text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
-      isBot: true, 
-      isLoading: false 
-    };
-    updateChatWindow();
-  } finally {
-    isLoading = false;
+      messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
+      
+      // Check if the answer doesn't include a question mark and randomly decide to show follow-up
+      if (!answer.includes('?') && Math.random() < 0.5) {
+        setTimeout(() => {
+          addMessage("Kan jag hjälpa dig med något mer?", true);
+          showFollowUp = true;
+          updateChatWindow();
+        }, 1000);
+      } else {
+        showFollowUp = false;
+      }
+
+      updateChatWindow();
+    } catch (error) {
+      console.error('Error fetching bot response:', error);
+      messages[messages.length - 1] = { 
+        text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
+        isBot: true, 
+        isLoading: false 
+      };
+      updateChatWindow();
+    } finally {
+      isLoading = false;
+    }
   }
-}
 
 function createMessageElement(message) {
   console.log('Creating message element for:', message);
@@ -326,31 +339,58 @@ function createMessageElement(message) {
   return messageElement;
 }
 
-function updateChatWindow() {
-  console.log('Updating chat window');
-  const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
-  if (messagesWrapper) {
-    // Retain the logo and text
-    const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
-    messagesWrapper.innerHTML = '';
-    if (logoContainer) {
-      messagesWrapper.appendChild(logoContainer);
-    }
-    
-    messages.forEach(message => {
-      const messageElement = createMessageElement(message);
-      messagesWrapper.appendChild(messageElement);
-    });
-    
-    if (showInitialOptions) {
-      const optionsElement = createInitialOptions();
-      messagesWrapper.appendChild(optionsElement);
-    }
-    
-    messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+  function handleFollowUpResponse(isYes) {
+    addMessage(isYes ? "Ja" : "Nej", false);
+    setTimeout(() => {
+      addMessage(
+        isYes ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!", 
+        true
+      );
+      showFollowUp = false;
+      updateChatWindow();
+    }, 500);
   }
-  console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
-}
+
+  
+  function updateChatWindow() {
+    console.log('Updating chat window');
+    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+    if (messagesWrapper) {
+      // Retain the logo and text
+      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
+      messagesWrapper.innerHTML = '';
+      if (logoContainer) {
+        messagesWrapper.appendChild(logoContainer);
+      }
+      
+      messages.forEach(message => {
+        const messageElement = createMessageElement(message);
+        messagesWrapper.appendChild(messageElement);
+      });
+      
+      if (showFollowUp) {
+        const followUpElement = document.createElement('div');
+        followUpElement.className = 'happyflops-initial-options';
+        
+        const yesButton = document.createElement('button');
+        yesButton.textContent = 'Ja';
+        yesButton.className = 'happyflops-option-button';
+        yesButton.addEventListener('click', () => handleFollowUpResponse(true));
+        
+        const noButton = document.createElement('button');
+        noButton.textContent = 'Nej';
+        noButton.className = 'happyflops-option-button';
+        noButton.addEventListener('click', () => handleFollowUpResponse(false));
+        
+        followUpElement.appendChild(yesButton);
+        followUpElement.appendChild(noButton);
+        messagesWrapper.appendChild(followUpElement);
+      }
+      
+      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+    }
+    console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
+  }
   
 
   function initializeChat() {
