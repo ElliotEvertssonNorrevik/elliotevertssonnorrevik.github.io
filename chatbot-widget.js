@@ -1,4 +1,4 @@
-// https://elliotevertssonnorrevik.github.io/chatbot-widget.js
+// https://elliotevertssonnorrevik.github.io/chatbot-widget.js 
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
 
