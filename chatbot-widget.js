@@ -155,32 +155,34 @@
     return container;
   }
 
+  
   function formatMessage(message) {
-    // Regex för URLs med text i hakparenteser
+    // Regex for URLs with text in square brackets
     const urlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
-    // Regex för vanliga URLs
+    // Regex for plain URLs
     const plainUrlRegex = /(https?:\/\/[^\s]+)/g;
-    // Regex för e-postadresser
+    // Regex for email addresses
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi;
   
-    // Ersätt URLs med text i hakparenteser
+    // Replace URLs with text in square brackets
     message = message.replace(urlRegex, function(match, text, url) {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
   
-    // Ersätt vanliga URLs
+    // Replace plain URLs
     message = message.replace(plainUrlRegex, function(url) {
+      // Avoid replacing URLs that were already replaced
+      if (url.startsWith('<a href=')) return url;
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
   
-    // Ersätt e-postadresser med klickbara mailto-länkar
+    // Replace email addresses with clickable mailto links
     message = message.replace(emailRegex, function(email) {
       return `<a href="mailto:${email}" class="email">${email}</a>`;
     });
-
-  return message;
-}
-
+  
+    return message;
+  }
 // Uppdatera createMessageElement funktionen
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
