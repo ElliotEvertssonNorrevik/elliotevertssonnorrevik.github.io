@@ -165,13 +165,13 @@
   function formatMessage(message) {
     console.log('Formatting message:', message);
   
-    // Regex for URLs
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    // Regex for Markdown-style links: [text](url)
+    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
     
-    // Replace URLs with anchor tags
-    message = message.replace(urlRegex, (url) => {
-      console.log('Replacing URL:', url);
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    // Replace Markdown-style links with HTML links
+    message = message.replace(markdownLinkRegex, (match, text, url) => {
+      console.log('Replacing Markdown link:', match, 'with HTML link');
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
   
     console.log('Formatted message:', message);
@@ -275,32 +275,82 @@
   }
 
   async function fetchBotResponse(question) {
-    console.log('Fetching bot response for:', question);
-    isLoading = true;
-    addMessage('', true, true);
-  
-    try {
-      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
-      const data = await response.json();
-      console.log('Raw API response:', data);
-  
-      const answer = data.answer;
-      console.log('Extracted answer:', answer);
-  
-      messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
-      updateChatWindow();
-    } catch (error) {
-      console.error('Error fetching bot response:', error);
-      messages[messages.length - 1] = { 
-        text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
-        isBot: true, 
-        isLoading: false 
-      };
-      updateChatWindow();
-    } finally {
-      isLoading = false;
-    }
+  console.log('Fetching bot response for:', question);
+  isLoading = true;
+  addMessage('', true, true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
+    const data = await response.json();
+    console.log('Raw API response:', data);
+
+    const answer = data.answer;
+    console.log('Extracted answer:', answer);
+
+    messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
+    updateChatWindow();
+  } catch (error) {
+    console.error('Error fetching bot response:', error);
+    messages[messages.length - 1] = { 
+      text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
+      isBot: true, 
+      isLoading: false 
+    };
+    updateChatWindow();
+  } finally {
+    isLoading = false;
   }
+}
+
+function createMessageElement(message) {
+  console.log('Creating message element for:', message);
+  const messageElement = document.createElement('div');
+  messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+
+  const textElement = document.createElement('div');
+  textElement.className = 'happyflops-message-text';
+  
+  if (message.isLoading) {
+    textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
+  } else if (message.isBot) {
+    const formattedMessage = formatMessage(message.text);
+    console.log('Formatted bot message:', formattedMessage);
+    textElement.innerHTML = formattedMessage;
+  } else {
+    textElement.textContent = message.text;
+  }
+
+  messageElement.appendChild(textElement);
+
+  console.log('Created message element:', messageElement.outerHTML);
+  return messageElement;
+}
+
+function updateChatWindow() {
+  console.log('Updating chat window');
+  const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+  if (messagesWrapper) {
+    // Retain the logo and text
+    const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
+    messagesWrapper.innerHTML = '';
+    if (logoContainer) {
+      messagesWrapper.appendChild(logoContainer);
+    }
+    
+    messages.forEach(message => {
+      const messageElement = createMessageElement(message);
+      messagesWrapper.appendChild(messageElement);
+    });
+    
+    if (showInitialOptions) {
+      const optionsElement = createInitialOptions();
+      messagesWrapper.appendChild(optionsElement);
+    }
+    
+    messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+  }
+  console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
+}
   
   function updateChatWindow() {
     console.log('Updating chat window');
