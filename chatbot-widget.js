@@ -184,7 +184,10 @@
     return message;
   }
 // Uppdatera createMessageElement funktionen
-  function createMessageElement(message) {
+  function createMessageElement(message, showOptions = false) {
+    const messageGroup = document.createElement('div');
+    messageGroup.className = 'happyflops-message-group';
+  
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
   
@@ -194,13 +197,19 @@
     if (message.isLoading) {
       textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
     } else {
-      // Använd formatMessage funktionen här
+      // Use innerHTML to properly render the formatted message with links
       textElement.innerHTML = formatMessage(message.text);
     }
   
     messageElement.appendChild(textElement);
+    messageGroup.appendChild(messageElement);
   
-    return messageElement;
+    if (showOptions && message.isBot) {
+      const optionsElement = createInitialOptions();
+      messageGroup.appendChild(optionsElement);
+    }
+  
+    return messageGroup;
   }
 
   function createInitialOptions() {
