@@ -190,10 +190,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px; /* Minskat från 10px till 8px för att minska avståndet mellan knapparna */
-  margin-top: 6px; /* Minskat från 15px till 8px för att minska avståndet till meddelandet ovanför */
+  margin-top: 8px; /* Minskat från 15px till 8px för att minska avståndet till meddelandet ovanför */
   justify-content: flex-start;
-  padding: 0 15px 0 6px; /* Minskat vänster padding från 15px till 8px */
-
+  padding: 0 15px 0 8px; /* Minskat vänster padding från 15px till 8px */
+}
 
 .happyflops-option-button {
   background-color: #fff;
