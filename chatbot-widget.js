@@ -337,34 +337,30 @@
         messagesWrapper.appendChild(logoContainer);
       }
       
-      messages.forEach(message => {
+      messages.forEach((message, index) => {
         const messageElement = createMessageElement(message);
         messagesWrapper.appendChild(messageElement);
+        
+        if (message.isBot && index === messages.length - 1) {
+          if (showInitialOptions) {
+            const optionsElement = createInitialOptions();
+            const optionsWrapper = document.createElement('div');
+            optionsWrapper.className = 'happyflops-options-wrapper';
+            optionsWrapper.appendChild(optionsElement);
+            messagesWrapper.appendChild(optionsWrapper);
+            showInitialOptions = false;
+          }
+          
+          if (showFollowUp) {
+            const followUpElement = createFollowUpOptions();
+            const followUpWrapper = document.createElement('div');
+            followUpWrapper.className = 'happyflops-options-wrapper';
+            followUpWrapper.appendChild(followUpElement);
+            messagesWrapper.appendChild(followUpWrapper);
+            showFollowUp = false;
+          }
+        }
       });
-      
-      if (showInitialOptions) {
-        const optionsElement = createInitialOptions();
-        messagesWrapper.appendChild(optionsElement);
-      }
-      
-      if (showFollowUp) {
-        const followUpElement = document.createElement('div');
-        followUpElement.className = 'happyflops-initial-options';
-        
-        const yesButton = document.createElement('button');
-        yesButton.textContent = 'Ja';
-        yesButton.className = 'happyflops-option-button';
-        yesButton.addEventListener('click', () => handleFollowUpResponse(true));
-        
-        const noButton = document.createElement('button');
-        noButton.textContent = 'Nej';
-        noButton.className = 'happyflops-option-button';
-        noButton.addEventListener('click', () => handleFollowUpResponse(false));
-        
-        followUpElement.appendChild(yesButton);
-        followUpElement.appendChild(noButton);
-        messagesWrapper.appendChild(followUpElement);
-      }
       
       messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
