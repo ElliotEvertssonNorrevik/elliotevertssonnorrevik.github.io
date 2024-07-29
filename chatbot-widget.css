@@ -1,5 +1,5 @@
 #happyflops-chatbot {
-  font-family: Arial, sans-serif;
+  font-family: Roboto, Arial, sans-serif;
 }
 
 .happyflops-launch-button {
@@ -39,8 +39,8 @@
 }
 
 .happyflops-chat-header {
-  padding: 10px 15px;
-  border-radius: 15px;
+  padding: 15px;
+  border-radius: 15px 15px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -53,21 +53,21 @@
 }
 
 .happyflops-header-image {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   margin-right: 10px;
 }
 
 .happyflops-header-text h1 {
   color: #fff;
-  font-size: 20px;
+  font-size: 18px;
   margin: 0;
 }
 
 .happyflops-header-text p {
   color: #fff;
-  font-size: 15px;
+  font-size: 14px;
   margin: 0;
 }
 
@@ -75,7 +75,7 @@
   background: none;
   border: none;
   color: #fff;
-  font-size: 27px;
+  font-size: 24px;
   cursor: pointer;
 }
 
@@ -90,7 +90,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 10px;
+  padding: 20px 10px;
   background-color: #fff;
   margin-bottom: 20px;
 }
@@ -107,13 +107,15 @@
 }
 
 .happyflops-logo-text h2 {
-  font-size: 16px;
+  font-size: 18px;
   margin: 0;
+  color: #333;
 }
 
 .happyflops-logo-text p {
-  font-size: 12px;
+  font-size: 14px;
   margin: 5px 0 0;
+  color: #666;
 }
 
 .happyflops-messages-container {
@@ -133,22 +135,22 @@
   max-width: 80%;
   margin-bottom: 10px;
   padding: 10px 15px;
-  border-radius: 18px;
   font-size: 14px;
   line-height: 1.4;
 }
 
 .happyflops-message.bot {
   align-self: flex-start;
-  background-color: #fff5d4;
+  background-color: #FFF5D4;
   color: #000;
-  max-width: 80%;
+  border-radius: 18px 18px 18px 0;
 }
 
 .happyflops-message.user {
   align-self: flex-end;
   background-color: #FCBE08;
   color: #fff;
+  border-radius: 18px 18px 0 18px;
 }
 
 .happyflops-input-area {
@@ -160,17 +162,17 @@
 
 .happyflops-input {
   flex-grow: 1;
-  border: none;
-  background-color: #f0f0f0;
-  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  border-radius: 20px 0 0 20px;
   padding: 10px 15px;
   font-size: 14px;
-  margin-right: 10px;
+  margin-right: 0;
 }
 
 .happyflops-send-button {
   border: none;
-  border-radius: 20px;
+  border-radius: 0 20px 20px 0;
   padding: 10px 20px;
   background-color: #FCBE08;
   color: #fff;
@@ -193,30 +195,23 @@
   padding: 0 15px;
 }
 
-.happyflops-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
 .happyflops-option-button {
   background-color: #fff;
   border: 1px solid #FCBE08;
   color: #000;
-  padding: 6px 12px;
-  border-radius: 16px;
+  padding: 8px 16px;
+  border-radius: 20px;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
   font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .happyflops-option-button:hover {
   background-color: #FCBE08;
   color: #fff;
 }
-
 
 .happyflops-loading-dots {
   display: flex;
