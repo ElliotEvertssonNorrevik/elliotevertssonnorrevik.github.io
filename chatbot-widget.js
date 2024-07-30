@@ -371,28 +371,25 @@
     console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
   }
 
-  function addMessageWithDelay(text, isBot, delay) {
+  function addMessageWithDelay(text, isBot, delay, callback) {
     addMessage('', isBot, true); // Add loading message
     updateChatWindow();
     
     setTimeout(() => {
       messages[messages.length - 1] = { text, isBot, isLoading: false };
       updateChatWindow();
+      if (callback) callback();
     }, delay);
   }
 
   function initializeChat() {
     if (!isInitialized) {
-      addMessageWithDelay('Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Happyflops.', true, 1000);
-      
-      setTimeout(() => {
-        addMessageWithDelay('Vad kan jag hjälpa dig med idag?😊', true, 1000);
-        
-        setTimeout(() => {
+      addMessageWithDelay('Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Happyflops.', true, 1000, () => {
+        addMessageWithDelay('Vad kan jag hjälpa dig med idag?😊', true, 500, () => {
           showInitialOptions = true;
           updateChatWindow();
-        }, 1500);
-      }, 2000);
+        });
+      });
       
       isInitialized = true;
     }
