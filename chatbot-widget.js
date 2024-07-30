@@ -326,6 +326,15 @@
     }, 500);
   }
 
+  function scrollToBottom() {
+    const messagesContainer = document.querySelector('.happyflops-messages-container');
+    if (messagesContainer) {
+      setTimeout(() => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }, 100); // Kort fördröjning för att säkerställa att innehållet har renderats
+    }
+  }
+
   function updateChatWindow() {
     console.log('Updating chat window');
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
@@ -366,7 +375,7 @@
         messagesWrapper.appendChild(followUpElement);
       }
       
-      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+      scrollToBottom();
     }
     console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
   }
