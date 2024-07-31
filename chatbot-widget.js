@@ -10,10 +10,10 @@
   let showFollowUp = false;
   
   const config = {
-    headerText: 'Happyflops AI',
+    headerText: 'Vanbruun AI',
     subHeaderText: 'Chatta med vår digitala assistent',
-    mainColor: '#FCBE08',
-    logoUrl: 'https://i.ibb.co/gTSR93f/s348hq3b.png',
+    mainColor: '#3f2b20',
+    logoUrl: 'https://i.ibb.co/m6LBcpN/cd8ajn5t.jpg',
     launchAvatarUrl: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png'
   };
 
