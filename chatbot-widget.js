@@ -14,7 +14,7 @@
     subHeaderText: 'Chatta med vår digitala assistent',
     mainColor: '#3f2b20',
     logoUrl: 'https://i.ibb.co/m6LBcpN/cd8ajn5t.jpg',
-    launchAvatarUrl: 'https://i.ibb.co/H2tqg2w/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview.png'
+    launchAvatarUrl: 'https://i.ibb.co/H41t1hV/Ventajas-1-200-removebg-preview-removebg-preview-removebg-preview-1.png'
   };
 
   function createChatbotUI() {
