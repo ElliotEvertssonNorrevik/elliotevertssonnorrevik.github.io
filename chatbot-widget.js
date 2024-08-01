@@ -273,7 +273,7 @@
         },
         body: JSON.stringify({
           conversation_history: conversationHistory,
-          question: text
+          question: conversationHistory
         }),
       });
 
