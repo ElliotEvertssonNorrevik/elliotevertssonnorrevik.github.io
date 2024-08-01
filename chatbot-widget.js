@@ -207,7 +207,7 @@
     const optionsElement = document.createElement('div');
     optionsElement.className = 'happyflops-initial-options';
 
-    const options = ['Spåra min order', 'Retur', 'Storleksguide'];
+    const options = ['Spåra min order', 'Boka konsultation'];
     options.forEach(option => {
       const button = document.createElement('button');
       button.textContent = option;
