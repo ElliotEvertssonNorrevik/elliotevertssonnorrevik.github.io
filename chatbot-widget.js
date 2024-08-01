@@ -1,8 +1,8 @@
-// https://elliotevertssonnorrevik.github.io/chatbot-widget.js 
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
 
   let messages = [];
+  let conversationHistory = [];
   let isInitialized = false;
   let isChatOpen = false;
   let isLoading = false;
@@ -14,7 +14,7 @@
     subHeaderText: 'Chatta med vår digitala assistent',
     mainColor: '#3f2b20',
     logoUrl: 'https://i.ibb.co/m6LBcpN/cd8ajn5t.jpg',
-    launchAvatarUrl: 'https://i.ibb.co/DtZd3sB/Untitled-design-37.png'
+    launchAvatarUrl: 'https://i.ibb.co/XJYMCyQ/Untitled-design-37.png'
   };
 
   function createChatbotUI() {
@@ -154,22 +154,11 @@
     return container;
   }
 
-  function unescapeHTML(text) {
-    console.log('Unescaping HTML:', text); // Debug log
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = text;
-    const unescaped = textarea.value;
-    console.log('Unescaped result:', unescaped); // Debug log
-    return unescaped;
-  }
-  
   function formatMessage(message) {
     console.log('Formatting message:', message);
   
-    // Regex for Markdown-style links: [text](url)
     const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
     
-    // Replace Markdown-style links with HTML links
     message = message.replace(markdownLinkRegex, (match, text, url) => {
       console.log('Replacing Markdown link:', match, 'with HTML link');
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
@@ -241,7 +230,7 @@
       const message = input.value.trim();
       if (message !== '') {
         sendMessage(message);
-        input.value = ''; // Tömmer inputfältet efter att meddelandet skickats
+        input.value = '';
       }
     };
 
@@ -258,34 +247,40 @@
     return inputArea;
   }
 
-  function sendMessage(text) {
+  async function sendMessage(text) {
     console.log('Sending message:', text);
     if (text.trim() === '' || isLoading) return;
 
     addMessage(text, false);
     showInitialOptions = false;
     showFollowUp = false;
-    fetchBotResponse(text);
-  }
 
-  function addMessage(text, isBot, isLoading = false) {
-    console.log('Adding message:', { text, isBot, isLoading });
-    messages.push({ text, isBot, isLoading });
-    updateChatWindow();
-  }
+    // Add user message to conversation history
+    conversationHistory.push({"role": "user", "content": text});
 
-  async function fetchBotResponse(question) {
-    console.log('Fetching bot response for:', question);
     isLoading = true;
     addMessage('', true, true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(question)}`);
+      const response = await fetch(API_BASE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: text,
+          conversation_history: conversationHistory
+        }),
+      });
+
       const data = await response.json();
       console.log('Raw API response:', data);
 
       const answer = data.answer;
       console.log('Extracted answer:', answer);
+
+      // Add AI response to conversation history
+      conversationHistory.push({"role": "assistant", "content": answer});
 
       messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
       
@@ -300,7 +295,6 @@
         showFollowUp = false;
       }
 
-      updateChatWindow();
     } catch (error) {
       console.error('Error fetching bot response:', error);
       messages[messages.length - 1] = { 
@@ -308,10 +302,16 @@
         isBot: true, 
         isLoading: false 
       };
-      updateChatWindow();
     } finally {
       isLoading = false;
+      updateChatWindow();
     }
+  }
+
+  function addMessage(text, isBot, isLoading = false) {
+    console.log('Adding message:', { text, isBot, isLoading });
+    messages.push({ text, isBot, isLoading });
+    updateChatWindow();
   }
 
   function handleFollowUpResponse(isYes) {
@@ -331,7 +331,7 @@
     if (messagesContainer) {
       setTimeout(() => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }, 100); // Kort fördröjning för att säkerställa att innehållet har renderats
+      }, 100);
     }
   }
 
@@ -339,7 +339,6 @@
     console.log('Updating chat window');
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
-      // Retain the logo and text
       const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
       messagesWrapper.innerHTML = '';
       if (logoContainer) {
@@ -381,7 +380,7 @@
   }
 
   function addMessageWithDelay(text, isBot, delay, callback) {
-    addMessage('', isBot, true); // Add loading message
+    addMessage('', isBot, true);
     updateChatWindow();
     
     setTimeout(() => {
@@ -393,7 +392,7 @@
 
   function initializeChat() {
     if (!isInitialized) {
-      addMessageWithDelay('Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Happyflops.', true, 1000, () => {
+      addMessageWithDelay('Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.', true, 1000, () => {
         addMessageWithDelay('Vad kan jag hjälpa dig med idag?😊', true, 500, () => {
           showInitialOptions = true;
           updateChatWindow();
@@ -406,7 +405,7 @@
 
   createChatbotUI();
 
-  window.openHappyflopsChat = function() {
+  window.openVanbruunChat = function() {
     isChatOpen = true;
     renderChatbot();
     initializeChat();
