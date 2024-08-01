@@ -262,19 +262,22 @@
     addMessage('', true, true);
 
     try {
-      const response = await fetch(API_BASE_URL, {
+      // Format conversation history for logging
+      const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n');
+      console.log(`conversation_history:\n${formattedHistory}\nquestion: ${text}`);
+
+      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(text)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          question: text,
-          conversation_history: conversationHistory
+          conversation_history: conversationHistory,
+          question: text
         }),
       });
 
       const data = await response.json();
-      console.log(conversationHistory)
       console.log('Raw API response:', data);
 
       const answer = data.answer;
@@ -393,8 +396,12 @@
 
   function initializeChat() {
     if (!isInitialized) {
-      addMessageWithDelay('Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.', true, 1000, () => {
-        addMessageWithDelay('Vad kan jag hjälpa dig med idag?😊', true, 500, () => {
+      const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
+      addMessageWithDelay(initialMessage, true, 1000, () => {
+        conversationHistory.push({"role": "assistant", "content": initialMessage});
+        const followUpMessage = 'Vad kan jag hjälpa dig med idag?😊';
+        addMessageWithDelay(followUpMessage, true, 500, () => {
+          conversationHistory.push({"role": "assistant", "content": followUpMessage});
           showInitialOptions = true;
           updateChatWindow();
         });
