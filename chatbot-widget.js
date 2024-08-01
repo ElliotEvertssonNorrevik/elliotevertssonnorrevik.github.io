@@ -247,7 +247,7 @@
     return inputArea;
   }
 
-  async function sendMessage(text) {
+async function sendMessage(text) {
     console.log('Sending message:', text);
     if (text.trim() === '' || isLoading) return;
 
@@ -262,55 +262,55 @@
     addMessage('', true, true);
 
     try {
-      // Format conversation history for logging
-      const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n');
-      console.log(`conversation_history:\n${formattedHistory}\nquestion: ${text}`);
+        // Format conversation history and question into a single string
+        const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+        const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
 
-      const response = await fetch(`${API_BASE_URL}?question=${encodeURIComponent(text)}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          conversation_history: conversationHistory,
-          question: conversationHistory
-        }),
-      });
+        console.log('Full query:', fullQuery);
 
-      const data = await response.json();
-      console.log('Raw API response:', data);
+        const encodedQuery = encodeURIComponent(fullQuery);
+        const url = `${API_BASE_URL}?question=${encodedQuery}`;
 
-      const answer = data.answer;
-      console.log('Extracted answer:', answer);
+        console.log('Request URL:', url);
 
-      // Add AI response to conversation history
-      conversationHistory.push({"role": "assistant", "content": answer});
+        const response = await fetch(url, {
+            method: 'GET', // Changed to GET since we're passing everything in the URL
+        });
 
-      messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
-      
-      // Check if the answer doesn't include a question mark and randomly decide to show follow-up
-      if (!answer.includes('?') && Math.random() < 0.5) {
-        setTimeout(() => {
-          addMessage("Kan jag hjälpa dig med något mer?", true);
-          showFollowUp = true;
-          updateChatWindow();
-        }, 1000);
-      } else {
-        showFollowUp = false;
-      }
+        const data = await response.json();
+        console.log('Raw API response:', data);
+
+        const answer = data.answer;
+        console.log('Extracted answer:', answer);
+
+        // Add AI response to conversation history
+        conversationHistory.push({"role": "assistant", "content": answer});
+
+        messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
+        
+        // Check if the answer doesn't include a question mark and randomly decide to show follow-up
+        if (!answer.includes('?') && Math.random() < 0.5) {
+            setTimeout(() => {
+                addMessage("Kan jag hjälpa dig med något mer?", true);
+                showFollowUp = true;
+                updateChatWindow();
+            }, 1000);
+        } else {
+            showFollowUp = false;
+        }
 
     } catch (error) {
-      console.error('Error fetching bot response:', error);
-      messages[messages.length - 1] = { 
-        text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
-        isBot: true, 
-        isLoading: false 
-      };
+        console.error('Error fetching bot response:', error);
+        messages[messages.length - 1] = { 
+            text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
+            isBot: true, 
+            isLoading: false 
+        };
     } finally {
-      isLoading = false;
-      updateChatWindow();
+        isLoading = false;
+        updateChatWindow();
     }
-  }
+}
 
   function addMessage(text, isBot, isLoading = false) {
     console.log('Adding message:', { text, isBot, isLoading });
