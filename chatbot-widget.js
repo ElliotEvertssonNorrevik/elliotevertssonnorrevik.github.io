@@ -82,30 +82,30 @@
     const header = document.createElement('div');
     header.className = 'happyflops-chat-header';
     header.style.backgroundColor = config.mainColor;
-
+  
     const headerContent = document.createElement('div');
     headerContent.className = 'happyflops-header-content';
-
+  
     const headerImage = document.createElement('img');
     headerImage.src = config.logoUrl;
     headerImage.alt = 'Happyflops';
     headerImage.className = 'happyflops-header-image';
-
+  
     const headerText = document.createElement('div');
     headerText.className = 'happyflops-header-text';
-
+  
     const title = document.createElement('h1');
     title.textContent = config.headerText;
-
+  
     const subtitle = document.createElement('p');
     subtitle.textContent = config.subHeaderText;
-
+  
     headerText.appendChild(title);
     headerText.appendChild(subtitle);
-
+  
     headerContent.appendChild(headerImage);
     headerContent.appendChild(headerText);
-
+  
     const closeButton = document.createElement('button');
     closeButton.textContent = '×';
     closeButton.className = 'happyflops-close-button';
@@ -113,13 +113,62 @@
       isChatOpen = false;
       renderChatbot();
     });
-
+  
     header.appendChild(headerContent);
     header.appendChild(closeButton);
-
+  
     return header;
   }
 
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+// Debounced version of sendConversationToAzure
+  const debouncedSendConversationToAzure = debounce(async (messages) => {
+    const url = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation';
+    const payload = {
+      conversationId: window.conversationId || (window.conversationId = generateUUID()),
+      messages: messages.map(msg => ({
+        text: msg.text,
+        isBot: msg.isBot
+      }))
+    };
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      console.log('Conversation stored successfully');
+    } catch (error) {
+      console.error('Error storing conversation:', error);
+    }
+  }, 2000); // Debounce for 2 seconds
+
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  
   function createChatLogo() {
     const logoContainer = document.createElement('div');
     logoContainer.className = 'happyflops-logo-container';
@@ -248,69 +297,72 @@
   }
 
 async function sendMessage(text) {
-    console.log('Sending message:', text);
-    if (text.trim() === '' || isLoading) return;
+  console.log('Sending message:', text);
+  if (text.trim() === '' || isLoading) return;
 
-    addMessage(text, false);
-    showInitialOptions = false;
-    showFollowUp = false;
+  addMessage(text, false);
+  showInitialOptions = false;
+  showFollowUp = false;
 
-    // Add user message to conversation history
-    conversationHistory.push({"role": "user", "content": text});
+  conversationHistory.push({"role": "user", "content": text});
 
-    isLoading = true;
-    addMessage('', true, true);
+  // Send conversation to Azure after user message
+  debouncedSendConversationToAzure(messages);
 
-    try {
-        // Format conversation history and question into a single string
-        const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
-        const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
+  isLoading = true;
+  addMessage('', true, true);
 
-        console.log('Full query:', fullQuery);
+  try {
+    const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+    const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
 
-        const encodedQuery = encodeURIComponent(fullQuery);
-        const url = `${API_BASE_URL}?question=${encodedQuery}`;
+    console.log('Full query:', fullQuery);
 
-        console.log('Request URL:', url);
+    const encodedQuery = encodeURIComponent(fullQuery);
+    const url = `${API_BASE_URL}?question=${encodedQuery}`;
 
-        const response = await fetch(url, {
-            method: 'GET', // Changed to GET since we're passing everything in the URL
-        });
+    console.log('Request URL:', url);
 
-        const data = await response.json();
-        console.log('Raw API response:', data);
+    const response = await fetch(url, {
+      method: 'GET',
+    });
 
-        const answer = data.answer;
-        console.log('Extracted answer:', answer);
+    const data = await response.json();
+    console.log('Raw API response:', data);
 
-        // Add AI response to conversation history
-        conversationHistory.push({"role": "assistant", "content": answer});
+    const answer = data.answer;
+    console.log('Extracted answer:', answer);
 
-        messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
-        
-        // Check if the answer doesn't include a question mark and randomly decide to show follow-up
-        if (!answer.includes('?') && Math.random() < 0.5) {
-            setTimeout(() => {
-                addMessage("Kan jag hjälpa dig med något mer?", true);
-                showFollowUp = true;
-                updateChatWindow();
-            }, 1000);
-        } else {
-            showFollowUp = false;
-        }
+    conversationHistory.push({"role": "assistant", "content": answer});
 
-    } catch (error) {
-        console.error('Error fetching bot response:', error);
-        messages[messages.length - 1] = { 
-            text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
-            isBot: true, 
-            isLoading: false 
-        };
-    } finally {
-        isLoading = false;
+    messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false };
+    
+    // Send conversation to Azure after AI response
+    debouncedSendConversationToAzure(messages);
+
+    if (!answer.includes('?') && Math.random() < 0.5) {
+      setTimeout(() => {
+        addMessage("Kan jag hjälpa dig med något mer?", true);
+        showFollowUp = true;
         updateChatWindow();
+      }, 1000);
+    } else {
+      showFollowUp = false;
     }
+
+  } catch (error) {
+    console.error('Error fetching bot response:', error);
+    messages[messages.length - 1] = { 
+      text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
+      isBot: true, 
+      isLoading: false 
+    };
+  } finally {
+    isLoading = false;
+    updateChatWindow();
+  }
 }
+
 
   function addMessage(text, isBot, isLoading = false) {
     console.log('Adding message:', { text, isBot, isLoading });
