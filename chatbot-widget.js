@@ -379,16 +379,20 @@ async function sendMessage(text) {
   }
 
 
-  function handleFollowUpResponse(isYes) {
-    addMessage(isYes ? "Ja" : ["Prata med kundtjänst", "Nej"], false);
-    setTimeout(() => {
-      addMessage(
-        isYes ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!", 
-        true
-      );
-      showFollowUp = false;
-      updateChatWindow();
-    }, 500);
+  function handleFollowUpResponse(response) {
+    if (response === "customer_service") {
+      fetchAndDisplayConversation();
+    } else {
+      addMessage(response === "yes" ? "Ja" : "Nej", false);
+      setTimeout(() => {
+        addMessage(
+          response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!", 
+          true
+        );
+        showFollowUp = false;
+        updateChatWindow();
+      }, 500);
+    }
   }
 
   function scrollToBottom() {
@@ -397,6 +401,33 @@ async function sendMessage(text) {
       setTimeout(() => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }, 100);
+    }
+  }
+
+  async function fetchAndDisplayConversation() {
+    const conversationId = window.conversationId || generateUUID();
+    const url = `https://rosterai-fresh-function.azurewebsites.net/api/getconversation?conversationId=${conversationId}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      // Clear existing messages
+      messages = [];
+
+      // Add fetched messages to the chat
+      data.messages.forEach(msg => {
+        addMessage(msg.text, msg.isBot, false, msg.timestamp);
+      });
+
+      // Add a message indicating transfer to customer service
+      addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true);
+
+      showFollowUp = false;
+      updateChatWindow();
+    } catch (error) {
+      console.error('Error fetching conversation:', error);
+      addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
     }
   }
 
@@ -427,15 +458,21 @@ async function sendMessage(text) {
         const yesButton = document.createElement('button');
         yesButton.textContent = 'Ja';
         yesButton.className = 'happyflops-option-button';
-        yesButton.addEventListener('click', () => handleFollowUpResponse(true));
+        yesButton.addEventListener('click', () => handleFollowUpResponse("yes"));
         
         const noButton = document.createElement('button');
         noButton.textContent = 'Nej';
         noButton.className = 'happyflops-option-button';
-        noButton.addEventListener('click', () => handleFollowUpResponse(false));
+        noButton.addEventListener('click', () => handleFollowUpResponse("no"));
+        
+        const customerServiceButton = document.createElement('button');
+        customerServiceButton.textContent = 'Prata med kundtjänst';
+        customerServiceButton.className = 'happyflops-option-button';
+        customerServiceButton.addEventListener('click', () => handleFollowUpResponse("customer_service"));
         
         followUpElement.appendChild(yesButton);
         followUpElement.appendChild(noButton);
+        followUpElement.appendChild(customerServiceButton);
         messagesWrapper.appendChild(followUpElement);
       }
       
