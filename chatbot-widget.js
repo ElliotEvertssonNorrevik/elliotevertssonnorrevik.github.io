@@ -1,4 +1,3 @@
-
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
 
@@ -133,7 +132,6 @@
     };
   }
 
-  // Debounced version of sendConversationToAzure
   const debouncedSendConversationToAzure = debounce(async (messages) => {
     const url = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation';
     const payload = {
@@ -162,14 +160,14 @@
     } catch (error) {
       console.error('Error storing conversation:', error);
     }
-  }, 2000); // Debounce for 2 seconds
+  }, 2000);
 
-function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
   
   function createChatLogo() {
     const logoContainer = document.createElement('div');
@@ -298,86 +296,83 @@ function generateUUID() {
     return inputArea;
   }
 
-async function sendMessage(text) {
-  console.log('Sending message:', text);
-  if (text.trim() === '' || isLoading) return;
+  async function sendMessage(text) {
+    console.log('Sending message:', text);
+    if (text.trim() === '' || isLoading) return;
 
-  const currentTime = new Date().toISOString();
+    const currentTime = new Date().toISOString();
 
-  addMessage(text, false, false, currentTime);
-  showInitialOptions = false;
-  showFollowUp = false;
+    addMessage(text, false, false, currentTime);
+    showInitialOptions = false;
+    showFollowUp = false;
 
-  conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
+    conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
 
-  // Send conversation to Azure after user message
-  debouncedSendConversationToAzure(messages);
-
-  isLoading = true;
-  addMessage('', true, true, currentTime);
-
-  try {
-    const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
-    const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
-
-    console.log('Full query:', fullQuery);
-
-    const encodedQuery = encodeURIComponent(fullQuery);
-    const url = `${API_BASE_URL}?question=${encodedQuery}`;
-
-    console.log('Request URL:', url);
-
-    const response = await fetch(url, {
-      method: 'GET',
-    });
-
-    const data = await response.json();
-    console.log('Raw API response:', data);
-
-    const answer = data.answer;
-    console.log('Extracted answer:', answer);
-
-    const responseTime = new Date().toISOString();
-    conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
-
-    messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
-    
-    // Send conversation to Azure after AI response
     debouncedSendConversationToAzure(messages);
 
-    if (!answer.includes('?') && Math.random() < 0.5) {
-      setTimeout(() => {
-        const followUpTime = new Date().toISOString();
-        addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
-        showFollowUp = true;
-        updateChatWindow();
-      }, 1000);
-    } else {
-      showFollowUp = false;
+    isLoading = true;
+    addMessage('', true, true, currentTime);
+
+    try {
+      const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+      const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
+
+      console.log('Full query:', fullQuery);
+
+      const encodedQuery = encodeURIComponent(fullQuery);
+      const url = `${API_BASE_URL}?question=${encodedQuery}`;
+
+      console.log('Request URL:', url);
+
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+
+      const data = await response.json();
+      console.log('Raw API response:', data);
+
+      const answer = data.answer;
+      console.log('Extracted answer:', answer);
+
+      const responseTime = new Date().toISOString();
+      conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
+
+      messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+      
+      debouncedSendConversationToAzure(messages);
+
+      if (!answer.includes('?') && Math.random() < 0.5) {
+        setTimeout(() => {
+          const followUpTime = new Date().toISOString();
+          addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
+          showFollowUp = true;
+          updateChatWindow();
+        }, 1000);
+      } else {
+        showFollowUp = false;
+      }
+
+    } catch (error) {
+      console.error('Error fetching bot response:', error);
+      const errorTime = new Date().toISOString();
+      messages[messages.length - 1] = { 
+        text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
+        isBot: true, 
+        isLoading: false,
+        timestamp: errorTime
+      };
+    } finally {
+      isLoading = false;
+      updateChatWindow();
     }
-
-  } catch (error) {
-    console.error('Error fetching bot response:', error);
-    const errorTime = new Date().toISOString();
-    messages[messages.length - 1] = { 
-      text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
-      isBot: true, 
-      isLoading: false,
-      timestamp: errorTime
-    };
-  } finally {
-    isLoading = false;
-    updateChatWindow();
   }
-}
 
-// Updated addMessage function to include timestamp
   function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString()) {
     console.log('Adding message:', { text, isBot, isLoading, timestamp });
     messages.push({ text, isBot, isLoading, timestamp });
     updateChatWindow();
+    saveConversation();
   }
-
 
   function handleFollowUpResponse(response) {
     if (response === "customer_service") {
@@ -395,15 +390,6 @@ async function sendMessage(text) {
     }
   }
 
-  function scrollToBottom() {
-    const messagesContainer = document.querySelector('.happyflops-messages-container');
-    if (messagesContainer) {
-      setTimeout(() => {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }, 100);
-    }
-  }
-
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
     const url = `https://rosterai-fresh-function.azurewebsites.net/api/getconversation?conversationId=${conversationId}`;
@@ -412,15 +398,12 @@ async function sendMessage(text) {
       const response = await fetch(url);
       const data = await response.json();
 
-      // Clear existing messages
       messages = [];
 
-      // Add fetched messages to the chat
       data.messages.forEach(msg => {
         addMessage(msg.text, msg.isBot, false, msg.timestamp);
       });
 
-      // Add a message indicating transfer to customer service
       addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true);
 
       showFollowUp = false;
@@ -428,6 +411,15 @@ async function sendMessage(text) {
     } catch (error) {
       console.error('Error fetching conversation:', error);
       addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
+    }
+  }
+
+  function scrollToBottom() {
+    const messagesContainer = document.querySelector('.happyflops-messages-container');
+    if (messagesContainer) {
+      setTimeout(() => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }, 100);
     }
   }
 
@@ -494,19 +486,50 @@ async function sendMessage(text) {
 
   function initializeChat() {
     if (!isInitialized) {
-      const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
-      addMessageWithDelay(initialMessage, true, 1000, () => {
-        conversationHistory.push({"role": "assistant", "content": initialMessage});
-        const followUpMessage = 'Vad kan jag hjälpa dig med idag?😊';
-        addMessageWithDelay(followUpMessage, true, 500, () => {
-          conversationHistory.push({"role": "assistant", "content": followUpMessage});
-          showInitialOptions = true;
-          updateChatWindow();
+      loadConversation();
+      if (messages.length === 0) {
+        const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
+        addMessageWithDelay(initialMessage, true, 1000, () => {
+          conversationHistory.push({"role": "assistant", "content": initialMessage});
+          const followUpMessage = 'Vad kan jag hjälpa dig med idag?😊';
+          addMessageWithDelay(followUpMessage, true, 500, () => {
+            conversationHistory.push({"role": "assistant", "content": followUpMessage});
+            showInitialOptions = true;
+            updateChatWindow();
+          });
         });
-      });
+      } else {
+        updateChatWindow();
+      }
       
       isInitialized = true;
     }
+  }
+
+  function saveConversation() {
+    localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
+    localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
+    localStorage.setItem('vanbruunChatId', window.conversationId || '');
+  }
+
+  function loadConversation() {
+    const storedMessages = localStorage.getItem('vanbruunChatMessages');
+    const storedHistory = localStorage.getItem('vanbruunChatHistory');
+    const storedId = localStorage.getItem('vanbruunChatId');
+
+    if (storedMessages) {
+      messages = JSON.parse(storedMessages);
+    }
+    if (storedHistory) {
+      conversationHistory = JSON.parse(storedHistory);
+    }
+    if (storedId) {
+      window.conversationId = storedId;
+    } else {
+      window.conversationId = generateUUID();
+    }
+
+    isInitialized = messages.length > 0;
   }
 
   createChatbotUI();
