@@ -380,7 +380,7 @@ async function sendMessage(text) {
 
 
   function handleFollowUpResponse(isYes) {
-    addMessage(isYes ? "Ja" : "Nej", false);
+    addMessage(isYes ? "Ja" : ["Prata med kundtjänst", "Nej"], false);
     setTimeout(() => {
       addMessage(
         isYes ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!", 
