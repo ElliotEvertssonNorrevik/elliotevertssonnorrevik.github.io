@@ -9,6 +9,7 @@
   let showInitialOptions = false;
   let showFollowUp = false;
   
+  
   const config = {
     headerText: 'Vanbruun AI',
     subHeaderText: 'Chatta med vår digitala assistent',
@@ -16,6 +17,50 @@
     logoUrl: 'https://i.ibb.co/m6LBcpN/cd8ajn5t.jpg',
     launchAvatarUrl: 'https://i.ibb.co/DtZd3sB/Untitled-design-37.png'
   };
+
+
+  
+  function saveConversation() {
+    localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
+    localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
+    localStorage.setItem('vanbruunChatId', window.conversationId || '');
+    localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
+    localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
+    localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
+  }
+
+
+  function loadConversation() {
+    const storedMessages = localStorage.getItem('vanbruunChatMessages');
+    const storedHistory = localStorage.getItem('vanbruunChatHistory');
+    const storedId = localStorage.getItem('vanbruunChatId');
+    const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
+    const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
+    const storedIsChatOpen = localStorage.getItem('vanbruunChatIsOpen');
+
+    if (storedMessages) {
+      messages = JSON.parse(storedMessages);
+    }
+    if (storedHistory) {
+      conversationHistory = JSON.parse(storedHistory);
+    }
+    if (storedId) {
+      window.conversationId = storedId;
+    } else {
+      window.conversationId = generateUUID();
+    }
+    if (storedShowInitialOptions !== null) {
+      showInitialOptions = JSON.parse(storedShowInitialOptions);
+    }
+    if (storedShowFollowUp !== null) {
+      showFollowUp = JSON.parse(storedShowFollowUp);
+    }
+    if (storedIsChatOpen !== null) {
+      isChatOpen = JSON.parse(storedIsChatOpen);
+    }
+
+    isInitialized = messages.length > 0;
+  }
 
   function createChatbotUI() {
     const chatbotContainer = document.createElement('div');
@@ -27,6 +72,7 @@
 
     document.body.appendChild(chatbotContainer);
 
+    loadConversation();
     renderChatbot();
   }
 
@@ -37,11 +83,13 @@
     if (isChatOpen) {
       const chatWindow = createChatWindow();
       chatbotContainer.appendChild(chatWindow);
+      updateChatWindow();
     } else {
       const launchButton = createLaunchButton();
       chatbotContainer.appendChild(launchButton);
     }
   }
+
 
   function createLaunchButton() {
     const button = document.createElement('button');
@@ -111,6 +159,7 @@
     closeButton.className = 'happyflops-close-button';
     closeButton.addEventListener('click', () => {
       isChatOpen = false;
+      saveConversation();
       renderChatbot();
     });
   
@@ -486,23 +535,20 @@
 
   function initializeChat() {
     if (!isInitialized) {
-      loadConversation();
-      if (messages.length === 0) {
-        const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
-        addMessageWithDelay(initialMessage, true, 1000, () => {
-          conversationHistory.push({"role": "assistant", "content": initialMessage});
-          const followUpMessage = 'Vad kan jag hjälpa dig med idag?😊';
-          addMessageWithDelay(followUpMessage, true, 500, () => {
-            conversationHistory.push({"role": "assistant", "content": followUpMessage});
-            showInitialOptions = true;
-            updateChatWindow();
-          });
+      const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
+      addMessageWithDelay(initialMessage, true, 1000, () => {
+        conversationHistory.push({"role": "assistant", "content": initialMessage});
+        const followUpMessage = 'Vad kan jag hjälpa dig med idag?😊';
+        addMessageWithDelay(followUpMessage, true, 500, () => {
+          conversationHistory.push({"role": "assistant", "content": followUpMessage});
+          showInitialOptions = true;
+          updateChatWindow();
         });
-      } else {
-        updateChatWindow();
-      }
+      });
       
       isInitialized = true;
+    } else {
+      updateChatWindow();
     }
   }
 
@@ -536,9 +582,12 @@
 
   window.openVanbruunChat = function() {
     isChatOpen = true;
+    saveConversation();
     renderChatbot();
     initializeChat();
   };
+
+  createChatbotUI();
 
   console.log('Chatbot script loaded and initialized');
 })();
