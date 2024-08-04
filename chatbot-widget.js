@@ -154,6 +154,15 @@
     headerContent.appendChild(headerImage);
     headerContent.appendChild(headerText);
   
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'happyflops-header-buttons';
+
+    const reloadButton = document.createElement('button');
+    reloadButton.innerHTML = '&#x21bb;'; // Reload symbol
+    reloadButton.className = 'happyflops-reload-button';
+    reloadButton.title = 'Restart conversation';
+    reloadButton.addEventListener('click', restartConversation);
+
     const closeButton = document.createElement('button');
     closeButton.textContent = '×';
     closeButton.className = 'happyflops-close-button';
@@ -163,10 +172,33 @@
       renderChatbot();
     });
   
+    buttonsContainer.appendChild(reloadButton);
+    buttonsContainer.appendChild(closeButton);
+
     header.appendChild(headerContent);
-    header.appendChild(closeButton);
+    header.appendChild(buttonsContainer);
   
     return header;
+  }
+
+  function restartConversation() {
+    // Clear all conversation data
+    messages = [];
+    conversationHistory = [];
+    isInitialized = false;
+    showInitialOptions = false;
+    showFollowUp = false;
+    window.conversationId = generateUUID();
+
+    // Clear localStorage
+    localStorage.removeItem('vanbruunChatMessages');
+    localStorage.removeItem('vanbruunChatHistory');
+    localStorage.removeItem('vanbruunChatId');
+    localStorage.removeItem('vanbruunChatShowInitialOptions');
+    localStorage.removeItem('vanbruunChatShowFollowUp');
+
+    // Reinitialize the chat
+    initializeChat();
   }
 
   function debounce(func, wait) {
