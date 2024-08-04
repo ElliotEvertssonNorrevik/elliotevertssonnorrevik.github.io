@@ -86,6 +86,27 @@
   flex-direction: column;
 }
 
+.happyflops-header-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.happyflops-reload-button,
+.happyflops-close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 5px;
+}
+
+.happyflops-reload-button:hover,
+.happyflops-close-button:hover {
+  opacity: 0.8;
+}
+
 .happyflops-logo-container {
   display: flex;
   flex-direction: column;
