@@ -305,8 +305,61 @@
     return inputArea;
   }
 
+  function updateChatWindow() {
+    console.log('Updating chat window');
+    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+    if (messagesWrapper) {
+      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
+      messagesWrapper.innerHTML = '';
+      if (logoContainer) {
+        messagesWrapper.appendChild(logoContainer);
+      }
+      
+      messages.forEach(message => {
+        const messageElement = createMessageElement(message);
+        messagesWrapper.appendChild(messageElement);
+      });
+      
+      if (showInitialOptions) {
+        const optionsElement = createInitialOptions();
+        messagesWrapper.appendChild(optionsElement);
+      }
+      
+      if (showFollowUp) {
+        const followUpElement = document.createElement('div');
+        followUpElement.className = 'happyflops-initial-options';
+        
+        const yesButton = document.createElement('button');
+        yesButton.textContent = 'Ja';
+        yesButton.className = 'happyflops-option-button';
+        yesButton.addEventListener('click', () => handleFollowUpResponse(true));
+        
+        const noButton = document.createElement('button');
+        noButton.textContent = 'Nej';
+        noButton.className = 'happyflops-option-button';
+        noButton.addEventListener('click', () => handleFollowUpResponse(false));
+        
+        const humanSupportButton = document.createElement('button');
+        humanSupportButton.textContent = 'Prata med kundtjänst';
+        humanSupportButton.className = 'happyflops-option-button happyflops-human-support-button';
+        humanSupportButton.style.backgroundColor = '#4CAF50';  // Green color
+        humanSupportButton.addEventListener('click', switchToHumanSupport);
+        
+        followUpElement.appendChild(yesButton);
+        followUpElement.appendChild(noButton);
+        followUpElement.appendChild(humanSupportButton);
+        
+        messagesWrapper.appendChild(followUpElement);
+      }
+      
+      scrollToBottom();
+    }
+    console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
+  }
+
   function switchToHumanSupport() {
     isHumanMode = true;
+    showFollowUp = false;
     addMessage('Du har begärt att prata med kundtjänst. En medarbetare kommer att ansluta sig till chatten snart. Tack för din tålamod!', true);
     
     // Simulating a notification
@@ -320,10 +373,6 @@
         }
       });
     }
-    
-    // Update UI to reflect human mode
-    updateChatWindow();
-  }
 
   async function sendMessage(text) {
     console.log('Sending message:', text);
