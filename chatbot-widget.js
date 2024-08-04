@@ -8,6 +8,7 @@
   let isLoading = false;
   let showInitialOptions = false;
   let showFollowUp = false;
+  let isHumanMode = false;  // New variable to track if we're in human mode
   
   const config = {
     headerText: 'Vanbruun AI',
@@ -132,7 +133,6 @@
     };
   }
 
-  // Debounced version of sendConversationToAzure
   const debouncedSendConversationToAzure = debounce(async (messages) => {
     const url = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation';
     const payload = {
@@ -161,14 +161,14 @@
     } catch (error) {
       console.error('Error storing conversation:', error);
     }
-  }, 2000); // Debounce for 2 seconds
+  }, 2000);
 
-function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
   
   function createChatLogo() {
     const logoContainer = document.createElement('div');
@@ -291,92 +291,130 @@ function generateUUID() {
       }
     });
 
+    // Add "Prata med kundtjänst" button
+    const humanSupportButton = document.createElement('button');
+    humanSupportButton.textContent = 'Prata med kundtjänst';
+    humanSupportButton.className = 'happyflops-human-support-button';
+    humanSupportButton.style.backgroundColor = '#4CAF50';  // Green color
+    humanSupportButton.addEventListener('click', switchToHumanSupport);
+
     inputArea.appendChild(input);
     inputArea.appendChild(sendButton);
+    inputArea.appendChild(humanSupportButton);
 
     return inputArea;
   }
 
-async function sendMessage(text) {
-  console.log('Sending message:', text);
-  if (text.trim() === '' || isLoading) return;
-
-  const currentTime = new Date().toISOString();
-
-  addMessage(text, false, false, currentTime);
-  showInitialOptions = false;
-  showFollowUp = false;
-
-  conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
-
-  // Send conversation to Azure after user message
-  debouncedSendConversationToAzure(messages);
-
-  isLoading = true;
-  addMessage('', true, true, currentTime);
-
-  try {
-    const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
-    const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
-
-    console.log('Full query:', fullQuery);
-
-    const encodedQuery = encodeURIComponent(fullQuery);
-    const url = `${API_BASE_URL}?question=${encodedQuery}`;
-
-    console.log('Request URL:', url);
-
-    const response = await fetch(url, {
-      method: 'GET',
-    });
-
-    const data = await response.json();
-    console.log('Raw API response:', data);
-
-    const answer = data.answer;
-    console.log('Extracted answer:', answer);
-
-    const responseTime = new Date().toISOString();
-    conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
-
-    messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+  function switchToHumanSupport() {
+    isHumanMode = true;
+    addMessage('Du har begärt att prata med kundtjänst. En medarbetare kommer att ansluta sig till chatten snart. Tack för din tålamod!', true);
     
-    // Send conversation to Azure after AI response
-    debouncedSendConversationToAzure(messages);
-
-    if (!answer.includes('?') && Math.random() < 0.5) {
-      setTimeout(() => {
-        const followUpTime = new Date().toISOString();
-        addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
-        showFollowUp = true;
-        updateChatWindow();
-      }, 1000);
-    } else {
-      showFollowUp = false;
+    // Simulating a notification
+    if ('Notification' in window) {
+      Notification.requestPermission().then(function (permission) {
+        if (permission === 'granted') {
+          new Notification('Kundtjänst kommer snart', {
+            body: 'En medarbetare kommer att ansluta sig till chatten inom kort.',
+            icon: config.logoUrl
+          });
+        }
+      });
     }
-
-  } catch (error) {
-    console.error('Error fetching bot response:', error);
-    const errorTime = new Date().toISOString();
-    messages[messages.length - 1] = { 
-      text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
-      isBot: true, 
-      isLoading: false,
-      timestamp: errorTime
-    };
-  } finally {
-    isLoading = false;
+    
+    // Update UI to reflect human mode
     updateChatWindow();
   }
-}
 
-// Updated addMessage function to include timestamp
+  async function sendMessage(text) {
+    console.log('Sending message:', text);
+    if (text.trim() === '' || isLoading) return;
+
+    const currentTime = new Date().toISOString();
+
+    addMessage(text, false, false, currentTime);
+    showInitialOptions = false;
+    showFollowUp = false;
+
+    conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
+
+    // Send conversation to Azure after user message
+    debouncedSendConversationToAzure(messages);
+
+    if (isHumanMode) {
+      // Simulate human response (in a real scenario, this would connect to a human agent)
+      setTimeout(() => {
+        const humanResponse = "Tack för ditt meddelande. En kundtjänstmedarbetare kommer att svara så snart som möjligt.";
+        const responseTime = new Date().toISOString();
+        addMessage(humanResponse, true, false, responseTime);
+        conversationHistory.push({"role": "assistant", "content": humanResponse, "timestamp": responseTime});
+        debouncedSendConversationToAzure(messages);
+      }, 1000);
+      return;
+    }
+
+    isLoading = true;
+    addMessage('', true, true, currentTime);
+
+    try {
+      const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+      const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
+
+      console.log('Full query:', fullQuery);
+
+      const encodedQuery = encodeURIComponent(fullQuery);
+      const url = `${API_BASE_URL}?question=${encodedQuery}`;
+
+      console.log('Request URL:', url);
+
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+
+      const data = await response.json();
+      console.log('Raw API response:', data);
+
+      const answer = data.answer;
+      console.log('Extracted answer:', answer);
+
+      const responseTime = new Date().toISOString();
+      conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
+
+      messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+      
+      // Send conversation to Azure after AI response
+      debouncedSendConversationToAzure(messages);
+
+      if (!answer.includes('?') && Math.random() < 0.5) {
+        setTimeout(() => {
+          const followUpTime = new Date().toISOString();
+          addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
+          showFollowUp = true;
+          updateChatWindow();
+        }, 1000);
+      } else {
+        showFollowUp = false;
+      }
+
+    } catch (error) {
+      console.error('Error fetching bot response:', error);
+      const errorTime = new Date().toISOString();
+      messages[messages.length - 1] = { 
+        text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
+        isBot: true, 
+        isLoading: false,
+        timestamp: errorTime
+      };
+    } finally {
+      isLoading = false;
+      updateChatWindow();
+    }
+  }
+
   function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString()) {
     console.log('Adding message:', { text, isBot, isLoading, timestamp });
     messages.push({ text, isBot, isLoading, timestamp });
     updateChatWindow();
   }
-
 
   function handleFollowUpResponse(isYes) {
     addMessage(isYes ? "Ja" : "Nej", false);
@@ -414,12 +452,12 @@ async function sendMessage(text) {
         messagesWrapper.appendChild(messageElement);
       });
       
-      if (showInitialOptions) {
+      if (showInitialOptions && !isHumanMode) {
         const optionsElement = createInitialOptions();
         messagesWrapper.appendChild(optionsElement);
       }
       
-      if (showFollowUp) {
+      if (showFollowUp && !isHumanMode) {
         const followUpElement = document.createElement('div');
         followUpElement.className = 'happyflops-initial-options';
         
