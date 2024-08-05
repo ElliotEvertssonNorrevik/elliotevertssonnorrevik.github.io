@@ -351,16 +351,22 @@
   }
 
   function handleFollowUpResponse(response) {
+    // Immediately hide the follow-up buttons
+    showFollowUp = false;
+    updateChatWindow();
+  
     if (response === "customer_service") {
       fetchAndDisplayConversation();
     } else {
-      addMessage(response === "yes" ? "Ja" : "Nej", false);
+      const userResponse = response === "yes" ? "Ja" : "Nej";
+      addMessage(userResponse, false);
+      
+      // Use setTimeout to add a small delay before the bot responds
       setTimeout(() => {
         addMessage(
           response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!", 
           true
         );
-        showFollowUp = false;
         updateChatWindow();
       }, 500);
     }
