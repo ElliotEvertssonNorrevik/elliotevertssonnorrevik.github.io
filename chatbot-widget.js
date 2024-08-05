@@ -126,51 +126,60 @@
     return chatWindow;
   }
 
-  function createChatHeader() {
-    const header = document.createElement('div');
-    header.className = 'happyflops-chat-header';
-    header.style.backgroundColor = config.mainColor;
-  
-    const headerContent = document.createElement('div');
-    headerContent.className = 'happyflops-header-content';
-  
-    const headerImage = document.createElement('img');
-    headerImage.src = config.logoUrl;
-    headerImage.alt = 'Happyflops';
-    headerImage.className = 'happyflops-header-image';
-  
-    const headerText = document.createElement('div');
-    headerText.className = 'happyflops-header-text';
-  
-    const title = document.createElement('h1');
-    title.textContent = config.headerText;
-  
-    const subtitle = document.createElement('p');
-    subtitle.textContent = config.subHeaderText;
-  
-    headerText.appendChild(title);
-    headerText.appendChild(subtitle);
-  
-    headerContent.appendChild(headerImage);
-    headerContent.appendChild(headerText);
-  
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.className = 'happyflops-header-buttons';
+function createChatHeader() {
+  const header = document.createElement('div');
+  header.className = 'happyflops-chat-header';
+  header.style.backgroundColor = config.mainColor;
 
-    const reloadButton = document.createElement('button');
-    reloadButton.innerHTML = '&#x21bb;'; // Reload symbol
-    reloadButton.className = 'happyflops-reload-button';
-    reloadButton.title = 'Restart conversation';
-    reloadButton.addEventListener('click', restartConversation);
+  const headerContent = document.createElement('div');
+  headerContent.className = 'happyflops-header-content';
 
-    const closeButton = document.createElement('button');
-    closeButton.textContent = '×';
-    closeButton.className = 'happyflops-close-button';
-    closeButton.addEventListener('click', () => {
-      isChatOpen = false;
-      saveConversation();
-      renderChatbot();
-    });
+  const headerImage = document.createElement('img');
+  headerImage.src = config.logoUrl;
+  headerImage.alt = 'Happyflops';
+  headerImage.className = 'happyflops-header-image';
+
+  const headerText = document.createElement('div');
+  headerText.className = 'happyflops-header-text';
+
+  const title = document.createElement('h1');
+  title.textContent = config.headerText;
+
+  const subtitle = document.createElement('p');
+  subtitle.textContent = config.subHeaderText;
+
+  headerText.appendChild(title);
+  headerText.appendChild(subtitle);
+
+  headerContent.appendChild(headerImage);
+  headerContent.appendChild(headerText);
+
+  const buttonsContainer = document.createElement('div');
+  buttonsContainer.className = 'happyflops-header-buttons';
+
+  const reloadButton = document.createElement('button');
+  reloadButton.innerHTML = '&#x21bb;'; // Reload symbol
+  reloadButton.className = 'happyflops-button happyflops-reload-button';
+  reloadButton.title = 'Restart conversation';
+  reloadButton.addEventListener('click', restartConversation);
+
+  const closeButton = document.createElement('button');
+  closeButton.textContent = '×';
+  closeButton.className = 'happyflops-button happyflops-close-button';
+  closeButton.addEventListener('click', () => {
+    isChatOpen = false;
+    saveConversation();
+    renderChatbot();
+  });
+
+  buttonsContainer.appendChild(reloadButton);
+  buttonsContainer.appendChild(closeButton);
+
+  header.appendChild(headerContent);
+  header.appendChild(buttonsContainer);
+
+  return header;
+}
   
     buttonsContainer.appendChild(reloadButton);
     buttonsContainer.appendChild(closeButton);
