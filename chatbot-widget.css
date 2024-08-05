@@ -199,19 +199,46 @@
 
 .happyflops-input-area {
   display: flex;
+  align-items: center;
   padding: 10px;
-  background-color: #fff;
-  border-top: 1px solid #eee;
+}
+
+.happyflops-emoji-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin-right: 5px;
 }
 
 .happyflops-input {
   flex-grow: 1;
-  border: 1px solid #e0e0e0;
-  background-color: #fff;
-  border-radius: 20px 0 0 20px;
-  padding: 10px 15px;
-  font-size: 14px;
-  margin-right: 0;
+  margin-right: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.happyflops-emoji-picker {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 200px;
+}
+
+.happyflops-emoji-picker button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
 }
 
 .happyflops-send-button {
