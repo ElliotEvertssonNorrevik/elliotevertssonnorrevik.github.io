@@ -91,7 +91,30 @@
   align-items: center;
 }
 
-.happyflops-reload-button,
+.happyflops-header-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.happyflops-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.happyflops-button:hover {
+  opacity: 0.8;
+}
+
+.happyflops-reload-button {
+  font-size: 20px; /* Slightly smaller than the close button */
+}
+
 .happyflops-close-button {
   background: none;
   border: none;
