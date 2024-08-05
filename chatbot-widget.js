@@ -27,6 +27,8 @@
     localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
     localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
     localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
+    // Save the last message to determine which buttons to show
+    localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
   }
 
 
@@ -37,6 +39,7 @@
     const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
     const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
     const storedIsChatOpen = localStorage.getItem('vanbruunChatIsOpen');
+    const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
 
     if (storedMessages) {
       messages = JSON.parse(storedMessages);
@@ -58,24 +61,15 @@
     if (storedIsChatOpen !== null) {
       isChatOpen = JSON.parse(storedIsChatOpen);
     }
+    if (storedLastMessage) {
+      const lastMessage = JSON.parse(storedLastMessage);
+      if (lastMessage && lastMessage.isBot && !lastMessage.text.includes('?')) {
+        showFollowUp = true;
+      }
+    }
 
     isInitialized = messages.length > 0;
   }
-
-  function createChatbotUI() {
-    const chatbotContainer = document.createElement('div');
-    chatbotContainer.id = 'happyflops-chatbot';
-    chatbotContainer.style.position = 'fixed';
-    chatbotContainer.style.bottom = '20px';
-    chatbotContainer.style.right = '20px';
-    chatbotContainer.style.fontFamily = 'Arial, sans-serif';
-
-    document.body.appendChild(chatbotContainer);
-
-    loadConversation();
-    renderChatbot();
-  }
-
   function renderChatbot() {
     const chatbotContainer = document.getElementById('happyflops-chatbot');
     chatbotContainer.innerHTML = '';
@@ -534,34 +528,42 @@ function createChatHeader() {
       }
       
       if (showFollowUp) {
-        const followUpElement = document.createElement('div');
-        followUpElement.className = 'happyflops-initial-options';
-        
-        const yesButton = document.createElement('button');
-        yesButton.textContent = 'Ja';
-        yesButton.className = 'happyflops-option-button';
-        yesButton.addEventListener('click', () => handleFollowUpResponse("yes"));
-        
-        const noButton = document.createElement('button');
-        noButton.textContent = 'Nej';
-        noButton.className = 'happyflops-option-button';
-        noButton.addEventListener('click', () => handleFollowUpResponse("no"));
-        
-        const customerServiceButton = document.createElement('button');
-        customerServiceButton.textContent = 'Prata med kundtjänst';
-        customerServiceButton.className = 'happyflops-option-button';
-        customerServiceButton.addEventListener('click', () => handleFollowUpResponse("customer_service"));
-        
-        followUpElement.appendChild(yesButton);
-        followUpElement.appendChild(noButton);
-        followUpElement.appendChild(customerServiceButton);
+        const followUpElement = createFollowUpButtons();
         messagesWrapper.appendChild(followUpElement);
       }
       
       scrollToBottom();
     }
     console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
+    saveConversation();  // Save the state after updating
   }
+
+  function createFollowUpButtons() {
+    const followUpElement = document.createElement('div');
+    followUpElement.className = 'happyflops-initial-options';
+    
+    const yesButton = document.createElement('button');
+    yesButton.textContent = 'Ja';
+    yesButton.className = 'happyflops-option-button';
+    yesButton.addEventListener('click', () => handleFollowUpResponse("yes"));
+    
+    const noButton = document.createElement('button');
+    noButton.textContent = 'Nej';
+    noButton.className = 'happyflops-option-button';
+    noButton.addEventListener('click', () => handleFollowUpResponse("no"));
+    
+    const customerServiceButton = document.createElement('button');
+    customerServiceButton.textContent = 'Prata med kundtjänst';
+    customerServiceButton.className = 'happyflops-option-button';
+    customerServiceButton.addEventListener('click', () => handleFollowUpResponse("customer_service"));
+    
+    followUpElement.appendChild(yesButton);
+    followUpElement.appendChild(noButton);
+    followUpElement.appendChild(customerServiceButton);
+
+    return followUpElement;
+  }
+
 
   function addMessageWithDelay(text, isBot, delay, callback) {
     addMessage('', isBot, true);
