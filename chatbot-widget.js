@@ -173,6 +173,11 @@
     const inputArea = document.createElement('div');
     inputArea.className = 'happyflops-input-area';
   
+    const emojiButton = document.createElement('button');
+    emojiButton.textContent = '😊';
+    emojiButton.className = 'happyflops-emoji-button';
+    emojiButton.addEventListener('click', toggleEmojiPicker);
+  
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
@@ -190,18 +195,77 @@
         input.value = '';
       }
     };
-
+  
     sendButton.addEventListener('click', handleSendMessage);
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         handleSendMessage();
       }
     });
-
+  
+    inputArea.appendChild(emojiButton);
     inputArea.appendChild(input);
     inputArea.appendChild(sendButton);
-
+  
     return inputArea;
+  }
+
+  function toggleEmojiPicker(event) {
+  event.stopPropagation();
+  const existingPicker = document.querySelector('.happyflops-emoji-picker');
+  
+  if (existingPicker) {
+    existingPicker.remove();
+    return;
+  }
+
+  const emojiPicker = document.createElement('div');
+  emojiPicker.className = 'happyflops-emoji-picker';
+  
+  const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
+  
+  emojis.forEach(emoji => {
+    const emojiButton = document.createElement('button');
+    emojiButton.textContent = emoji;
+    emojiButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const input = document.querySelector('.happyflops-input');
+      const startPos = input.selectionStart;
+      const endPos = input.selectionEnd;
+      input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos, input.value.length);
+      input.focus();
+      input.selectionStart = input.selectionEnd = startPos + emoji.length;
+    });
+    emojiPicker.appendChild(emojiButton);
+  });
+
+  const rect = event.target.getBoundingClientRect();
+  emojiPicker.style.position = 'fixed';
+  emojiPicker.style.left = `${rect.left}px`;
+  emojiPicker.style.bottom = `${window.innerHeight - rect.top}px`;
+
+  document.body.appendChild(emojiPicker);
+
+  function closeEmojiPicker(e) {
+    if (!emojiPicker.contains(e.target) && e.target !== event.target) {
+      emojiPicker.remove();
+      document.removeEventListener('click', closeEmojiPicker);
+    }
+  }
+
+  // Stäng emoji-väljaren när man klickar utanför den
+  setTimeout(() => {
+    document.addEventListener('click', closeEmojiPicker);
+  }, 0);
+
+  // Stäng emoji-väljaren när man scrollar
+  const chatWindow = document.querySelector('.happyflops-chat-window');
+    if (chatWindow) {
+      chatWindow.addEventListener('scroll', () => {
+        emojiPicker.remove();
+        document.removeEventListener('click', closeEmojiPicker);
+      }, { once: true });
+    }
   }
 
   function createMessageElement(message) {
