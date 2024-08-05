@@ -9,7 +9,6 @@
   let showInitialOptions = false;
   let showFollowUp = false;
   
-  
   const config = {
     headerText: 'Vanbruun AI',
     subHeaderText: 'Chatta med vår digitala assistent',
@@ -18,58 +17,20 @@
     launchAvatarUrl: 'https://i.ibb.co/DtZd3sB/Untitled-design-37.png'
   };
 
+  function createChatbotUI() {
+    const chatbotContainer = document.createElement('div');
+    chatbotContainer.id = 'happyflops-chatbot';
+    chatbotContainer.style.position = 'fixed';
+    chatbotContainer.style.bottom = '20px';
+    chatbotContainer.style.right = '20px';
+    chatbotContainer.style.fontFamily = 'Arial, sans-serif';
 
-  
-  function saveConversation() {
-    localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
-    localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
-    localStorage.setItem('vanbruunChatId', window.conversationId || '');
-    localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
-    localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
-    localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
-    // Save the last message to determine which buttons to show
-    localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
+    document.body.appendChild(chatbotContainer);
+
+    loadConversation();
+    renderChatbot();
   }
 
-
-  function loadConversation() {
-    const storedMessages = localStorage.getItem('vanbruunChatMessages');
-    const storedHistory = localStorage.getItem('vanbruunChatHistory');
-    const storedId = localStorage.getItem('vanbruunChatId');
-    const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
-    const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
-    const storedIsChatOpen = localStorage.getItem('vanbruunChatIsOpen');
-    const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
-
-    if (storedMessages) {
-      messages = JSON.parse(storedMessages);
-    }
-    if (storedHistory) {
-      conversationHistory = JSON.parse(storedHistory);
-    }
-    if (storedId) {
-      window.conversationId = storedId;
-    } else {
-      window.conversationId = generateUUID();
-    }
-    if (storedShowInitialOptions !== null) {
-      showInitialOptions = JSON.parse(storedShowInitialOptions);
-    }
-    if (storedShowFollowUp !== null) {
-      showFollowUp = JSON.parse(storedShowFollowUp);
-    }
-    if (storedIsChatOpen !== null) {
-      isChatOpen = JSON.parse(storedIsChatOpen);
-    }
-    if (storedLastMessage) {
-      const lastMessage = JSON.parse(storedLastMessage);
-      if (lastMessage && lastMessage.isBot && !lastMessage.text.includes('?')) {
-        showFollowUp = true;
-      }
-    }
-
-    isInitialized = messages.length > 0;
-  }
   function renderChatbot() {
     const chatbotContainer = document.getElementById('happyflops-chatbot');
     chatbotContainer.innerHTML = '';
@@ -83,7 +44,6 @@
       chatbotContainer.appendChild(launchButton);
     }
   }
-
 
   function createLaunchButton() {
     const button = document.createElement('button');
@@ -120,60 +80,51 @@
     return chatWindow;
   }
 
-function createChatHeader() {
-  const header = document.createElement('div');
-  header.className = 'happyflops-chat-header';
-  header.style.backgroundColor = config.mainColor;
+  function createChatHeader() {
+    const header = document.createElement('div');
+    header.className = 'happyflops-chat-header';
+    header.style.backgroundColor = config.mainColor;
+  
+    const headerContent = document.createElement('div');
+    headerContent.className = 'happyflops-header-content';
+  
+    const headerImage = document.createElement('img');
+    headerImage.src = config.logoUrl;
+    headerImage.alt = 'Happyflops';
+    headerImage.className = 'happyflops-header-image';
+  
+    const headerText = document.createElement('div');
+    headerText.className = 'happyflops-header-text';
+  
+    const title = document.createElement('h1');
+    title.textContent = config.headerText;
+  
+    const subtitle = document.createElement('p');
+    subtitle.textContent = config.subHeaderText;
+  
+    headerText.appendChild(title);
+    headerText.appendChild(subtitle);
+  
+    headerContent.appendChild(headerImage);
+    headerContent.appendChild(headerText);
+  
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'happyflops-header-buttons';
 
-  const headerContent = document.createElement('div');
-  headerContent.className = 'happyflops-header-content';
+    const reloadButton = document.createElement('button');
+    reloadButton.innerHTML = '&#x21bb;'; // Reload symbol
+    reloadButton.className = 'happyflops-button happyflops-reload-button';
+    reloadButton.title = 'Restart conversation';
+    reloadButton.addEventListener('click', restartConversation);
 
-  const headerImage = document.createElement('img');
-  headerImage.src = config.logoUrl;
-  headerImage.alt = 'Happyflops';
-  headerImage.className = 'happyflops-header-image';
-
-  const headerText = document.createElement('div');
-  headerText.className = 'happyflops-header-text';
-
-  const title = document.createElement('h1');
-  title.textContent = config.headerText;
-
-  const subtitle = document.createElement('p');
-  subtitle.textContent = config.subHeaderText;
-
-  headerText.appendChild(title);
-  headerText.appendChild(subtitle);
-
-  headerContent.appendChild(headerImage);
-  headerContent.appendChild(headerText);
-
-  const buttonsContainer = document.createElement('div');
-  buttonsContainer.className = 'happyflops-header-buttons';
-
-  const reloadButton = document.createElement('button');
-  reloadButton.innerHTML = '&#x21bb;'; // Reload symbol
-  reloadButton.className = 'happyflops-button happyflops-reload-button';
-  reloadButton.title = 'Restart conversation';
-  reloadButton.addEventListener('click', restartConversation);
-
-  const closeButton = document.createElement('button');
-  closeButton.textContent = '×';
-  closeButton.className = 'happyflops-button happyflops-close-button';
-  closeButton.addEventListener('click', () => {
-    isChatOpen = false;
-    saveConversation();
-    renderChatbot();
-  });
-
-  buttonsContainer.appendChild(reloadButton);
-  buttonsContainer.appendChild(closeButton);
-
-  header.appendChild(headerContent);
-  header.appendChild(buttonsContainer);
-
-  return header;
-}
+    const closeButton = document.createElement('button');
+    closeButton.textContent = '×';
+    closeButton.className = 'happyflops-button happyflops-close-button';
+    closeButton.addEventListener('click', () => {
+      isChatOpen = false;
+      saveConversation();
+      renderChatbot();
+    });
   
     buttonsContainer.appendChild(reloadButton);
     buttonsContainer.appendChild(closeButton);
@@ -182,94 +133,6 @@ function createChatHeader() {
     header.appendChild(buttonsContainer);
   
     return header;
-  }
-
-  function restartConversation() {
-    // Clear all conversation data
-    messages = [];
-    conversationHistory = [];
-    isInitialized = false;
-    showInitialOptions = false;
-    showFollowUp = false;
-    window.conversationId = generateUUID();
-
-    // Clear localStorage
-    localStorage.removeItem('vanbruunChatMessages');
-    localStorage.removeItem('vanbruunChatHistory');
-    localStorage.removeItem('vanbruunChatId');
-    localStorage.removeItem('vanbruunChatShowInitialOptions');
-    localStorage.removeItem('vanbruunChatShowFollowUp');
-
-    // Reinitialize the chat
-    initializeChat();
-  }
-
-  function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  }
-
-  const debouncedSendConversationToAzure = debounce(async (messages) => {
-    const url = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation';
-    const payload = {
-      conversationId: window.conversationId || (window.conversationId = generateUUID()),
-      messages: messages.map(msg => ({
-        text: msg.text,
-        isBot: msg.isBot,
-        timestamp: msg.timestamp
-      }))
-    };
-  
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      console.log('Conversation stored successfully');
-    } catch (error) {
-      console.error('Error storing conversation:', error);
-    }
-  }, 2000);
-
-  function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-  
-  function createChatLogo() {
-    const logoContainer = document.createElement('div');
-    logoContainer.className = 'happyflops-logo-container';
-  
-    const logo = document.createElement('img');
-    logo.src = config.logoUrl;
-    logo.alt = 'Happyflops Logo';
-    logo.className = 'happyflops-logo';
-  
-    const logoText = document.createElement('div');
-    logoText.className = 'happyflops-logo-text';
-    logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
-  
-    logoContainer.appendChild(logo);
-    logoContainer.appendChild(logoText);
-  
-    return logoContainer;
   }
 
   function createMessagesContainer() {
@@ -287,62 +150,23 @@ function createChatHeader() {
     return container;
   }
 
-  function formatMessage(message) {
-    console.log('Formatting message:', message);
+  function createChatLogo() {
+    const logoContainer = document.createElement('div');
+    logoContainer.className = 'happyflops-logo-container';
   
-    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
-    
-    message = message.replace(markdownLinkRegex, (match, text, url) => {
-      console.log('Replacing Markdown link:', match, 'with HTML link');
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-    });
+    const logo = document.createElement('img');
+    logo.src = config.logoUrl;
+    logo.alt = 'Happyflops Logo';
+    logo.className = 'happyflops-logo';
   
-    console.log('Formatted message:', message);
-    return message;
-  }
-
-  function createMessageElement(message) {
-    console.log('Creating message element for:', message);
-    const messageElement = document.createElement('div');
-    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+    const logoText = document.createElement('div');
+    logoText.className = 'happyflops-logo-text';
+    logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
   
-    const textElement = document.createElement('div');
-    textElement.className = 'happyflops-message-text';
-    
-    if (message.isLoading) {
-      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
-    } else if (message.isBot) {
-      const formattedMessage = formatMessage(message.text);
-      console.log('Formatted bot message:', formattedMessage);
-      textElement.innerHTML = formattedMessage;
-    } else {
-      textElement.textContent = message.text;
-    }
+    logoContainer.appendChild(logo);
+    logoContainer.appendChild(logoText);
   
-    messageElement.appendChild(textElement);
-  
-    console.log('Created message element:', messageElement.outerHTML);
-    return messageElement;
-  }
-
-  function createInitialOptions() {
-    const optionsElement = document.createElement('div');
-    optionsElement.className = 'happyflops-initial-options';
-
-    const options = ['Spåra min order', 'Boka konsultation'];
-    options.forEach(option => {
-      const button = document.createElement('button');
-      button.textContent = option;
-      button.className = 'happyflops-option-button';
-      button.addEventListener('click', () => {
-        sendMessage(option);
-        showInitialOptions = false;
-        updateChatWindow();
-      });
-      optionsElement.appendChild(button);
-    });
-
-    return optionsElement;
+    return logoContainer;
   }
 
   function createInputArea() {
@@ -380,8 +204,84 @@ function createChatHeader() {
     return inputArea;
   }
 
+  function createMessageElement(message) {
+    const messageElement = document.createElement('div');
+    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+  
+    const textElement = document.createElement('div');
+    textElement.className = 'happyflops-message-text';
+    
+    if (message.isLoading) {
+      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
+    } else if (message.isBot) {
+      const formattedMessage = formatMessage(message.text);
+      textElement.innerHTML = formattedMessage;
+    } else {
+      textElement.textContent = message.text;
+    }
+  
+    messageElement.appendChild(textElement);
+  
+    return messageElement;
+  }
+
+  function formatMessage(message) {
+    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
+    
+    message = message.replace(markdownLinkRegex, (match, text, url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    });
+  
+    return message;
+  }
+
+  function createInitialOptions() {
+    const optionsElement = document.createElement('div');
+    optionsElement.className = 'happyflops-initial-options';
+
+    const options = ['Spåra min order', 'Boka konsultation'];
+    options.forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      button.className = 'happyflops-option-button';
+      button.addEventListener('click', () => {
+        sendMessage(option);
+        showInitialOptions = false;
+        updateChatWindow();
+      });
+      optionsElement.appendChild(button);
+    });
+
+    return optionsElement;
+  }
+
+  function createFollowUpButtons() {
+    const followUpElement = document.createElement('div');
+    followUpElement.className = 'happyflops-initial-options';
+    
+    const yesButton = document.createElement('button');
+    yesButton.textContent = 'Ja';
+    yesButton.className = 'happyflops-option-button';
+    yesButton.addEventListener('click', () => handleFollowUpResponse("yes"));
+    
+    const noButton = document.createElement('button');
+    noButton.textContent = 'Nej';
+    noButton.className = 'happyflops-option-button';
+    noButton.addEventListener('click', () => handleFollowUpResponse("no"));
+    
+    const customerServiceButton = document.createElement('button');
+    customerServiceButton.textContent = 'Prata med kundtjänst';
+    customerServiceButton.className = 'happyflops-option-button';
+    customerServiceButton.addEventListener('click', () => handleFollowUpResponse("customer_service"));
+    
+    followUpElement.appendChild(yesButton);
+    followUpElement.appendChild(noButton);
+    followUpElement.appendChild(customerServiceButton);
+
+    return followUpElement;
+  }
+
   async function sendMessage(text) {
-    console.log('Sending message:', text);
     if (text.trim() === '' || isLoading) return;
 
     const currentTime = new Date().toISOString();
@@ -401,22 +301,15 @@ function createChatHeader() {
       const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
       const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
 
-      console.log('Full query:', fullQuery);
-
       const encodedQuery = encodeURIComponent(fullQuery);
       const url = `${API_BASE_URL}?question=${encodedQuery}`;
-
-      console.log('Request URL:', url);
 
       const response = await fetch(url, {
         method: 'GET',
       });
 
       const data = await response.json();
-      console.log('Raw API response:', data);
-
       const answer = data.answer;
-      console.log('Extracted answer:', answer);
 
       const responseTime = new Date().toISOString();
       conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
@@ -452,7 +345,6 @@ function createChatHeader() {
   }
 
   function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString()) {
-    console.log('Adding message:', { text, isBot, isLoading, timestamp });
     messages.push({ text, isBot, isLoading, timestamp });
     updateChatWindow();
     saveConversation();
@@ -498,17 +390,7 @@ function createChatHeader() {
     }
   }
 
-  function scrollToBottom() {
-    const messagesContainer = document.querySelector('.happyflops-messages-container');
-    if (messagesContainer) {
-      setTimeout(() => {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }, 100);
-    }
-  }
-
   function updateChatWindow() {
-    console.log('Updating chat window');
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
       const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
@@ -526,7 +408,6 @@ function createChatHeader() {
         const optionsElement = createInitialOptions();
         messagesWrapper.appendChild(optionsElement);
       }
-      
       if (showFollowUp) {
         const followUpElement = createFollowUpButtons();
         messagesWrapper.appendChild(followUpElement);
@@ -534,36 +415,17 @@ function createChatHeader() {
       
       scrollToBottom();
     }
-    console.log('Chat window updated, current messages:', JSON.stringify(messages, null, 2));
-    saveConversation();  // Save the state after updating
+    saveConversation();
   }
 
-  function createFollowUpButtons() {
-    const followUpElement = document.createElement('div');
-    followUpElement.className = 'happyflops-initial-options';
-    
-    const yesButton = document.createElement('button');
-    yesButton.textContent = 'Ja';
-    yesButton.className = 'happyflops-option-button';
-    yesButton.addEventListener('click', () => handleFollowUpResponse("yes"));
-    
-    const noButton = document.createElement('button');
-    noButton.textContent = 'Nej';
-    noButton.className = 'happyflops-option-button';
-    noButton.addEventListener('click', () => handleFollowUpResponse("no"));
-    
-    const customerServiceButton = document.createElement('button');
-    customerServiceButton.textContent = 'Prata med kundtjänst';
-    customerServiceButton.className = 'happyflops-option-button';
-    customerServiceButton.addEventListener('click', () => handleFollowUpResponse("customer_service"));
-    
-    followUpElement.appendChild(yesButton);
-    followUpElement.appendChild(noButton);
-    followUpElement.appendChild(customerServiceButton);
-
-    return followUpElement;
+  function scrollToBottom() {
+    const messagesContainer = document.querySelector('.happyflops-messages-container');
+    if (messagesContainer) {
+      setTimeout(() => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }, 100);
+    }
   }
-
 
   function addMessageWithDelay(text, isBot, delay, callback) {
     addMessage('', isBot, true);
@@ -599,12 +461,20 @@ function createChatHeader() {
     localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
     localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
     localStorage.setItem('vanbruunChatId', window.conversationId || '');
+    localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
+    localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
+    localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
+    localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
   }
 
   function loadConversation() {
     const storedMessages = localStorage.getItem('vanbruunChatMessages');
     const storedHistory = localStorage.getItem('vanbruunChatHistory');
     const storedId = localStorage.getItem('vanbruunChatId');
+    const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
+    const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
+    const storedIsChatOpen = localStorage.getItem('vanbruunChatIsOpen');
+    const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
 
     if (storedMessages) {
       messages = JSON.parse(storedMessages);
@@ -617,9 +487,91 @@ function createChatHeader() {
     } else {
       window.conversationId = generateUUID();
     }
+    if (storedShowInitialOptions !== null) {
+      showInitialOptions = JSON.parse(storedShowInitialOptions);
+    }
+    if (storedShowFollowUp !== null) {
+      showFollowUp = JSON.parse(storedShowFollowUp);
+    }
+    if (storedIsChatOpen !== null) {
+      isChatOpen = JSON.parse(storedIsChatOpen);
+    }
+    if (storedLastMessage) {
+      const lastMessage = JSON.parse(storedLastMessage);
+      if (lastMessage && lastMessage.isBot && !lastMessage.text.includes('?')) {
+        showFollowUp = true;
+      }
+    }
 
     isInitialized = messages.length > 0;
   }
+
+  function restartConversation() {
+    messages = [];
+    conversationHistory = [];
+    isInitialized = false;
+    showInitialOptions = false;
+    showFollowUp = false;
+    window.conversationId = generateUUID();
+
+    localStorage.removeItem('vanbruunChatMessages');
+    localStorage.removeItem('vanbruunChatHistory');
+    localStorage.removeItem('vanbruunChatId');
+    localStorage.removeItem('vanbruunChatShowInitialOptions');
+    localStorage.removeItem('vanbruunChatShowFollowUp');
+    localStorage.removeItem('vanbruunChatLastMessage');
+
+    initializeChat();
+  }
+
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  const debouncedSendConversationToAzure = debounce(async (messages) => {
+    const url = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation';
+    const payload = {
+      conversationId: window.conversationId || (window.conversationId = generateUUID()),
+      messages: messages.map(msg => ({
+        text: msg.text,
+        isBot: msg.isBot,
+        timestamp: msg.timestamp
+      }))
+    };
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      console.log('Conversation stored successfully');
+    } catch (error) {
+      console.error('Error storing conversation:', error);
+    }
+  }, 2000);
 
   createChatbotUI();
 
@@ -629,8 +581,6 @@ function createChatHeader() {
     renderChatbot();
     initializeChat();
   };
-
-  createChatbotUI();
 
   console.log('Chatbot script loaded and initialized');
 })();
