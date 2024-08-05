@@ -225,15 +225,23 @@
     return messageElement;
   }
 
-  function formatMessage(message) {
-    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
-    
-    message = message.replace(markdownLinkRegex, (match, text, url) => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-    });
+function formatMessage(message) {
+  // Regex för att matcha e-postadresser
+  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
   
-    return message;
-  }
+  // Ersätt e-postadresser med klickbara länkar
+  message = message.replace(emailRegex, (email) => {
+    return `<a href="mailto:${email}" target="_blank" rel="noopener noreferrer">${email}</a>`;
+  });
+
+  // Befintlig kod för markdown-länkar
+  const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
+  message = message.replace(markdownLinkRegex, (match, text, url) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+  });
+
+  return message;
+}
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
