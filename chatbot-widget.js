@@ -173,18 +173,15 @@
     const inputArea = document.createElement('div');
     inputArea.className = 'happyflops-input-area';
   
-    const inputWrapper = document.createElement('div');
-    inputWrapper.className = 'happyflops-input-wrapper';
+    const emojiButton = document.createElement('button');
+    emojiButton.textContent = '😊';
+    emojiButton.className = 'happyflops-emoji-button';
+    emojiButton.addEventListener('click', toggleEmojiPicker);
   
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
-  
-    const emojiButton = document.createElement('button');
-    emojiButton.innerHTML = '😊'; // Du kan ersätta detta med en bild om du föredrar
-    emojiButton.className = 'happyflops-emoji-button';
-    emojiButton.addEventListener('click', toggleEmojiPicker);
   
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
@@ -206,13 +203,13 @@
       }
     });
   
-    inputWrapper.appendChild(input);
-    inputWrapper.appendChild(emojiButton);
-    inputArea.appendChild(inputWrapper);
+    inputArea.appendChild(emojiButton);
+    inputArea.appendChild(input);
     inputArea.appendChild(sendButton);
   
     return inputArea;
   }
+
   function toggleEmojiPicker(event) {
   event.stopPropagation();
   const existingPicker = document.querySelector('.happyflops-emoji-picker');
