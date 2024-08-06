@@ -289,96 +289,114 @@ function formatMessage(message) {
     return followUpElement;
   }
 
+  function handleFollowUpResponse(response) {
+    showFollowUp = false;
+    updateChatWindow();
+  
+    const currentTime = new Date().toISOString();
+    let userResponse = '';
+  
+    if (response === "customer_service") {
+      userResponse = "Prata med kundtjänst";
+      addMessage(userResponse, false, false, currentTime);
+      conversationHistory.push({"role": "user", "content": userResponse, "timestamp": currentTime});
+      fetchAndDisplayConversation();
+    } else {
+      userResponse = response === "yes" ? "Ja" : "Nej";
+      addMessage(userResponse, false, false, currentTime);
+      conversationHistory.push({"role": "user", "content": userResponse, "timestamp": currentTime});
+      
+      setTimeout(() => {
+        const botResponseTime = new Date().toISOString();
+        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
+        addMessage(botResponse, true, false, botResponseTime);
+        conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": botResponseTime});
+        updateChatWindow();
+      }, 500);
+    }
+  
+    debouncedSendConversationToAzure(messages);
+  }
+
   async function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
-
+  
     const currentTime = new Date().toISOString();
-
+  
     addMessage(text, false, false, currentTime);
     showInitialOptions = false;
     showFollowUp = false;
-
+  
     conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
-
+  
     debouncedSendConversationToAzure(messages);
-
+  
     isLoading = true;
-    addMessage('', true, true, currentTime);
-
+    const loadingTime = new Date().toISOString();
+    addMessage('', true, true, loadingTime);
+  
     try {
       const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
       const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
-
+  
       const encodedQuery = encodeURIComponent(fullQuery);
       const url = `${API_BASE_URL}?question=${encodedQuery}`;
-
+  
       const response = await fetch(url, {
         method: 'GET',
       });
-
+  
       const data = await response.json();
       const answer = data.answer;
-
+  
       const responseTime = new Date().toISOString();
       conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
-
+  
       messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
       
       debouncedSendConversationToAzure(messages);
-
+  
       if (!answer.includes('?') && Math.random() < 0.5) {
         setTimeout(() => {
           const followUpTime = new Date().toISOString();
           addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
+          conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
           showFollowUp = true;
           updateChatWindow();
+          debouncedSendConversationToAzure(messages);
         }, 1000);
       } else {
         showFollowUp = false;
       }
-
+  
     } catch (error) {
       console.error('Error fetching bot response:', error);
       const errorTime = new Date().toISOString();
+      const errorMessage = 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se';
       messages[messages.length - 1] = { 
-        text: 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se', 
+        text: errorMessage, 
         isBot: true, 
         isLoading: false,
         timestamp: errorTime
       };
+      conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
+      debouncedSendConversationToAzure(messages);
     } finally {
       isLoading = false;
       updateChatWindow();
     }
   }
 
+
   function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString()) {
     messages.push({ text, isBot, isLoading, timestamp });
     updateChatWindow();
     saveConversation();
-  }
-
-  function handleFollowUpResponse(response) {
-    // Immediately hide the follow-up buttons
-    showFollowUp = false;
-    updateChatWindow();
-  
-    if (response === "customer_service") {
-      fetchAndDisplayConversation();
-    } else {
-      const userResponse = response === "yes" ? "Ja" : "Nej";
-      addMessage(userResponse, false);
-      
-      // Use setTimeout to add a small delay before the bot responds
-      setTimeout(() => {
-        addMessage(
-          response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!", 
-          true
-        );
-        updateChatWindow();
-      }, 500);
+    if (!isLoading) {
+      debouncedSendConversationToAzure(messages);
     }
   }
+
 
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
