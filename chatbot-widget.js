@@ -225,23 +225,20 @@
     return messageElement;
   }
 
-function formatMessage(message) {
-  // Regex för att matcha e-postadresser
-  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-  
-  // Ersätt e-postadresser med klickbara länkar
-  message = message.replace(emailRegex, (email) => {
-    return `<a href="mailto:${email}" target="_blank" rel="noopener noreferrer">${email}</a>`;
-  });
+  function formatMessage(message) {
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+    
+    message = message.replace(emailRegex, (email) => {
+      return `<a href="mailto:${email}" target="_blank" rel="noopener noreferrer">${email}</a>`;
+    });
 
-  // Befintlig kod för markdown-länkar
-  const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
-  message = message.replace(markdownLinkRegex, (match, text, url) => {
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-  });
+    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
+    message = message.replace(markdownLinkRegex, (match, text, url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    });
 
-  return message;
-}
+    return message;
+  }
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
@@ -280,40 +277,50 @@ function formatMessage(message) {
       button.addEventListener('click', () => handleFollowUpResponse(option.response));
       followUpElement.appendChild(button);
     });
-  
+
     return followUpElement;
   }
-
 
   function handleFollowUpResponse(response) {
     showFollowUp = false;
     updateChatWindow();
-  
+
     const currentTime = new Date().toISOString();
     let userResponse = '';
-  
-    if (response === "customer_service") {
-      userResponse = "Prata med kundtjänst";
-    } else {
-      userResponse = response === "yes" ? "Ja" : "Nej";
+
+    switch(response) {
+      case 'yes':
+        userResponse = 'Ja';
+        break;
+      case 'no':
+        userResponse = 'Nej';
+        break;
+      case 'customer_service':
+        userResponse = 'Prata med kundtjänst';
+        break;
     }
-  
+
     // Add user's response to messages and conversation history
     addMessage(userResponse, false, false, currentTime);
     conversationHistory.push({"role": "user", "content": userResponse, "timestamp": currentTime});
-  
-    if (response === "customer_service") {
+    
+    // Update the chat window to show the user's response immediately
+    updateChatWindow();
+
+    // Handle bot response based on user's choice
+    if (response === 'customer_service') {
       fetchAndDisplayConversation();
     } else {
       setTimeout(() => {
         const botResponseTime = new Date().toISOString();
-        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
+        const botResponse = response === 'yes' ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
         addMessage(botResponse, true, false, botResponseTime);
         conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": botResponseTime});
         updateChatWindow();
       }, 500);
     }
-  
+
+    // Send the updated conversation to Azure
     debouncedSendConversationToAzure(messages);
   }
 
@@ -386,7 +393,6 @@ function formatMessage(message) {
     }
   }
 
-
   function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString()) {
     messages.push({ text, isBot, isLoading, timestamp });
     updateChatWindow();
@@ -394,8 +400,6 @@ function formatMessage(message) {
     if (!isLoading) {
       debouncedSendConversationToAzure(messages);
     }
-  }
-
 
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
@@ -405,10 +409,11 @@ function formatMessage(message) {
       const response = await fetch(url);
       const data = await response.json();
 
-      messages = [];
-
+      // Append new messages instead of replacing all messages
       data.messages.forEach(msg => {
-        addMessage(msg.text, msg.isBot, false, msg.timestamp);
+        if (!messages.some(existingMsg => existingMsg.timestamp === msg.timestamp)) {
+          addMessage(msg.text, msg.isBot, false, msg.timestamp);
+        }
       });
 
       addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true);
