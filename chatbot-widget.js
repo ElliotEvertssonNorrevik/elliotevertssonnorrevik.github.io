@@ -298,14 +298,17 @@ function formatMessage(message) {
   
     if (response === "customer_service") {
       userResponse = "Prata med kundtjänst";
-      addMessage(userResponse, false, false, currentTime);
-      conversationHistory.push({"role": "user", "content": userResponse, "timestamp": currentTime});
-      fetchAndDisplayConversation();
     } else {
       userResponse = response === "yes" ? "Ja" : "Nej";
-      addMessage(userResponse, false, false, currentTime);
-      conversationHistory.push({"role": "user", "content": userResponse, "timestamp": currentTime});
-      
+    }
+  
+    // Add user's response to messages and conversation history
+    addMessage(userResponse, false, false, currentTime);
+    conversationHistory.push({"role": "user", "content": userResponse, "timestamp": currentTime});
+  
+    if (response === "customer_service") {
+      fetchAndDisplayConversation();
+    } else {
       setTimeout(() => {
         const botResponseTime = new Date().toISOString();
         const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
