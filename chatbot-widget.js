@@ -316,6 +316,30 @@ function formatMessage(message) {
   
     debouncedSendConversationToAzure(messages);
   }
+  
+  async function fetchAndDisplayConversation() {
+    const conversationId = window.conversationId || generateUUID();
+    const url = `https://rosterai-fresh-function.azurewebsites.net/api/getconversation?conversationId=${conversationId}`;
+  
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+  
+      messages = [];
+  
+      data.messages.forEach(msg => {
+        addMessage(msg.text, msg.isBot, false, msg.timestamp);
+      });
+  
+      addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true);
+  
+      showFollowUp = false;
+      updateChatWindow();
+    } catch (error) {
+      console.error('Error fetching conversation:', error);
+      addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
+    }
+  }
 
   async function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
