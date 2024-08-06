@@ -1,5 +1,7 @@
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
+  const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation';
+  const STORE_CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation';
 
   let messages = [];
   let conversationHistory = [];
@@ -294,21 +296,22 @@
       userResponse = response === "yes" ? "Ja" : "Nej";
     }
 
-    // Add user's response to messages and conversation history
-    addMessage(userResponse, false, false, currentTime);
-    conversationHistory.push({"role": "user", "content": userResponse, "timestamp": currentTime});
-
-    // Send the updated conversation to Azure immediately
-    await sendConversationToAzure(messages);
+    // Only send the response to Azure, don't add it locally
+    await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
 
     if (response === "customer_service") {
       await fetchAndDisplayConversation();
     } else {
+      addMessage(userResponse, false, false, currentTime);
+      isLoading = true;
+      addMessage('', true, true);
+      updateChatWindow();
+
       setTimeout(() => {
         const botResponseTime = new Date().toISOString();
         const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
-        addMessage(botResponse, true, false, botResponseTime);
-        conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": botResponseTime});
+        messages[messages.length - 1] = { text: botResponse, isBot: true, isLoading: false, timestamp: botResponseTime };
+        isLoading = false;
         updateChatWindow();
         sendConversationToAzure(messages);
       }, 500);
@@ -317,7 +320,7 @@
 
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
-    const url = `https://rosterai-fresh-function.azurewebsites.net/api/getconversation?conversationId=${conversationId}`;
+    const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
 
     try {
       const response = await fetch(url);
@@ -325,17 +328,11 @@
 
       messages = data.messages;
 
-      updateChatWindow();
-
-      addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true);
-      await sendConversationToAzure(messages);
-
       showFollowUp = false;
       updateChatWindow();
     } catch (error) {
       console.error('Error fetching conversation:', error);
       addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
-      await sendConversationToAzure(messages);
     }
   }
 
@@ -350,11 +347,9 @@
   
     conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
   
-    await sendConversationToAzure(messages);
-  
     isLoading = true;
-    const loadingTime = new Date().toISOString();
-    addMessage('', true, true, loadingTime);
+    addMessage('', true, true);
+    updateChatWindow();
   
     try {
       const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
@@ -415,7 +410,7 @@
   }
 
   async function sendConversationToAzure(messages) {
-    const url = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation';
+    const url = STORE_CONVERSATION_API_URL;
     const payload = {
       conversationId: window.conversationId || (window.conversationId = generateUUID()),
       messages: messages.map(msg => ({
