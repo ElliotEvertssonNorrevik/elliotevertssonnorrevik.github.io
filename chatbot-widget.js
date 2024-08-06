@@ -267,27 +267,23 @@ function formatMessage(message) {
     const followUpElement = document.createElement('div');
     followUpElement.className = 'happyflops-initial-options';
     
-    const yesButton = document.createElement('button');
-    yesButton.textContent = 'Ja';
-    yesButton.className = 'happyflops-option-button';
-    yesButton.addEventListener('click', () => handleFollowUpResponse("yes"));
+    const options = [
+      { text: 'Ja', response: 'yes' },
+      { text: 'Nej', response: 'no' },
+      { text: 'Prata med kundtjänst', response: 'customer_service' }
+    ];
     
-    const noButton = document.createElement('button');
-    noButton.textContent = 'Nej';
-    noButton.className = 'happyflops-option-button';
-    noButton.addEventListener('click', () => handleFollowUpResponse("no"));
-    
-    const customerServiceButton = document.createElement('button');
-    customerServiceButton.textContent = 'Prata med kundtjänst';
-    customerServiceButton.className = 'happyflops-option-button';
-    customerServiceButton.addEventListener('click', () => handleFollowUpResponse("customer_service"));
-    
-    followUpElement.appendChild(yesButton);
-    followUpElement.appendChild(noButton);
-    followUpElement.appendChild(customerServiceButton);
-
+    options.forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option.text;
+      button.className = 'happyflops-option-button';
+      button.addEventListener('click', () => handleFollowUpResponse(option.response));
+      followUpElement.appendChild(button);
+    });
+  
     return followUpElement;
   }
+
 
   function handleFollowUpResponse(response) {
     showFollowUp = false;
