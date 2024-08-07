@@ -295,10 +295,11 @@
     return followUpElement;
   }
 
-  // New function to fetch and display conversation
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
     const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
+  
+    console.log('Fetching conversation from URL:', url);
   
     try {
       // Show loading state
@@ -309,8 +310,16 @@
       const response = await fetch(url);
       const data = await response.json();
   
+      console.log('Received data from API:', data);
+      console.log('Conversation ID:', data.id);
+      console.log('Number of messages:', data.messages.length);
+      console.log('First message:', data.messages[0]);
+      console.log('Last message:', data.messages[data.messages.length - 1]);
+  
       // Replace local messages with fetched messages
       messages = data.messages;
+  
+      console.log('Updated local messages. New length:', messages.length);
   
       // Update local storage
       saveConversation();
@@ -319,6 +328,8 @@
       showFollowUp = false;
       updateChatWindow();
       scrollToBottom();
+  
+      console.log('Conversation update complete');
     } catch (error) {
       console.error('Error fetching conversation:', error);
       addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
