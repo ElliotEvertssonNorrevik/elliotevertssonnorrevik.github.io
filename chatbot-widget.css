@@ -27,6 +27,8 @@
   object-fit: cover;
 }
 
+
+
 .happyflops-chat-window {
   width: 440px;
   height: 600px;
@@ -215,6 +217,34 @@
   font-size: 14px;
   outline: none;
 }
+
+.happyflops-emoji-picker {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 200px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.happyflops-emoji-picker button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  padding: 5px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.happyflops-emoji-picker button:hover {
+  transform: scale(1.2);
+}
+
 
 .happyflops-emoji-button {
   background: none;
