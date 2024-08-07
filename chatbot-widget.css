@@ -121,21 +121,13 @@
   border-top: 1px solid #eee;
 }
 
-.happyflops-input-container {
-  display: flex;
-  flex-grow: 1;
-  border: 1px solid #e0e0e0;
-  background-color: #fff;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
 .happyflops-input {
   flex-grow: 1;
-  border: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 18px 0px 18px 0px;
   padding: 10px 15px;
   font-size: 14px;
-  outline: none;
+  outline: none
 }
 
 .happyflops-emoji-button {
@@ -144,11 +136,12 @@
   font-size: 20px;
   cursor: pointer;
   padding: 0 10px;
+  margin-left: 10px;
 }
 
 .happyflops-send-button {
   border: none;
-  border-radius: 20px;
+  border-radius: 0px 18px 0px 18px;
   padding: 10px 20px;
   background-color: #FCBE08;
   color: #fff;
@@ -161,6 +154,34 @@
 
 .happyflops-send-button:hover {
   opacity: 0.9;
+}
+
+.happyflops-emoji-picker {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  z-index: 1000;
+}
+
+.happyflops-emoji-picker button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  transition: background-color 0.2s;
+}
+
+.happyflops-emoji-picker button:hover {
+  background-color: #f0f0f0;
+  border-radius: 3px;
 }
 
 .happyflops-initial-options {
