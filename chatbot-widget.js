@@ -212,9 +212,6 @@
       }
     });
 
-    inputArea.appendChild(input);
-    inputArea.appendChild(sendButton);
-
     return inputArea;
   }
 
@@ -295,61 +292,82 @@
     return followUpElement;
   }
 
-  // New function to fetch and display conversation
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
     const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
   
+    console.log('Fetching conversation from URL:', url);
+
     try {
-      // Show loading state
       isLoading = true;
       addMessage('', true, true);
       updateChatWindow();
   
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
   
-      // Replace local messages with fetched messages
+      console.log('Received data from API:', data);
+
+      if (!data || !Array.isArray(data.messages)) {
+        throw new Error('Invalid data structure received from API');
+      }
+
       messages = data.messages;
   
-      // Update local storage
+      console.log('Updated local messages. New length:', messages.length);
+
       saveConversation();
   
       isLoading = false;
       showFollowUp = false;
       updateChatWindow();
       scrollToBottom();
+
+      console.log('Conversation update complete');
     } catch (error) {
       console.error('Error fetching conversation:', error);
+      isLoading = false;
       addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
+      updateChatWindow();
     }
   }
 
-// Modified handleFollowUpResponse function
   async function handleFollowUpResponse(response) {
+    console.log('Handling follow-up response:', response);
+
     showFollowUp = false;
     updateChatWindow();
-  
+
     const currentTime = new Date().toISOString();
     let userResponse = '';
-  
+
     if (response === "customer_service") {
       userResponse = "Prata med kundtjänst";
     } else {
       userResponse = response === "yes" ? "Ja" : "Nej";
     }
-  
-    // Only send the response to Azure, don't add it locally
+
+    // Add the user's response to the messages array
+    addMessage(userResponse, false, false, currentTime);
+
+    // Send the updated conversation to Azure
     await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
-  
+
     if (response === "customer_service") {
+      console.log('Fetching conversation from database...');
       await fetchAndDisplayConversation();
+      
+      // Add a message to indicate that customer service has been contacted
+      addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true, false, new Date().toISOString());
+      updateChatWindow();
     } else {
-      addMessage(userResponse, false, false, currentTime);
       isLoading = true;
       addMessage('', true, true);
       updateChatWindow();
-  
+
       setTimeout(() => {
         const botResponseTime = new Date().toISOString();
         const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
@@ -385,7 +403,7 @@
   
       const response = await fetch(url, {
         method: 'GET',
-      });
+        });
   
       const data = await response.json();
       const answer = data.answer;
@@ -501,17 +519,6 @@
     }
   }
 
-  function addMessageWithDelay(text, isBot, delay, callback) {
-    addMessage('', isBot, true);
-    updateChatWindow();
-    
-    setTimeout(() => {
-      messages[messages.length - 1] = { text, isBot, isLoading: false };
-      updateChatWindow();
-      if (callback) callback();
-    }, delay);
-  }
-
   function initializeChat() {
     if (!isInitialized) {
       const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
@@ -529,6 +536,17 @@
     } else {
       updateChatWindow();
     }
+  }
+
+  function addMessageWithDelay(text, isBot, delay, callback) {
+    addMessage('', isBot, true);
+    updateChatWindow();
+    
+    setTimeout(() => {
+      messages[messages.length - 1] = { text, isBot, isLoading: false };
+      updateChatWindow();
+      if (callback) callback();
+    }, delay);
   }
 
   function saveConversation() {
