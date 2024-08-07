@@ -91,11 +91,6 @@
   align-items: center;
 }
 
-.happyflops-header-buttons {
-  display: flex;
-  align-items: center;
-}
-
 .happyflops-button {
   background: none;
   border: none;
@@ -112,7 +107,7 @@
 }
 
 .happyflops-reload-button {
-  font-size: 20px; /* Slightly smaller than the close button */
+  font-size: 20px;
 }
 
 .happyflops-close-button {
@@ -204,14 +199,34 @@
   border-top: 1px solid #eee;
 }
 
-.happyflops-input {
+.happyflops-input-container {
+  display: flex;
   flex-grow: 1;
   border: 1px solid #e0e0e0;
   background-color: #fff;
   border-radius: 20px 0 0 20px;
+  overflow: hidden;
+}
+
+.happyflops-emoji-button {
+  background: none;
+  border: none;
+  padding: 0 10px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.happyflops-emoji-button:hover {
+  opacity: 0.7;
+}
+
+.happyflops-input {
+  flex-grow: 1;
+  border: none;
   padding: 10px 15px;
   font-size: 14px;
-  margin-right: 0;
+  outline: none;
 }
 
 .happyflops-send-button {
@@ -233,17 +248,17 @@
 .happyflops-initial-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px; /* Minskat från 10px till 8px för att minska avståndet mellan knapparna */
-  margin-top: 8px; /* Minskat från 15px till 8px för att minska avståndet till meddelandet ovanför */
+  gap: 8px;
+  margin-top: 8px;
   justify-content: flex-start;
-  padding: 0 15px 0 8px; /* Minskat vänster padding från 15px till 8px */
+  padding: 0 15px 0 8px;
 }
 
 .happyflops-option-button {
   background-color: #fff;
   border: 1px solid #60463C;
   color: #000;
-  padding: 6px 12px; /* Minskat padding från 8px 16px till 6px 12px */
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 14px;
   cursor: pointer;
