@@ -1,3 +1,4 @@
+
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation';
@@ -171,90 +172,148 @@
     return logoContainer;
   }
 
-function createInputArea() {
-  const inputArea = document.createElement('div');
-  inputArea.className = 'happyflops-input-area';
-
-  const inputContainer = document.createElement('div');
-  inputContainer.className = 'happyflops-input-container';
-
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.placeholder = 'Skriv ett meddelande...';
-  input.className = 'happyflops-input';
-
-  const emojiButton = document.createElement('button');
-  emojiButton.className = 'happyflops-emoji-button';
-  emojiButton.innerHTML = '😊';
-
-  const sendButton = document.createElement('button');
-  sendButton.textContent = 'Skicka';
-  sendButton.className = 'happyflops-send-button';
-  sendButton.style.backgroundColor = config.mainColor;
-
-  inputContainer.appendChild(emojiButton);
-  inputContainer.appendChild(input);
-  inputArea.appendChild(inputContainer);
-  inputArea.appendChild(sendButton);
-
-  // Create emoji picker
-  const emojiPicker = createEmojiPicker();
-  emojiPicker.style.display = 'none';
-
-  // Add emoji picker to the main chat window instead of input area
-  const chatWindow = document.querySelector('.happyflops-chat-window');
-  chatWindow.appendChild(emojiPicker);
-
-  emojiButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'flex' : 'none';
-  });
-
-  document.addEventListener('click', () => {
-    emojiPicker.style.display = 'none';
-  });
-
-  emojiPicker.addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
-
-  // Function to handle emoji selection
-  function handleEmojiSelect(emoji) {
-    input.value += emoji;
-    input.focus();
-    emojiPicker.style.display = 'none';
+  function createInputArea() {
+    const inputArea = document.createElement('div');
+    inputArea.className = 'happyflops-input-area';
+  
+    const inputContainer = document.createElement('div');
+    inputContainer.className = 'happyflops-input-container';
+  
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Skriv ett meddelande...';
+    input.className = 'happyflops-input';
+  
+    const emojiButton = document.createElement('button');
+    emojiButton.className = 'happyflops-emoji-button';
+    emojiButton.innerHTML = '☺️';
+  
+    const emojiPicker = createEmojiPicker();
+    const emojiPickerWrapper = document.createElement('div');
+    emojiPickerWrapper.className = 'happyflops-emoji-picker-wrapper';
+    emojiPickerWrapper.appendChild(emojiPicker);
+    emojiPickerWrapper.style.display = 'none';
+  
+    const sendButton = document.createElement('button');
+    sendButton.textContent = 'Skicka';
+    sendButton.className = 'happyflops-send-button';
+    sendButton.style.backgroundColor = config.mainColor;
+  
+    inputContainer.appendChild(input);
+    inputContainer.appendChild(emojiButton);
+    inputArea.appendChild(inputContainer);
+    inputArea.appendChild(sendButton);
+    inputArea.appendChild(emojiPickerWrapper);
+  
+    emojiButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      emojiPickerWrapper.style.display = emojiPickerWrapper.style.display === 'none' ? 'block' : 'none';
+    });
+  
+    document.addEventListener('click', () => {
+      emojiPickerWrapper.style.display = 'none';
+    });
+  
+    emojiPickerWrapper.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  
+    const handleSendMessage = () => {
+      const message = input.value.trim();
+      if (message !== '') {
+        sendMessage(message);
+        input.value = '';
+      }
+    };
+  
+    sendButton.addEventListener('click', handleSendMessage);
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleSendMessage();
+      }
+    });
+  
+    // Function to handle emoji selection
+    function handleEmojiSelect(emoji) {
+      input.value += emoji;
+      input.focus();
+      emojiPickerWrapper.style.display = 'none';
+    }
+  
+    // Create and append emojis to the picker
+    const emojis = [
+      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
+      '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
+      '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
+      '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😶‍🌫️', '😏', '😒',
+      '🙄', '😬', '😮‍💨', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷',
+      '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '😵‍💫',
+      '🤯', '🤠', '🥳', '🥸', '😎', '🤓', '🧐', '😕', '😟', '🙁',
+      '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰',
+      '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫',
+      '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩'
+    ];
+  
+    const emojiContainer = emojiPicker.querySelector('.happyflops-emoji-container');
+    emojis.forEach(emoji => {
+      const emojiButton = document.createElement('button');
+      emojiButton.textContent = emoji;
+      emojiButton.addEventListener('click', () => handleEmojiSelect(emoji));
+      emojiContainer.appendChild(emojiButton);
+    });
+  
+    return inputArea;
   }
 
-  // Populate emoji picker
-  const emojis = [
-    '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
-    '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
-    '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
-    '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😶‍🌫️', '😏', '😒',
-    '🙄', '😬', '😮‍💨', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷',
-    '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '😵‍💫',
-    '🤯', '🤠', '🥳', '🥸', '😎', '🤓', '🧐', '😕', '😟', '🙁',
-    '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰',
-    '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫',
-    '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩'
-  ];
-
-  emojis.forEach(emoji => {
-    const emojiButton = document.createElement('button');
-    emojiButton.textContent = emoji;
-    emojiButton.addEventListener('click', () => handleEmojiSelect(emoji));
-    emojiPicker.appendChild(emojiButton);
-  });
-
-  return inputArea;
-}
-
-function createEmojiPicker() {
-  const emojiPicker = document.createElement('div');
-  emojiPicker.className = 'happyflops-emoji-picker';
-  return emojiPicker;
-}
+  function createEmojiPicker() {
+    const emojiPicker = document.createElement('div');
+    emojiPicker.className = 'happyflops-emoji-picker';
   
+    const emojiContainer = document.createElement('div');
+    emojiContainer.className = 'happyflops-emoji-container';
+  
+    emojiPicker.appendChild(emojiContainer);
+    return emojiPicker;
+  }
+
+  function createEmojiPicker() {
+    const emojiPicker = document.createElement('div');
+    emojiPicker.className = 'happyflops-emoji-picker';
+  
+    const emojiContainer = document.createElement('div');
+    emojiContainer.className = 'happyflops-emoji-container';
+  
+    // Expanded list of emojis
+    const emojis = [
+      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
+      '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
+      '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
+      '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😶‍🌫️', '😏', '😒',
+      '🙄', '😬', '😮‍💨', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷',
+      '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '😵‍💫',
+      '🤯', '🤠', '🥳', '🥸', '😎', '🤓', '🧐', '😕', '😟', '🙁',
+      '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰',
+      '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫',
+      '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩'
+    ];
+  
+    emojis.forEach(emoji => {
+      const emojiButton = document.createElement('button');
+      emojiButton.textContent = emoji;
+      emojiButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const input = document.querySelector('.happyflops-input');
+        input.value += emoji;
+        input.focus();
+        emojiPicker.style.display = 'none';
+      });
+      emojiContainer.appendChild(emojiButton);
+    });
+  
+    emojiPicker.appendChild(emojiContainer);
+    return emojiPicker;
+  }
+
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
