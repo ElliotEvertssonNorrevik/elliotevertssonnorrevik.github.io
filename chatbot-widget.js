@@ -218,55 +218,42 @@
 
   function toggleEmojiPicker(event) {
     event.stopPropagation();
-    const existingPicker = document.querySelector('.happyflops-emoji-picker');
+    const existingPicker = document.querySelector('.happyflops-emoji-picker-wrapper');
     
     if (existingPicker) {
       existingPicker.remove();
       return;
     }
-
-    const emojiPicker = document.createElement('div');
-    emojiPicker.className = 'happyflops-emoji-picker';
+  
+    const emojiPickerWrapper = document.createElement('div');
+    emojiPickerWrapper.className = 'happyflops-emoji-picker-wrapper';
     
-    const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
-    
-    emojis.forEach(emoji => {
-      const emojiButton = document.createElement('button');
-      emojiButton.textContent = emoji;
-      emojiButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const input = document.querySelector('.happyflops-input');
-        const startPos = input.selectionStart;
-        const endPos = input.selectionEnd;
-        input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos, input.value.length);
-        input.focus();
-        input.selectionStart = input.selectionEnd = startPos + emoji.length;
-      });
-      emojiPicker.appendChild(emojiButton);
-    });
-
-    const rect = event.target.getBoundingClientRect();
-    emojiPicker.style.position = 'fixed';
-    emojiPicker.style.left = `${rect.left}px`;
-    emojiPicker.style.bottom = `${window.innerHeight - rect.top}px`;
-
-    document.body.appendChild(emojiPicker);
-
+    const emojiPicker = createEmojiPicker();
+    emojiPickerWrapper.appendChild(emojiPicker);
+  
+    const inputContainer = event.target.closest('.happyflops-input-container');
+    inputContainer.appendChild(emojiPickerWrapper);
+  
+    // Position the picker
+    const inputRect = inputContainer.getBoundingClientRect();
+    emojiPickerWrapper.style.bottom = `${inputRect.height}px`;
+    emojiPickerWrapper.style.right = '0';
+  
     function closeEmojiPicker(e) {
-      if (!emojiPicker.contains(e.target) && e.target !== event.target) {
-        emojiPicker.remove();
+      if (!emojiPickerWrapper.contains(e.target) && e.target !== event.target) {
+        emojiPickerWrapper.remove();
         document.removeEventListener('click', closeEmojiPicker);
       }
     }
-
+  
     setTimeout(() => {
       document.addEventListener('click', closeEmojiPicker);
     }, 0);
-
+  
     const chatWindow = document.querySelector('.happyflops-chat-window');
     if (chatWindow) {
       chatWindow.addEventListener('scroll', () => {
-        emojiPicker.remove();
+        emojiPickerWrapper.remove();
         document.removeEventListener('click', closeEmojiPicker);
       }, { once: true });
     }
