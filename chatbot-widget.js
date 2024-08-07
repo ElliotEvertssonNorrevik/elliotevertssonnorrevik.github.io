@@ -188,7 +188,10 @@
     emojiButton.innerHTML = '😊';
   
     const emojiPicker = createEmojiPicker();
-    emojiPicker.style.display = 'none';
+    const emojiPickerWrapper = document.createElement('div');
+    emojiPickerWrapper.className = 'happyflops-emoji-picker-wrapper';
+    emojiPickerWrapper.appendChild(emojiPicker);
+    emojiPickerWrapper.style.display = 'none';
   
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
@@ -199,15 +202,19 @@
     inputContainer.appendChild(emojiButton);
     inputArea.appendChild(inputContainer);
     inputArea.appendChild(sendButton);
-    inputArea.appendChild(emojiPicker);
+    inputArea.appendChild(emojiPickerWrapper);
   
     emojiButton.addEventListener('click', (e) => {
       e.stopPropagation();
-      emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+      emojiPickerWrapper.style.display = emojiPickerWrapper.style.display === 'none' ? 'block' : 'none';
     });
   
     document.addEventListener('click', () => {
-      emojiPicker.style.display = 'none';
+      emojiPickerWrapper.style.display = 'none';
+    });
+  
+    emojiPickerWrapper.addEventListener('click', (e) => {
+      e.stopPropagation();
     });
   
     const handleSendMessage = () => {
@@ -225,6 +232,35 @@
       }
     });
   
+    // Function to handle emoji selection
+    function handleEmojiSelect(emoji) {
+      input.value += emoji;
+      input.focus();
+      emojiPickerWrapper.style.display = 'none';
+    }
+  
+    // Create and append emojis to the picker
+    const emojis = [
+      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
+      '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
+      '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
+      '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😶‍🌫️', '😏', '😒',
+      '🙄', '😬', '😮‍💨', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷',
+      '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '😵‍💫',
+      '🤯', '🤠', '🥳', '🥸', '😎', '🤓', '🧐', '😕', '😟', '🙁',
+      '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰',
+      '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫',
+      '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩'
+    ];
+  
+    const emojiContainer = emojiPicker.querySelector('.happyflops-emoji-container');
+    emojis.forEach(emoji => {
+      const emojiButton = document.createElement('button');
+      emojiButton.textContent = emoji;
+      emojiButton.addEventListener('click', () => handleEmojiSelect(emoji));
+      emojiContainer.appendChild(emojiButton);
+    });
+  
     return inputArea;
   }
 
@@ -232,7 +268,33 @@
     const emojiPicker = document.createElement('div');
     emojiPicker.className = 'happyflops-emoji-picker';
   
-    const emojis = ['😊', '😂', '😍', '👍', '😎', '🤔', '😄', '👋', '🎉', '❤️'];
+    const emojiContainer = document.createElement('div');
+    emojiContainer.className = 'happyflops-emoji-container';
+  
+    emojiPicker.appendChild(emojiContainer);
+    return emojiPicker;
+  }
+
+  function createEmojiPicker() {
+    const emojiPicker = document.createElement('div');
+    emojiPicker.className = 'happyflops-emoji-picker';
+  
+    const emojiContainer = document.createElement('div');
+    emojiContainer.className = 'happyflops-emoji-container';
+  
+    // Expanded list of emojis
+    const emojis = [
+      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
+      '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
+      '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
+      '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😶‍🌫️', '😏', '😒',
+      '🙄', '😬', '😮‍💨', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷',
+      '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '😵‍💫',
+      '🤯', '🤠', '🥳', '🥸', '😎', '🤓', '🧐', '😕', '😟', '🙁',
+      '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰',
+      '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫',
+      '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩'
+    ];
   
     emojis.forEach(emoji => {
       const emojiButton = document.createElement('button');
@@ -244,9 +306,10 @@
         input.focus();
         emojiPicker.style.display = 'none';
       });
-      emojiPicker.appendChild(emojiButton);
+      emojiContainer.appendChild(emojiButton);
     });
   
+    emojiPicker.appendChild(emojiContainer);
     return emojiPicker;
   }
 
