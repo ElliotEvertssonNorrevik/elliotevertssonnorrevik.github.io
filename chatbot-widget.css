@@ -208,6 +208,14 @@
   overflow: hidden;
 }
 
+.happyflops-input {
+  flex-grow: 1;
+  border: none;
+  padding: 10px 15px;
+  font-size: 14px;
+  outline: none;
+}
+
 .happyflops-emoji-button {
   background: none;
   border: none;
@@ -219,14 +227,6 @@
 
 .happyflops-emoji-button:hover {
   opacity: 0.7;
-}
-
-.happyflops-input {
-  flex-grow: 1;
-  border: none;
-  padding: 10px 15px;
-  font-size: 14px;
-  outline: none;
 }
 
 .happyflops-send-button {
