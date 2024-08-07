@@ -216,53 +216,6 @@
     return inputArea;
   }
 
-
-
-  function createEmojiPicker() {
-    const emojiPicker = document.createElement('div');
-    emojiPicker.className = 'happyflops-emoji-picker';
-  
-    const emojiContainer = document.createElement('div');
-    emojiContainer.className = 'happyflops-emoji-container';
-  
-    const emojis = [
-      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
-      '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
-      '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
-      '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄',
-      '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕',
-      '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳',
-      '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲',
-      '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱',
-      '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠',
-      '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👻', '👽', '👾'
-    ];
-  
-    emojis.forEach(emoji => {
-      const emojiButton = document.createElement('button');
-      emojiButton.textContent = emoji;
-      emojiButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const input = document.querySelector('.happyflops-input');
-        const startPos = input.selectionStart;
-        const endPos = input.selectionEnd;
-        input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos);
-        input.focus();
-        input.selectionStart = input.selectionEnd = startPos + emoji.length;
-        
-        // Close the emoji picker after selection
-        const emojiPickerWrapper = document.querySelector('.happyflops-emoji-picker-wrapper');
-        if (emojiPickerWrapper) {
-          emojiPickerWrapper.remove();
-        }
-      });
-      emojiContainer.appendChild(emojiButton);
-    });
-  
-    emojiPicker.appendChild(emojiContainer);
-    return emojiPicker;
-  }
-
   function toggleEmojiPicker(event) {
     event.stopPropagation();
     const existingPicker = document.querySelector('.happyflops-emoji-picker-wrapper');
@@ -304,6 +257,51 @@
         document.removeEventListener('click', closeEmojiPicker);
       }, { once: true });
     }
+  }
+
+  function createEmojiPicker() {
+    const emojiPicker = document.createElement('div');
+    emojiPicker.className = 'happyflops-emoji-picker';
+
+    const emojiContainer = document.createElement('div');
+    emojiContainer.className = 'happyflops-emoji-container';
+
+    const emojis = [
+      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
+      '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
+      '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
+      '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄',
+      '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕',
+      '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳',
+      '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲',
+      '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱',
+      '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠',
+      '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👻', '👽', '👾'
+    ];
+
+    emojis.forEach(emoji => {
+      const emojiButton = document.createElement('button');
+      emojiButton.textContent = emoji;
+      emojiButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const input = document.querySelector('.happyflops-input');
+        const startPos = input.selectionStart;
+        const endPos = input.selectionEnd;
+        input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos);
+        input.focus();
+        input.selectionStart = input.selectionEnd = startPos + emoji.length;
+        
+        // Close the emoji picker after selection
+        const emojiPickerWrapper = document.querySelector('.happyflops-emoji-picker-wrapper');
+        if (emojiPickerWrapper) {
+          emojiPickerWrapper.remove();
+        }
+      });
+      emojiContainer.appendChild(emojiButton);
+    });
+
+    emojiPicker.appendChild(emojiContainer);
+    return emojiPicker;
   }
 
   function createMessageElement(message) {
@@ -360,7 +358,7 @@
     });
 
     return optionsElement;
-  }
+    }
 
   function createFollowUpButtons() {
     const followUpElement = document.createElement('div');
@@ -407,7 +405,7 @@
   
       const response = await fetch(url, {
         method: 'GET',
-        });
+      });
   
       const data = await response.json();
       const answer = data.answer;
