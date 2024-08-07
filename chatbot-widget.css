@@ -239,7 +239,6 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 5px;
-  padding: 10px;
 }
 
 .happyflops-emoji-picker button {
