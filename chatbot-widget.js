@@ -175,6 +175,13 @@
     const inputArea = document.createElement('div');
     inputArea.className = 'happyflops-input-area';
   
+    const inputContainer = document.createElement('div');
+    inputContainer.className = 'happyflops-input-container';
+  
+    const emojiButton = document.createElement('button');
+    emojiButton.className = 'happyflops-emoji-button';
+    emojiButton.innerHTML = '😊'; // You can change this to any emoji or icon
+  
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
@@ -184,6 +191,11 @@
     sendButton.textContent = 'Skicka';
     sendButton.className = 'happyflops-send-button';
     sendButton.style.backgroundColor = config.mainColor;
+  
+    inputContainer.appendChild(emojiButton);
+    inputContainer.appendChild(input);
+    inputArea.appendChild(inputContainer);
+    inputArea.appendChild(sendButton);
   
     const handleSendMessage = () => {
       const message = input.value.trim();
@@ -314,40 +326,40 @@
   }
 
 // Modified handleFollowUpResponse function
-async function handleFollowUpResponse(response) {
-  showFollowUp = false;
-  updateChatWindow();
-
-  const currentTime = new Date().toISOString();
-  let userResponse = '';
-
-  if (response === "customer_service") {
-    userResponse = "Prata med kundtjänst";
-  } else {
-    userResponse = response === "yes" ? "Ja" : "Nej";
-  }
-
-  // Only send the response to Azure, don't add it locally
-  await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
-
-  if (response === "customer_service") {
-    await fetchAndDisplayConversation();
-  } else {
-    addMessage(userResponse, false, false, currentTime);
-    isLoading = true;
-    addMessage('', true, true);
+  async function handleFollowUpResponse(response) {
+    showFollowUp = false;
     updateChatWindow();
-
-    setTimeout(() => {
-      const botResponseTime = new Date().toISOString();
-      const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
-      messages[messages.length - 1] = { text: botResponse, isBot: true, isLoading: false, timestamp: botResponseTime };
-      isLoading = false;
+  
+    const currentTime = new Date().toISOString();
+    let userResponse = '';
+  
+    if (response === "customer_service") {
+      userResponse = "Prata med kundtjänst";
+    } else {
+      userResponse = response === "yes" ? "Ja" : "Nej";
+    }
+  
+    // Only send the response to Azure, don't add it locally
+    await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
+  
+    if (response === "customer_service") {
+      await fetchAndDisplayConversation();
+    } else {
+      addMessage(userResponse, false, false, currentTime);
+      isLoading = true;
+      addMessage('', true, true);
       updateChatWindow();
-      sendConversationToAzure(messages);
-    }, 500);
+  
+      setTimeout(() => {
+        const botResponseTime = new Date().toISOString();
+        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
+        messages[messages.length - 1] = { text: botResponse, isBot: true, isLoading: false, timestamp: botResponseTime };
+        isLoading = false;
+        updateChatWindow();
+        sendConversationToAzure(messages);
+      }, 500);
+    }
   }
-}
 
   async function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
