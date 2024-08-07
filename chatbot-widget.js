@@ -1,3 +1,4 @@
+
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation';
@@ -283,330 +284,311 @@
     return followUpElement;
   }
 
-async function handleFollowUpResponse(response) {
-  showFollowUp = false;
-  updateChatWindow();
+  async function handleFollowUpResponse(response) {
+    showFollowUp = false;
+    updateChatWindow();
 
-  const currentTime = new Date().toISOString();
-  let userResponse = '';
+    const currentTime = new Date().toISOString();
+    let userResponse = '';
 
-  if (response === "customer_service") {
-    userResponse = "Prata med kundtjänst";
-  } else {
-    userResponse = response === "yes" ? "Ja" : "Nej";
+    if (response === "customer_service") {
+      userResponse = "Prata med kundtjänst";
+    } else {
+      userResponse = response === "yes" ? "Ja" : "Nej";
+    }
+
+    // Only send the response to Azure, don't add it locally
+    await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
+
+    if (response === "customer_service") {
+      await fetchAndDisplayConversation();
+    } else {
+      addMessage(userResponse, false, false, currentTime);
+      isLoading = true;
+      addMessage('', true, true);
+      updateChatWindow();
+
+      setTimeout(() => {
+        const botResponseTime = new Date().toISOString();
+        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
+        messages[messages.length - 1] = { text: botResponse, isBot: true, isLoading: false, timestamp: botResponseTime };
+        isLoading = false;
+        updateChatWindow();
+        sendConversationToAzure(messages);
+      }, 500);
+    }
   }
 
-  // Send the response to Azure
-  await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
+  async function fetchAndDisplayConversation() {
+    const conversationId = window.conversationId || generateUUID();
+    const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
 
-  if (response === "customer_service") {
-    await fetchAndDisplayConversation();
-    startPollingConversation();
-  } else {
-    addMessage(userResponse, false, false, currentTime);
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      messages = data.messages;
+
+      showFollowUp = false;
+      updateChatWindow();
+    } catch (error) {
+      console.error('Error fetching conversation:', error);
+      addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
+    }
+  }
+
+  async function sendMessage(text) {
+    if (text.trim() === '' || isLoading) return;
+  
+    const currentTime = new Date().toISOString();
+  
+    addMessage(text, false, false, currentTime);
+    showInitialOptions = false;
+    showFollowUp = false;
+  
+    conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
+  
     isLoading = true;
     addMessage('', true, true);
     updateChatWindow();
-
-    setTimeout(() => {
-      const botResponseTime = new Date().toISOString();
-      const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
-      messages[messages.length - 1] = { text: botResponse, isBot: true, isLoading: false, timestamp: botResponseTime };
+  
+    try {
+      const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+      const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
+  
+      const encodedQuery = encodeURIComponent(fullQuery);
+      const url = `${API_BASE_URL}?question=${encodedQuery}`;
+  
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+  
+      const data = await response.json();
+      const answer = data.answer;
+  
+      const responseTime = new Date().toISOString();
+      conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
+  
+      messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+      
+      await sendConversationToAzure(messages);
+  
+      if (!answer.includes('?') && Math.random() < 0.5) {
+        setTimeout(() => {
+          const followUpTime = new Date().toISOString();
+          addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
+          conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
+          showFollowUp = true;
+          updateChatWindow();
+          sendConversationToAzure(messages);
+        }, 1000);
+      } else {
+        showFollowUp = false;
+      }
+  
+    } catch (error) {
+      console.error('Error fetching bot response:', error);
+      const errorTime = new Date().toISOString();
+      const errorMessage = 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se';
+      messages[messages.length - 1] = { 
+        text: errorMessage, 
+        isBot: true, 
+        isLoading: false,
+        timestamp: errorTime
+      };
+      conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
+      await sendConversationToAzure(messages);
+    } finally {
       isLoading = false;
       updateChatWindow();
-      sendConversationToAzure(messages);
-    }, 500);
+    }
   }
-}
 
-async function fetchAndDisplayConversation() {
-  const conversationId = window.conversationId || generateUUID();
-  const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    messages = data.messages;
-
-    showFollowUp = false;
+  function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString()) {
+    messages.push({ text, isBot, isLoading, timestamp });
     updateChatWindow();
-  } catch (error) {
-    console.error('Error fetching conversation:', error);
-    addMessage("Det uppstod ett fel vid hämtning av konversationen. Vänligen försök igen senare.", true);
-  }
-}
-
-let pollingInterval;
-
-function startPollingConversation() {
-  // Clear any existing polling interval
-  if (pollingInterval) {
-    clearInterval(pollingInterval);
+    saveConversation();
   }
 
-  // Start polling every 5 seconds
-  pollingInterval = setInterval(fetchAndDisplayConversation, 5000);
-}
+  async function sendConversationToAzure(messages) {
+    const url = STORE_CONVERSATION_API_URL;
+    const payload = {
+      conversationId: window.conversationId || (window.conversationId = generateUUID()),
+      messages: messages.map(msg => ({
+        text: msg.text,
+        isBot: msg.isBot,
+        timestamp: msg.timestamp
+      }))
+    };
 
-function stopPollingConversation() {
-  if (pollingInterval) {
-    clearInterval(pollingInterval);
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      console.log('Conversation stored successfully');
+    } catch (error) {
+      console.error('Error storing conversation:', error);
+    }
   }
-}
 
-async function sendMessage(text) {
-  if (text.trim() === '' || isLoading) return;
+  function updateChatWindow() {
+    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+    if (messagesWrapper) {
+      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
+      messagesWrapper.innerHTML = '';
+      if (logoContainer) {
+        messagesWrapper.appendChild(logoContainer);
+      }
+      
+      messages.forEach(message => {
+        const messageElement = createMessageElement(message);
+        messagesWrapper.appendChild(messageElement);
+      });
+      
+      if (showInitialOptions) {
+        const optionsElement = createInitialOptions();
+        messagesWrapper.appendChild(optionsElement);
+      }
+      if (showFollowUp) {
+        const followUpElement = createFollowUpButtons();
+        messagesWrapper.appendChild(followUpElement);
+      }
+      
+      scrollToBottom();
+    }
+    saveConversation();
+  }
 
-  const currentTime = new Date().toISOString();
-
-  addMessage(text, false, false, currentTime);
-  showInitialOptions = false;
-  showFollowUp = false;
-
-  conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
-
-  isLoading = true;
-  addMessage('', true, true);
-  updateChatWindow();
-
-  try {
-    const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
-    const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
-
-    const encodedQuery = encodeURIComponent(fullQuery);
-    const url = `${API_BASE_URL}?question=${encodedQuery}`;
-
-    const response = await fetch(url, {
-      method: 'GET',
-    });
-
-    const data = await response.json();
-    const answer = data.answer;
-
-    const responseTime = new Date().toISOString();
-    conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
-
-    messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
-    
-    await sendConversationToAzure(messages);
-
-    if (!answer.includes('?') && Math.random() < 0.5) {
+  function scrollToBottom() {
+    const messagesContainer = document.querySelector('.happyflops-messages-container');
+    if (messagesContainer) {
       setTimeout(() => {
-        const followUpTime = new Date().toISOString();
-        addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
-        conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
-        showFollowUp = true;
-        updateChatWindow();
-        sendConversationToAzure(messages);
-      }, 1000);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }, 100);
+    }
+  }
+
+  function addMessageWithDelay(text, isBot, delay, callback) {
+    addMessage('', isBot, true);
+    updateChatWindow();
+    
+    setTimeout(() => {
+      messages[messages.length - 1] = { text, isBot, isLoading: false };
+      updateChatWindow();
+      if (callback) callback();
+    }, delay);
+  }
+
+  function initializeChat() {
+    if (!isInitialized) {
+      const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
+      addMessageWithDelay(initialMessage, true, 1000, () => {
+        conversationHistory.push({"role": "assistant", "content": initialMessage});
+        const followUpMessage = 'Vad kan jag hjälpa dig med idag?😊';
+        addMessageWithDelay(followUpMessage, true, 500, () => {
+          conversationHistory.push({"role": "assistant", "content": followUpMessage});
+          showInitialOptions = true;
+          updateChatWindow();
+        });
+      });
+      
+      isInitialized = true;
     } else {
-      showFollowUp = false;
+      updateChatWindow();
+    }
+  }
+
+  function saveConversation() {
+    localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
+    localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
+    localStorage.setItem('vanbruunChatId', window.conversationId || '');
+    localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
+    localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
+    localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
+    localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
+  }
+
+  function loadConversation() {
+    const storedMessages = localStorage.getItem('vanbruunChatMessages');
+    const storedHistory = localStorage.getItem('vanbruunChatHistory');
+    const storedId = localStorage.getItem('vanbruunChatId');
+    const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
+    const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
+    const storedIsChatOpen = localStorage.getItem('vanbruunChatIsOpen');
+    const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
+
+    if (storedMessages) {
+      messages = JSON.parse(storedMessages);
+    }
+    if (storedHistory) {
+      conversationHistory = JSON.parse(storedHistory);
+    }
+    if (storedId) {
+      window.conversationId = storedId;
+    } else {
+      window.conversationId = generateUUID();
+    }
+    if (storedShowInitialOptions !== null) {
+      showInitialOptions = JSON.parse(storedShowInitialOptions);
+    }
+    if (storedShowFollowUp !== null) {
+      showFollowUp = JSON.parse(storedShowFollowUp);
+    }
+    if (storedIsChatOpen !== null) {
+      isChatOpen = JSON.parse(storedIsChatOpen);
+    }
+    if (storedLastMessage) {
+      const lastMessage = JSON.parse(storedLastMessage);
+      if (lastMessage && lastMessage.isBot && !lastMessage.text.includes('?')) {
+        showFollowUp = true;
+      }
     }
 
-  } catch (error) {
-    console.error('Error fetching bot response:', error);
-    const errorTime = new Date().toISOString();
-    const errorMessage = 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se';
-    messages[messages.length - 1] = { 
-      text: errorMessage, 
-      isBot: true, 
-      isLoading: false,
-      timestamp: errorTime
-    };
-    conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
-    await sendConversationToAzure(messages);
-  } finally {
-    isLoading = false;
-    updateChatWindow();
+    isInitialized = messages.length > 0;
   }
-}
 
-function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString()) {
-  messages.push({ text, isBot, isLoading, timestamp });
-  updateChatWindow();
-  saveConversation();
-}
+  function restartConversation() {
+    messages = [];
+    conversationHistory = [];
+    isInitialized = false;
+    showInitialOptions = false;
+    showFollowUp = false;
+    window.conversationId = generateUUID();
 
-async function sendConversationToAzure(messages) {
-  const url = STORE_CONVERSATION_API_URL;
-  const payload = {
-    conversationId: window.conversationId || (window.conversationId = generateUUID()),
-    messages: messages.map(msg => ({
-      text: msg.text,
-      isBot: msg.isBot,
-      timestamp: msg.timestamp
-    }))
+    localStorage.removeItem('vanbruunChatMessages');
+    localStorage.removeItem('vanbruunChatHistory');
+    localStorage.removeItem('vanbruunChatId');
+    localStorage.removeItem('vanbruunChatShowInitialOptions');
+    localStorage.removeItem('vanbruunChatShowFollowUp');
+    localStorage.removeItem('vanbruunChatLastMessage');
+
+    initializeChat();
+  }
+
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  createChatbotUI();
+
+  window.openVanbruunChat = function() {
+    isChatOpen = true;
+    saveConversation();
+    renderChatbot();
+    initializeChat();
   };
 
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    console.log('Conversation stored successfully');
-  } catch (error) {
-    console.error('Error storing conversation:', error);
-  }
-}
-
-function updateChatWindow() {
-  const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
-  if (messagesWrapper) {
-    const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
-    messagesWrapper.innerHTML = '';
-    if (logoContainer) {
-      messagesWrapper.appendChild(logoContainer);
-    }
-    
-    messages.forEach(message => {
-      const messageElement = createMessageElement(message);
-      messagesWrapper.appendChild(messageElement);
-    });
-    
-    if (showInitialOptions) {
-      const optionsElement = createInitialOptions();
-      messagesWrapper.appendChild(optionsElement);
-    }
-    if (showFollowUp) {
-      const followUpElement = createFollowUpButtons();
-      messagesWrapper.appendChild(followUpElement);
-    }
-    
-    scrollToBottom();
-  }
-  saveConversation();
-}
-
-function scrollToBottom() {
-  const messagesContainer = document.querySelector('.happyflops-messages-container');
-  if (messagesContainer) {
-    setTimeout(() => {
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 100);
-  }
-}
-
-function addMessageWithDelay(text, isBot, delay, callback) {
-  addMessage('', isBot, true);
-  updateChatWindow();
-  
-  setTimeout(() => {
-    messages[messages.length - 1] = { text, isBot, isLoading: false };
-    updateChatWindow();
-    if (callback) callback();
-  }, delay);
-}
-
-function initializeChat() {
-  if (!isInitialized) {
-    const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
-    addMessageWithDelay(initialMessage, true, 1000, () => {
-      conversationHistory.push({"role": "assistant", "content": initialMessage});
-      const followUpMessage = 'Vad kan jag hjälpa dig med idag?😊';
-      addMessageWithDelay(followUpMessage, true, 500, () => {
-        conversationHistory.push({"role": "assistant", "content": followUpMessage});
-        showInitialOptions = true;
-        updateChatWindow();
-      });
-    });
-    
-    isInitialized = true;
-  } else {
-    updateChatWindow();
-  }
-}
-
-function saveConversation() {
-  localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
-  localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
-  localStorage.setItem('vanbruunChatId', window.conversationId || '');
-  localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
-  localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
-  localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
-  localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
-}
-
-function loadConversation() {
-  const storedMessages = localStorage.getItem('vanbruunChatMessages');
-  const storedHistory = localStorage.getItem('vanbruunChatHistory');
-  const storedId = localStorage.getItem('vanbruunChatId');
-  const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
-  const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
-  const storedIsChatOpen = localStorage.getItem('vanbruunChatIsOpen');
-  const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
-
-  if (storedMessages) {
-    messages = JSON.parse(storedMessages);
-  }
-  if (storedHistory) {
-    conversationHistory = JSON.parse(storedHistory);
-  }
-  if (storedId) {
-    window.conversationId = storedId;
-  } else {
-    window.conversationId = generateUUID();
-  }
-  if (storedShowInitialOptions !== null) {
-    showInitialOptions = JSON.parse(storedShowInitialOptions);
-  }
-  if (storedShowFollowUp !== null) {
-    showFollowUp = JSON.parse(storedShowFollowUp);
-  }
-  if (storedIsChatOpen !== null) {
-    isChatOpen = JSON.parse(storedIsChatOpen);
-  }
-  if (storedLastMessage) {
-    const lastMessage = JSON.parse(storedLastMessage);
-    if (lastMessage && lastMessage.isBot && !lastMessage.text.includes('?')) {
-      showFollowUp = true;
-    }
-  }
-
-  isInitialized = messages.length > 0;
-}
-
-function restartConversation() {
-  stopPollingConversation();
-  messages = [];
-  conversationHistory = [];
-  isInitialized = false;
-  showInitialOptions = false;
-  showFollowUp = false;
-  window.conversationId = generateUUID();
-
-  localStorage.removeItem('vanbruunChatMessages');
-  localStorage.removeItem('vanbruunChatHistory');
-  localStorage.removeItem('vanbruunChatId');
-  localStorage.removeItem('vanbruunChatShowInitialOptions');
-  localStorage.removeItem('vanbruunChatShowFollowUp');
-  localStorage.removeItem('vanbruunChatLastMessage');
-
-  initializeChat();
-}
-
-function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
-
-createChatbotUI();
-
-window.openVanbruunChat = function() {
-  isChatOpen = true;
-  saveConversation();
-  renderChatbot();
-  initializeChat();
-};
-
-console.log('Chatbot script loaded and initialized');
+  console.log('Chatbot script loaded and initialized');
+})();
