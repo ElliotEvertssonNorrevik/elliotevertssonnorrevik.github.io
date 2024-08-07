@@ -185,7 +185,7 @@
   
     const emojiButton = document.createElement('button');
     emojiButton.className = 'happyflops-emoji-button';
-    emojiButton.innerHTML = '😊';
+    emojiButton.innerHTML = '☺️';
   
     const emojiPicker = createEmojiPicker();
     const emojiPickerWrapper = document.createElement('div');
