@@ -27,8 +27,6 @@
   object-fit: cover;
 }
 
-
-
 .happyflops-chat-window {
   width: 440px;
   height: 600px;
@@ -208,6 +206,7 @@
   background-color: #fff;
   border-radius: 20px 0 0 20px;
   overflow: hidden;
+  position: relative;
 }
 
 .happyflops-input {
@@ -218,20 +217,28 @@
   outline: none;
 }
 
+.happyflops-emoji-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 10px;
+}
+
 .happyflops-emoji-picker-wrapper {
   position: absolute;
   bottom: 100%;
   left: 0;
+  right: 0;
   z-index: 1000;
-}
-
-.happyflops-emoji-picker {
   background-color: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 250px;
-  max-height: 300px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.happyflops-emoji-picker {
+  max-height: 200px;
   overflow-y: auto;
 }
 
@@ -260,7 +267,6 @@
   border-radius: 4px;
 }
 
-/* Customizing scrollbar for webkit browsers */
 .happyflops-emoji-picker::-webkit-scrollbar {
   width: 10px;
 }
@@ -278,6 +284,7 @@
 .happyflops-emoji-picker::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
 .happyflops-send-button {
   border: none;
   border-radius: 0 20px 20px 0;
