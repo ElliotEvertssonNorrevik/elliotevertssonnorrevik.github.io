@@ -178,22 +178,22 @@
     const inputContainer = document.createElement('div');
     inputContainer.className = 'happyflops-input-container';
   
-    const emojiButton = document.createElement('button');
-    emojiButton.className = 'happyflops-emoji-button';
-    emojiButton.innerHTML = '😊'; // You can change this to any emoji or icon
-  
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
+  
+    const emojiButton = document.createElement('button');
+    emojiButton.className = 'happyflops-emoji-button';
+    emojiButton.innerHTML = '😊'; // You can change this to any emoji or icon
   
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
     sendButton.className = 'happyflops-send-button';
     sendButton.style.backgroundColor = config.mainColor;
   
-    inputContainer.appendChild(emojiButton);
     inputContainer.appendChild(input);
+    inputContainer.appendChild(emojiButton);
     inputArea.appendChild(inputContainer);
     inputArea.appendChild(sendButton);
   
