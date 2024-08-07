@@ -208,6 +208,14 @@
   overflow: hidden;
 }
 
+.happyflops-input {
+  flex-grow: 1;
+  border: none;
+  padding: 10px 15px;
+  font-size: 14px;
+  outline: none;
+}
+
 .happyflops-emoji-button {
   background: none;
   border: none;
@@ -221,19 +229,11 @@
   opacity: 0.7;
 }
 
-.happyflops-input {
-  flex-grow: 1;
-  border: none;
-  padding: 10px 15px;
-  font-size: 14px;
-  outline: none;
-}
-
 .happyflops-send-button {
   border: none;
   border-radius: 0 20px 20px 0;
   padding: 10px 20px;
-  background-color: #60463C;
+  background-color: #FCBE08;
   color: #fff;
   font-size: 14px;
   font-weight: bold;
