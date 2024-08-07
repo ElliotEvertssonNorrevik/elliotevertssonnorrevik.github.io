@@ -1,4 +1,3 @@
-
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation';
