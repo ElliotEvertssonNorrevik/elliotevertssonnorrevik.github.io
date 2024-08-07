@@ -185,7 +185,10 @@
   
     const emojiButton = document.createElement('button');
     emojiButton.className = 'happyflops-emoji-button';
-    emojiButton.innerHTML = '😊'; // You can change this to any emoji or icon
+    emojiButton.innerHTML = '😊';
+  
+    const emojiPicker = createEmojiPicker();
+    emojiPicker.style.display = 'none';
   
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
@@ -196,6 +199,16 @@
     inputContainer.appendChild(emojiButton);
     inputArea.appendChild(inputContainer);
     inputArea.appendChild(sendButton);
+    inputArea.appendChild(emojiPicker);
+  
+    emojiButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+    });
+  
+    document.addEventListener('click', () => {
+      emojiPicker.style.display = 'none';
+    });
   
     const handleSendMessage = () => {
       const message = input.value.trim();
@@ -204,15 +217,37 @@
         input.value = '';
       }
     };
-
+  
     sendButton.addEventListener('click', handleSendMessage);
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         handleSendMessage();
       }
     });
-
+  
     return inputArea;
+  }
+
+  function createEmojiPicker() {
+    const emojiPicker = document.createElement('div');
+    emojiPicker.className = 'happyflops-emoji-picker';
+  
+    const emojis = ['😊', '😂', '😍', '👍', '😎', '🤔', '😄', '👋', '🎉', '❤️'];
+  
+    emojis.forEach(emoji => {
+      const emojiButton = document.createElement('button');
+      emojiButton.textContent = emoji;
+      emojiButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const input = document.querySelector('.happyflops-input');
+        input.value += emoji;
+        input.focus();
+        emojiPicker.style.display = 'none';
+      });
+      emojiPicker.appendChild(emojiButton);
+    });
+  
+    return emojiPicker;
   }
 
   function createMessageElement(message) {
