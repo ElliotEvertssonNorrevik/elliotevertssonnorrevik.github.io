@@ -174,25 +174,25 @@
   function createInputArea() {
     const inputArea = document.createElement('div');
     inputArea.className = 'happyflops-input-area';
-
+  
     const inputContainer = document.createElement('div');
     inputContainer.className = 'happyflops-input-container';
-
+  
     const emojiButton = document.createElement('button');
     emojiButton.textContent = '😊';
     emojiButton.className = 'happyflops-emoji-button';
     emojiButton.addEventListener('click', toggleEmojiPicker);
-
+  
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
-
+  
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
     sendButton.className = 'happyflops-send-button';
     sendButton.style.backgroundColor = config.mainColor;
-
+  
     const handleSendMessage = () => {
       const message = input.value.trim();
       if (message !== '') {
@@ -200,19 +200,19 @@
         input.value = '';
       }
     };
-
+  
     sendButton.addEventListener('click', handleSendMessage);
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         handleSendMessage();
       }
     });
-
+  
     inputContainer.appendChild(emojiButton);
     inputContainer.appendChild(input);
     inputArea.appendChild(inputContainer);
     inputArea.appendChild(sendButton);
-
+  
     return inputArea;
   }
 
