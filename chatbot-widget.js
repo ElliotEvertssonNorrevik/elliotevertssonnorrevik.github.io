@@ -171,120 +171,106 @@
     return logoContainer;
   }
 
-function createInputArea() {
-  const inputArea = document.createElement('div');
-  inputArea.className = 'happyflops-input-area';
+  function createInputArea() {
+    const inputArea = document.createElement('div');
+    inputArea.className = 'happyflops-input-area';
 
-  const inputContainer = document.createElement('div');
-  inputContainer.className = 'happyflops-input-container';
+    const inputContainer = document.createElement('div');
+    inputContainer.className = 'happyflops-input-container';
 
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.placeholder = 'Skriv ett meddelande...';
-  input.className = 'happyflops-input';
-
-  const emojiButton = document.createElement('button');
-  emojiButton.className = 'happyflops-emoji-button';
-  emojiButton.innerHTML = '😊';
-
-  const emojiPicker = createEmojiPicker();
-  const emojiPickerWrapper = document.createElement('div');
-  emojiPickerWrapper.className = 'happyflops-emoji-picker-wrapper';
-  emojiPickerWrapper.appendChild(emojiPicker);
-  emojiPickerWrapper.style.display = 'none';
-
-  inputContainer.appendChild(input);
-  inputContainer.appendChild(emojiButton);
-  inputContainer.appendChild(emojiPickerWrapper);
-
-  const sendButton = document.createElement('button');
-  sendButton.textContent = 'Skicka';
-  sendButton.className = 'happyflops-send-button';
-  sendButton.style.backgroundColor = config.mainColor;
-
-  inputArea.appendChild(inputContainer);
-  inputArea.appendChild(sendButton);
-
-  emojiButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    emojiPickerWrapper.style.display = emojiPickerWrapper.style.display === 'none' ? 'block' : 'none';
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!inputContainer.contains(e.target)) {
-      emojiPickerWrapper.style.display = 'none';
-    }
-  });
-
-  const handleSendMessage = () => {
-    const message = input.value.trim();
-    if (message !== '') {
-      sendMessage(message);
-      input.value = '';
-    }
-  };
-
-  sendButton.addEventListener('click', handleSendMessage);
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  });
-
-  return inputArea;
-}
-
-function createEmojiPicker() {
-  const emojiPicker = document.createElement('div');
-  emojiPicker.className = 'happyflops-emoji-picker';
-
-  const searchBar = document.createElement('input');
-  searchBar.type = 'text';
-  searchBar.placeholder = 'Search';
-  searchBar.className = 'happyflops-emoji-search';
-  emojiPicker.appendChild(searchBar);
-
-  const emojiContainer = document.createElement('div');
-  emojiContainer.className = 'happyflops-emoji-container';
-
-  const emojis = [
-    '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
-    '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
-    '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
-    '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😶‍🌫️', '😏', '😒',
-    '🙄', '😬', '😮‍💨', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷'
-  ];
-
-  emojis.forEach(emoji => {
     const emojiButton = document.createElement('button');
-    emojiButton.textContent = emoji;
-    emojiButton.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const input = e.target.closest('.happyflops-input-container').querySelector('.happyflops-input');
-      input.value += emoji;
-      input.focus();
-      emojiPicker.style.display = 'none';
-    });
-    emojiContainer.appendChild(emojiButton);
-  });
+    emojiButton.textContent = '😊';
+    emojiButton.className = 'happyflops-emoji-button';
+    emojiButton.addEventListener('click', toggleEmojiPicker);
 
-  emojiPicker.appendChild(emojiContainer);
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Skriv ett meddelande...';
+    input.className = 'happyflops-input';
 
-  searchBar.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const emojiButtons = emojiContainer.querySelectorAll('button');
-    emojiButtons.forEach(button => {
-      const emoji = button.textContent;
-      if (emoji.toLowerCase().includes(searchTerm)) {
-        button.style.display = 'block';
-      } else {
-        button.style.display = 'none';
+    const sendButton = document.createElement('button');
+    sendButton.textContent = 'Skicka';
+    sendButton.className = 'happyflops-send-button';
+    sendButton.style.backgroundColor = config.mainColor;
+
+    const handleSendMessage = () => {
+      const message = input.value.trim();
+      if (message !== '') {
+        sendMessage(message);
+        input.value = '';
+      }
+    };
+
+    sendButton.addEventListener('click', handleSendMessage);
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleSendMessage();
       }
     });
-  });
 
-  return emojiPicker;
-}
+    inputContainer.appendChild(emojiButton);
+    inputContainer.appendChild(input);
+    inputArea.appendChild(inputContainer);
+    inputArea.appendChild(sendButton);
+
+    return inputArea;
+  }
+
+  function toggleEmojiPicker(event) {
+    event.stopPropagation();
+    const existingPicker = document.querySelector('.happyflops-emoji-picker');
+    
+    if (existingPicker) {
+      existingPicker.remove();
+      return;
+    }
+
+    const emojiPicker = document.createElement('div');
+    emojiPicker.className = 'happyflops-emoji-picker';
+    
+    const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
+    
+    emojis.forEach(emoji => {
+      const emojiButton = document.createElement('button');
+      emojiButton.textContent = emoji;
+      emojiButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const input = document.querySelector('.happyflops-input');
+        const startPos = input.selectionStart;
+        const endPos = input.selectionEnd;
+        input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos, input.value.length);
+        input.focus();
+        input.selectionStart = input.selectionEnd = startPos + emoji.length;
+      });
+      emojiPicker.appendChild(emojiButton);
+    });
+
+    const rect = event.target.getBoundingClientRect();
+    emojiPicker.style.position = 'fixed';
+    emojiPicker.style.left = `${rect.left}px`;
+    emojiPicker.style.bottom = `${window.innerHeight - rect.top}px`;
+
+    document.body.appendChild(emojiPicker);
+
+    function closeEmojiPicker(e) {
+      if (!emojiPicker.contains(e.target) && e.target !== event.target) {
+        emojiPicker.remove();
+        document.removeEventListener('click', closeEmojiPicker);
+      }
+    }
+
+    setTimeout(() => {
+      document.addEventListener('click', closeEmojiPicker);
+    }, 0);
+
+    const chatWindow = document.querySelector('.happyflops-chat-window');
+    if (chatWindow) {
+      chatWindow.addEventListener('scroll', () => {
+        emojiPicker.remove();
+        document.removeEventListener('click', closeEmojiPicker);
+      }, { once: true });
+    }
+  }
 
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
@@ -361,90 +347,6 @@ function createEmojiPicker() {
     });
   
     return followUpElement;
-  }
-
-  async function fetchAndDisplayConversation() {
-    const conversationId = window.conversationId || generateUUID();
-    const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
-  
-    console.log('Fetching conversation from URL:', url);
-
-    try {
-      isLoading = true;
-      addMessage('', true, true);
-      updateChatWindow();
-  
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-  
-      console.log('Received data from API:', data);
-
-      if (!data || !Array.isArray(data.messages)) {
-        throw new Error('Invalid data structure received from API');
-      }
-
-      messages = data.messages;
-  
-      console.log('Updated local messages. New length:', messages.length);
-
-      saveConversation();
-  
-      isLoading = false;
-      showFollowUp = false;
-      updateChatWindow();
-      scrollToBottom();
-
-      console.log('Conversation update complete');
-    } catch (error) {
-      console.error('Error fetching conversation:', error);
-      isLoading = false;
-      addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
-      updateChatWindow();
-    }
-  }
-
-  async function handleFollowUpResponse(response) {
-    console.log('Handling follow-up response:', response);
-
-    showFollowUp = false;
-    updateChatWindow();
-
-    const currentTime = new Date().toISOString();
-    let userResponse = '';
-
-    if (response === "customer_service") {
-      userResponse = "Prata med kundtjänst";
-    } else {
-      userResponse = response === "yes" ? "Ja" : "Nej";
-    }
-
-    addMessage(userResponse, false, false, currentTime);
-
-    await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
-
-    if (response === "customer_service") {
-      console.log('Fetching conversation from database...');
-      await fetchAndDisplayConversation();
-      
-      addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true, false, new Date().toISOString());
-      updateChatWindow();
-    } else {
-      isLoading = true;
-      addMessage('', true, true);
-      updateChatWindow();
-
-      setTimeout(() => {
-        const botResponseTime = new Date().toISOString();
-        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
-        messages[messages.length - 1] = { text: botResponse, isBot: true, isLoading: false, timestamp: botResponseTime };
-        isLoading = false;
-        updateChatWindow();
-        sendConversationToAzure(messages);
-      }, 500);
-    }
   }
 
   async function sendMessage(text) {
