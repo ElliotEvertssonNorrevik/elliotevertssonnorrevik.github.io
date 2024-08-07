@@ -199,6 +199,7 @@
   padding: 10px 15px;
   font-size: 14px;
   outline: none;
+  border-radius: 18px 18px 18px 0;
 }
 
 .happyflops-emoji-button {
