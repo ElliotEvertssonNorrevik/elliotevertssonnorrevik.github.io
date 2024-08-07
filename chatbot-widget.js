@@ -178,19 +178,24 @@
     const inputContainer = document.createElement('div');
     inputContainer.className = 'happyflops-input-container';
   
-    const emojiButton = document.createElement('button');
-    emojiButton.className = 'happyflops-emoji-button';
-    emojiButton.innerHTML = '😊'; // You can change this to any emoji or icon
-  
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
   
+    const emojiButton = document.createElement('button');
+    emojiButton.className = 'happyflops-emoji-button';
+    emojiButton.innerHTML = '😊'; // You can change this to any emoji or icon
+  
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
     sendButton.className = 'happyflops-send-button';
     sendButton.style.backgroundColor = config.mainColor;
+  
+    inputContainer.appendChild(input);
+    inputContainer.appendChild(emojiButton);
+    inputArea.appendChild(inputContainer);
+    inputArea.appendChild(sendButton);
   
     const handleSendMessage = () => {
       const message = input.value.trim();
@@ -207,9 +212,7 @@
       }
     });
 
-    inputContainer.appendChild(emojiButton);
-    inputContainer.appendChild(input);
-    inputArea.appendChild(inputContainer);
+    inputArea.appendChild(input);
     inputArea.appendChild(sendButton);
 
     return inputArea;
@@ -296,7 +299,10 @@
     const conversationId = window.conversationId || generateUUID();
     const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
   
+    console.log('Fetching conversation from URL:', url);
+  
     try {
+      // Show loading state
       isLoading = true;
       addMessage('', true, true);
       updateChatWindow();
@@ -304,35 +310,49 @@
       const response = await fetch(url);
       const data = await response.json();
   
+      console.log('Received data from API:', data);
+      console.log('Conversation ID:', data.id);
+      console.log('Number of messages:', data.messages.length);
+      console.log('First message:', data.messages[0]);
+      console.log('Last message:', data.messages[data.messages.length - 1]);
+  
+      // Replace local messages with fetched messages
       messages = data.messages;
   
+      console.log('Updated local messages. New length:', messages.length);
+  
+      // Update local storage
       saveConversation();
   
       isLoading = false;
       showFollowUp = false;
       updateChatWindow();
       scrollToBottom();
+  
+      console.log('Conversation update complete');
     } catch (error) {
       console.error('Error fetching conversation:', error);
       addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
     }
   }
 
+// Modified handleFollowUpResponse function
   async function handleFollowUpResponse(response) {
     showFollowUp = false;
     updateChatWindow();
-
+  
     const currentTime = new Date().toISOString();
     let userResponse = '';
-
+  
     if (response === "customer_service") {
       userResponse = "Prata med kundtjänst";
     } else {
       userResponse = response === "yes" ? "Ja" : "Nej";
     }
-
+  
+    // Only send the response to Azure, don't add it locally
     await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
-
+  
     if (response === "customer_service") {
       await fetchAndDisplayConversation();
     } else {
@@ -340,7 +360,7 @@
       isLoading = true;
       addMessage('', true, true);
       updateChatWindow();
-
+  
       setTimeout(() => {
         const botResponseTime = new Date().toISOString();
         const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
@@ -398,7 +418,6 @@
           sendConversationToAzure(messages);
         }, 1000);
       } else {
-        showFollowUp} else {
         showFollowUp = false;
       }
   
@@ -493,6 +512,17 @@
     }
   }
 
+  function addMessageWithDelay(text, isBot, delay, callback) {
+    addMessage('', isBot, true);
+    updateChatWindow();
+    
+    setTimeout(() => {
+      messages[messages.length - 1] = { text, isBot, isLoading: false };
+      updateChatWindow();
+      if (callback) callback();
+    }, delay);
+  }
+
   function initializeChat() {
     if (!isInitialized) {
       const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
@@ -510,17 +540,6 @@
     } else {
       updateChatWindow();
     }
-  }
-
-  function addMessageWithDelay(text, isBot, delay, callback) {
-    addMessage('', isBot, true);
-    updateChatWindow();
-    
-    setTimeout(() => {
-      messages[messages.length - 1] = { text, isBot, isLoading: false };
-      updateChatWindow();
-      if (callback) callback();
-    }, delay);
   }
 
   function saveConversation() {
