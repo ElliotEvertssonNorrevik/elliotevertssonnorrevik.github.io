@@ -1,4 +1,3 @@
-
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation';
@@ -194,28 +193,30 @@
     emojiPickerWrapper.appendChild(emojiPicker);
     emojiPickerWrapper.style.display = 'none';
   
+    inputContainer.appendChild(input);
+    inputContainer.appendChild(emojiButton);
+    inputContainer.appendChild(emojiPickerWrapper);
+  
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
     sendButton.className = 'happyflops-send-button';
     sendButton.style.backgroundColor = config.mainColor;
   
-    inputContainer.appendChild(input);
-    inputContainer.appendChild(emojiButton);
     inputArea.appendChild(inputContainer);
     inputArea.appendChild(sendButton);
-    inputArea.appendChild(emojiPickerWrapper);
   
     emojiButton.addEventListener('click', (e) => {
       e.stopPropagation();
       emojiPickerWrapper.style.display = emojiPickerWrapper.style.display === 'none' ? 'block' : 'none';
+      if (emojiPickerWrapper.style.display === 'block') {
+        input.focus();
+      }
     });
   
-    document.addEventListener('click', () => {
-      emojiPickerWrapper.style.display = 'none';
-    });
-  
-    emojiPickerWrapper.addEventListener('click', (e) => {
-      e.stopPropagation();
+    document.addEventListener('click', (e) => {
+      if (!inputContainer.contains(e.target)) {
+        emojiPickerWrapper.style.display = 'none';
+      }
     });
   
     const handleSendMessage = () => {
@@ -233,35 +234,6 @@
       }
     });
   
-    // Function to handle emoji selection
-    function handleEmojiSelect(emoji) {
-      input.value += emoji;
-      input.focus();
-      emojiPickerWrapper.style.display = 'none';
-    }
-  
-    // Create and append emojis to the picker
-    const emojis = [
-      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
-      '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
-      '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
-      '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😶‍🌫️', '😏', '😒',
-      '🙄', '😬', '😮‍💨', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷',
-      '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '😵‍💫',
-      '🤯', '🤠', '🥳', '🥸', '😎', '🤓', '🧐', '😕', '😟', '🙁',
-      '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰',
-      '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫',
-      '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩'
-    ];
-  
-    const emojiContainer = emojiPicker.querySelector('.happyflops-emoji-container');
-    emojis.forEach(emoji => {
-      const emojiButton = document.createElement('button');
-      emojiButton.textContent = emoji;
-      emojiButton.addEventListener('click', () => handleEmojiSelect(emoji));
-      emojiContainer.appendChild(emojiButton);
-    });
-  
     return inputArea;
   }
 
@@ -272,18 +244,6 @@
     const emojiContainer = document.createElement('div');
     emojiContainer.className = 'happyflops-emoji-container';
   
-    emojiPicker.appendChild(emojiContainer);
-    return emojiPicker;
-  }
-
-  function createEmojiPicker() {
-    const emojiPicker = document.createElement('div');
-    emojiPicker.className = 'happyflops-emoji-picker';
-  
-    const emojiContainer = document.createElement('div');
-    emojiContainer.className = 'happyflops-emoji-container';
-  
-    // Expanded list of emojis
     const emojis = [
       '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
       '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
@@ -302,7 +262,7 @@
       emojiButton.textContent = emoji;
       emojiButton.addEventListener('click', (e) => {
         e.stopPropagation();
-        const input = document.querySelector('.happyflops-input');
+        const input = e.target.closest('.happyflops-input-container').querySelector('.happyflops-input');
         input.value += emoji;
         input.focus();
         emojiPicker.style.display = 'none';
@@ -449,17 +409,14 @@
       userResponse = response === "yes" ? "Ja" : "Nej";
     }
 
-    // Add the user's response to the messages array
     addMessage(userResponse, false, false, currentTime);
 
-    // Send the updated conversation to Azure
     await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
 
     if (response === "customer_service") {
       console.log('Fetching conversation from database...');
       await fetchAndDisplayConversation();
       
-      // Add a message to indicate that customer service has been contacted
       addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true, false, new Date().toISOString());
       updateChatWindow();
     } else {
