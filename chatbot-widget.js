@@ -283,58 +283,71 @@
     return followUpElement;
   }
 
-  async function handleFollowUpResponse(response) {
-    showFollowUp = false;
-    updateChatWindow();
-
-    const currentTime = new Date().toISOString();
-    let userResponse = '';
-
-    if (response === "customer_service") {
-      userResponse = "Prata med kundtjänst";
-    } else {
-      userResponse = response === "yes" ? "Ja" : "Nej";
-    }
-
-    // Only send the response to Azure, don't add it locally
-    await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
-
-    if (response === "customer_service") {
-      await fetchAndDisplayConversation();
-    } else {
-      addMessage(userResponse, false, false, currentTime);
-      isLoading = true;
-      addMessage('', true, true);
-      updateChatWindow();
-
-      setTimeout(() => {
-        const botResponseTime = new Date().toISOString();
-        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
-        messages[messages.length - 1] = { text: botResponse, isBot: true, isLoading: false, timestamp: botResponseTime };
-        isLoading = false;
-        updateChatWindow();
-        sendConversationToAzure(messages);
-      }, 500);
-    }
-  }
-
+  // New function to fetch and display conversation
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
     const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
-
+  
     try {
+      // Show loading state
+      isLoading = true;
+      addMessage('', true, true);
+      updateChatWindow();
+  
       const response = await fetch(url);
       const data = await response.json();
-
+  
+      // Replace local messages with fetched messages
       messages = data.messages;
-
+  
+      // Update local storage
+      saveConversation();
+  
+      isLoading = false;
       showFollowUp = false;
       updateChatWindow();
+      scrollToBottom();
     } catch (error) {
       console.error('Error fetching conversation:', error);
       addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
     }
   }
+
+// Modified handleFollowUpResponse function
+async function handleFollowUpResponse(response) {
+  showFollowUp = false;
+  updateChatWindow();
+
+  const currentTime = new Date().toISOString();
+  let userResponse = '';
+
+  if (response === "customer_service") {
+    userResponse = "Prata med kundtjänst";
+  } else {
+    userResponse = response === "yes" ? "Ja" : "Nej";
+  }
+
+  // Only send the response to Azure, don't add it locally
+  await sendConversationToAzure([...messages, { text: userResponse, isBot: false, timestamp: currentTime }]);
+
+  if (response === "customer_service") {
+    await fetchAndDisplayConversation();
+  } else {
+    addMessage(userResponse, false, false, currentTime);
+    isLoading = true;
+    addMessage('', true, true);
+    updateChatWindow();
+
+    setTimeout(() => {
+      const botResponseTime = new Date().toISOString();
+      const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
+      messages[messages.length - 1] = { text: botResponse, isBot: true, isLoading: false, timestamp: botResponseTime };
+      isLoading = false;
+      updateChatWindow();
+      sendConversationToAzure(messages);
+    }, 500);
+  }
+}
 
   async function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
