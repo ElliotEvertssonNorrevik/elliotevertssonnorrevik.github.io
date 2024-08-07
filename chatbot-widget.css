@@ -27,6 +27,8 @@
   object-fit: cover;
 }
 
+
+
 .happyflops-chat-window {
   width: 440px;
   height: 600px;
@@ -36,16 +38,15 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  position: relative;
 }
 
 .happyflops-chat-header {
   padding: 15px;
-  border-radius: 15px 15px 0 0;
+  border-radius: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #3f2b20;
+  background-color: #FCBE08;
 }
 
 .happyflops-header-content {
@@ -70,6 +71,21 @@
   color: #fff;
   font-size: 14px;
   margin: 0;
+}
+
+.happyflops-close-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.happyflops-scrollable-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .happyflops-header-buttons {
@@ -97,19 +113,63 @@
 }
 
 .happyflops-close-button {
+  background: none;
+  border: none;
+  color: white;
   font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 5px;
+}
+
+.happyflops-reload-button:hover,
+.happyflops-close-button:hover {
+  opacity: 0.8;
+}
+
+.happyflops-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 10px;
+  background-color: #fff;
+  margin-bottom: 20px;
+}
+
+.happyflops-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.happyflops-logo-text {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.happyflops-logo-text h2 {
+  font-size: 18px;
+  margin: 0;
+  color: #333;
+}
+
+.happyflops-logo-text p {
+  font-size: 14px;
+  margin: 5px 0 0;
+  color: #666;
 }
 
 .happyflops-messages-container {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 15px;
-  background-color: #f5f5f5;
+  padding: 0;
+  background-color: #fff;
 }
 
 .happyflops-messages-wrapper {
   display: flex;
   flex-direction: column;
+  padding: 10px;
 }
 
 .happyflops-message {
@@ -118,82 +178,67 @@
   padding: 10px 15px;
   font-size: 14px;
   line-height: 1.4;
-  border-radius: 18px;
 }
 
 .happyflops-message.bot {
   align-self: flex-start;
-  background-color: #e0e0e0;
+  background-color: #DEECE7;
   color: #000;
+  border-radius: 18px 18px 18px 0;
 }
 
 .happyflops-message.user {
   align-self: flex-end;
-  background-color: #3f2b20;
+  background-color: #60463C;
   color: #fff;
+  border-radius: 18px 18px 0 18px;
 }
 
 .happyflops-input-area {
   display: flex;
-  align-items: center;
   padding: 10px;
   background-color: #fff;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #eee;
 }
 
 .happyflops-input-container {
   display: flex;
   flex-grow: 1;
-  align-items: center;
-  background-color: #f5f5f5;
-  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  border-radius: 20px 0 0 20px;
   overflow: hidden;
-  margin-right: 10px;
-}
-
-.happyflops-emoji-button {
-  background: none;
-  border: none;
-  font-size: 20px;
-  padding: 5px 10px;
-  cursor: pointer;
 }
 
 .happyflops-input {
   flex-grow: 1;
   border: none;
-  background-color: #f5f5f5;
-  padding: 10px;
+  padding: 10px 15px;
   font-size: 14px;
   outline: none;
 }
 
-.happyflops-send-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
-  background-color: #3f2b20;
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
+.happyflops-emoji-picker-wrapper {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  z-index: 1000;
 }
 
 .happyflops-emoji-picker {
-  position: absolute;
-  bottom: 70px;
-  left: 10px;
-  right: 10px;
   background-color: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-height: 200px;
+  width: 250px;
+  max-height: 300px;
   overflow-y: auto;
-  display: none;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  padding: 10px;
-  z-index: 1000;
+}
+
+.happyflops-emoji-container {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
 }
 
 .happyflops-emoji-picker button {
@@ -203,27 +248,49 @@
   padding: 5px;
   cursor: pointer;
   transition: transform 0.1s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .happyflops-emoji-picker button:hover {
   transform: scale(1.2);
+  background-color: #f0f0f0;
+  border-radius: 4px;
 }
 
+/* Customizing scrollbar for webkit browsers */
 .happyflops-emoji-picker::-webkit-scrollbar {
   width: 10px;
 }
 
 .happyflops-emoji-picker::-webkit-scrollbar-track {
   background: #f1f1f1;
+  border-radius: 0 8px 8px 0;
 }
 
 .happyflops-emoji-picker::-webkit-scrollbar-thumb {
   background: #888;
-  border-radius: 5px;
+  border-radius: 10px;
 }
 
 .happyflops-emoji-picker::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+.happyflops-send-button {
+  border: none;
+  border-radius: 0 20px 20px 0;
+  padding: 10px 20px;
+  background-color: #FCBE08;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.happyflops-send-button:hover {
+  opacity: 0.9;
 }
 
 .happyflops-initial-options {
@@ -232,21 +299,24 @@
   gap: 8px;
   margin-top: 8px;
   justify-content: flex-start;
+  padding: 0 15px 0 8px;
 }
 
 .happyflops-option-button {
   background-color: #fff;
-  border: 1px solid #3f2b20;
-  color: #3f2b20;
+  border: 1px solid #60463C;
+  color: #000;
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .happyflops-option-button:hover {
-  background-color: #3f2b20;
+  background-color: #60463C;
   color: #fff;
 }
 
@@ -279,6 +349,14 @@
     opacity: 0.3;
     transform: translate3d(0, -4px, 0);
   }
+}
+
+.happyflops-message-text img.emoji {
+  height: 1em;
+  width: 1em;
+  border-radius: 50%;
+  margin: 0 .05em 0 .1em;
+  vertical-align: -0.1em;
 }
 
 .happyflops-message a {
