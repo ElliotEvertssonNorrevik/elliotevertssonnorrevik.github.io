@@ -179,15 +179,15 @@
     const inputContainer = document.createElement('div');
     inputContainer.className = 'happyflops-input-container';
   
+    const emojiButton = document.createElement('button');
+    emojiButton.innerHTML = '😊';
+    emojiButton.className = 'happyflops-emoji-button';
+    emojiButton.addEventListener('click', toggleEmojiPicker);
+  
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
-  
-    const emojiButton = document.createElement('button');
-    emojiButton.className = 'happyflops-emoji-button';
-    emojiButton.innerHTML = '☺️';
-    emojiButton.addEventListener('click', toggleEmojiPicker);
   
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
@@ -209,8 +209,8 @@
       }
     });
   
-    inputContainer.appendChild(input);
     inputContainer.appendChild(emojiButton);
+    inputContainer.appendChild(input);
     inputContainer.appendChild(sendButton);
     inputArea.appendChild(inputContainer);
   
@@ -221,7 +221,7 @@
     event.stopPropagation();
     console.log('Emoji button clicked');
   
-    const existingPicker = document.querySelector('.happyflops-emoji-picker-wrapper');
+    const existingPicker = document.querySelector('.happyflops-emoji-picker');
     
     if (existingPicker) {
       console.log('Removing existing picker');
@@ -230,29 +230,42 @@
     }
   
     console.log('Creating new emoji picker');
-    const emojiPickerWrapper = document.createElement('div');
-    emojiPickerWrapper.className = 'happyflops-emoji-picker-wrapper';
+    const emojiPicker = document.createElement('div');
+    emojiPicker.className = 'happyflops-emoji-picker';
     
-    const emojiPicker = createEmojiPicker();
-    emojiPickerWrapper.appendChild(emojiPicker);
+    const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
+    
+    emojis.forEach(emoji => {
+      const emojiButton = document.createElement('button');
+      emojiButton.textContent = emoji;
+      emojiButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const input = document.querySelector('.happyflops-input');
+        const startPos = input.selectionStart;
+        const endPos = input.selectionEnd;
+        input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos);
+        input.focus();
+        input.selectionStart = input.selectionEnd = startPos + emoji.length;
+        emojiPicker.remove();
+      });
+      emojiPicker.appendChild(emojiButton);
+    });
   
     const inputContainer = event.target.closest('.happyflops-input-container');
-    inputContainer.appendChild(emojiPickerWrapper);
+    inputContainer.appendChild(emojiPicker);
   
     // Position the picker
-    const inputRect = inputContainer.getBoundingClientRect();
-    emojiPickerWrapper.style.bottom = `${inputRect.height}px`;
-    emojiPickerWrapper.style.right = '0';
-  
-    // Ensure the picker is visible
-    emojiPickerWrapper.style.display = 'block';
+    const rect = event.target.getBoundingClientRect();
+    emojiPicker.style.position = 'absolute';
+    emojiPicker.style.bottom = `${inputContainer.offsetHeight}px`;
+    emojiPicker.style.left = '0';
   
     console.log('Emoji picker created and positioned');
   
     function closeEmojiPicker(e) {
-      if (!emojiPickerWrapper.contains(e.target) && e.target !== event.target) {
+      if (!emojiPicker.contains(e.target) && e.target !== event.target) {
         console.log('Closing emoji picker');
-        emojiPickerWrapper.remove();
+        emojiPicker.remove();
         document.removeEventListener('click', closeEmojiPicker);
       }
     }
@@ -265,7 +278,7 @@
     if (chatWindow) {
       chatWindow.addEventListener('scroll', () => {
         console.log('Chat window scrolled, removing emoji picker');
-        emojiPickerWrapper.remove();
+        emojiPicker.remove();
         document.removeEventListener('click', closeEmojiPicker);
       }, { once: true });
     }
