@@ -1,4 +1,3 @@
-
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation';
@@ -171,29 +170,29 @@
   
     return logoContainer;
   }
-    
+
   function createInputArea() {
     const inputArea = document.createElement('div');
     inputArea.className = 'happyflops-input-area';
-  
+
     const inputContainer = document.createElement('div');
     inputContainer.className = 'happyflops-input-container';
-  
+
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
-  
+
     const emojiButton = document.createElement('button');
     emojiButton.innerHTML = '☺️';
     emojiButton.className = 'happyflops-emoji-button';
     emojiButton.addEventListener('click', toggleEmojiPicker);
-  
+
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
     sendButton.className = 'happyflops-send-button';
     sendButton.style.backgroundColor = config.mainColor;
-  
+
     const handleSendMessage = () => {
       const message = input.value.trim();
       if (message !== '') {
@@ -201,26 +200,26 @@
         input.value = '';
       }
     };
-  
+
     sendButton.addEventListener('click', handleSendMessage);
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         handleSendMessage();
       }
     });
-  
+
     inputContainer.appendChild(input);
     inputContainer.appendChild(emojiButton);
     inputContainer.appendChild(sendButton);
     inputArea.appendChild(inputContainer);
-  
+
     return inputArea;
   }
-  
+
   function toggleEmojiPicker(event) {
     event.stopPropagation();
     console.log('Emoji button clicked');
-  
+
     const existingPicker = document.querySelector('.happyflops-emoji-picker');
     
     if (existingPicker) {
@@ -228,11 +227,11 @@
       existingPicker.remove();
       return;
     }
-  
+
     console.log('Creating new emoji picker');
     const emojiPicker = document.createElement('div');
     emojiPicker.className = 'happyflops-emoji-picker';
-  
+
     const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
     
     emojis.forEach(emoji => {
@@ -250,18 +249,18 @@
       });
       emojiPicker.appendChild(emojiButton);
     });
-  
+
     const inputArea = event.target.closest('.happyflops-input-area');
     inputArea.appendChild(emojiPicker);
-  
+
     // Position the picker
     const rect = event.target.getBoundingClientRect();
     const inputAreaRect = inputArea.getBoundingClientRect();
     emojiPicker.style.bottom = `${inputAreaRect.height}px`;
     emojiPicker.style.right = `${inputAreaRect.width - (rect.right - inputAreaRect.left)}px`;
-  
+
     console.log('Emoji picker created and positioned');
-  
+
     function closeEmojiPicker(e) {
       if (!emojiPicker.contains(e.target) && e.target !== event.target) {
         console.log('Closing emoji picker');
@@ -269,11 +268,11 @@
         document.removeEventListener('click', closeEmojiPicker);
       }
     }
-  
+
     setTimeout(() => {
       document.addEventListener('click', closeEmojiPicker);
     }, 0);
-  
+
     const chatWindow = document.querySelector('.happyflops-chat-window');
     if (chatWindow) {
       chatWindow.addEventListener('scroll', () => {
@@ -282,51 +281,6 @@
         document.removeEventListener('click', closeEmojiPicker);
       }, { once: true });
     }
-  }
-  
-  function createEmojiPicker() {
-    const emojiPicker = document.createElement('div');
-    emojiPicker.className = 'happyflops-emoji-picker';
-  
-    const emojiContainer = document.createElement('div');
-    emojiContainer.className = 'happyflops-emoji-container';
-  
-    const emojis = [
-      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
-      '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
-      '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭',
-      '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄',
-      '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕',
-      '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳',
-      '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲',
-      '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱',
-      '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠',
-      '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👻', '👽', '👾'
-    ];
-  
-    emojis.forEach(emoji => {
-      const emojiButton = document.createElement('button');
-      emojiButton.textContent = emoji;
-      emojiButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const input = document.querySelector('.happyflops-input');
-        const startPos = input.selectionStart;
-        const endPos = input.selectionEnd;
-        input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos);
-        input.focus();
-        input.selectionStart = input.selectionEnd = startPos + emoji.length;
-        
-        // Close the emoji picker after selection
-        const emojiPickerWrapper = document.querySelector('.happyflops-emoji-picker-wrapper');
-        if (emojiPickerWrapper) {
-          emojiPickerWrapper.remove();
-        }
-      });
-      emojiContainer.appendChild(emojiButton);
-    });
-  
-    emojiPicker.appendChild(emojiContainer);
-    return emojiPicker;
   }
 
   function createMessageElement(message) {
@@ -383,7 +337,7 @@
     });
 
     return optionsElement;
-    }
+  }
 
   function createFollowUpButtons() {
     const followUpElement = document.createElement('div');
@@ -479,33 +433,48 @@
     saveConversation();
   }
 
-  async function sendConversationToAzure(messages) {
-    const url = STORE_CONVERSATION_API_URL;
-    const payload = {
-      conversationId: window.conversationId || (window.conversationId = generateUUID()),
-      messages: messages.map(msg => ({
-        text: msg.text,
-        isBot: msg.isBot,
-        timestamp: msg.timestamp
-      }))
-    };
+  function handleFollowUpResponse(response) {
+    showFollowUp = false;
+    updateChatWindow();
+  
+    if (response === "customer_service") {
+      addMessage("Connecting you to customer service...", true);
+      fetchAndDisplayConversation();
+    } else {
+      const userResponse = response === "yes" ? "Ja" : "Nej";
+      addMessage(userResponse, false);
+      
+      setTimeout(() => {
+        addMessage(
+          response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!", 
+          true
+        );
+        updateChatWindow();
+      }, 500);
+    }
+  }
+
+  async function fetchAndDisplayConversation() {
+    const conversationId = window.conversationId || generateUUID();
+    const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
 
     try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
+      const response = await fetch(url);
+      const data = await response.json();
+
+      messages = [];
+
+      data.messages.forEach(msg => {
+        addMessage(msg.text, msg.isBot, false, msg.timestamp);
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true);
 
-      console.log('Conversation stored successfully');
+      showFollowUp = false;
+      updateChatWindow();
     } catch (error) {
-      console.error('Error storing conversation:', error);
+      console.error('Error fetching conversation:', error);
+      addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
     }
   }
 
@@ -648,6 +617,36 @@
       var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
+  }
+
+  async function sendConversationToAzure(messages) {
+    const url = STORE_CONVERSATION_API_URL;
+    const payload = {
+      conversationId: window.conversationId || (window.conversationId = generateUUID()),
+      messages: messages.map(msg => ({
+        text: msg.text,
+        isBot: msg.isBot,
+        timestamp: msg.timestamp
+      }))
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      console.log('Conversation stored successfully');
+    } catch (error) {
+      console.error('Error storing conversation:', error);
+    }
   }
 
   createChatbotUI();
