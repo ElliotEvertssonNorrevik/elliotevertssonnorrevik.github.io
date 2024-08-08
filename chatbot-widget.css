@@ -220,7 +220,7 @@
   right: 0;
   z-index: 1000;
   margin-bottom: 10px;
-  display: block; /* Ensure it's visible */
+  display: block;
 }
 
 .happyflops-emoji-picker {
@@ -231,7 +231,7 @@
   width: 250px;
   max-height: 300px;
   overflow-y: auto;
-  display: block; /* Ensure it's visible */
+  display: block;
 }
 
 .happyflops-emoji-container {
