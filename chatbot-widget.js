@@ -643,7 +643,7 @@
         timestamp: msg.timestamp
       }))
     };
-
+  
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -652,11 +652,11 @@
         },
         body: JSON.stringify(payload)
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       console.log('Conversation stored successfully');
     } catch (error) {
       console.error('Error storing conversation:', error);
