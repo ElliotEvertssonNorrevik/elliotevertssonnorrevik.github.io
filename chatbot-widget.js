@@ -251,12 +251,14 @@
       emojiPicker.appendChild(emojiButton);
     });
   
-    const inputContainer = event.target.closest('.happyflops-input-container');
-    inputContainer.appendChild(emojiPicker);
+    const inputArea = event.target.closest('.happyflops-input-area');
+    inputArea.appendChild(emojiPicker);
   
-    // Ensure the picker is positioned to the right
-    emojiPicker.style.left = 'auto';
-    emojiPicker.style.right = '0';
+    // Position the picker
+    const rect = event.target.getBoundingClientRect();
+    const inputAreaRect = inputArea.getBoundingClientRect();
+    emojiPicker.style.bottom = `${inputAreaRect.height}px`;
+    emojiPicker.style.right = `${inputAreaRect.width - (rect.right - inputAreaRect.left)}px`;
   
     console.log('Emoji picker created and positioned');
   
