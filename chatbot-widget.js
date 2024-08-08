@@ -432,24 +432,38 @@
     updateChatWindow();
     saveConversation();
   }
-
+  
   function handleFollowUpResponse(response) {
     showFollowUp = false;
     updateChatWindow();
   
     if (response === "customer_service") {
-      addMessage("Connecting you to customer service...", true);
-      fetchAndDisplayConversation();
+      const customerServiceMessage = "Jag vill prata med kundtjänst.";
+      const timestamp = new Date().toISOString();
+      
+      // Add user's request to messages and conversation history
+      addMessage(customerServiceMessage, false, false, timestamp);
+      conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
+      
+      // Add bot's response
+      const botResponse = "Connecting you to customer service...";
+      addMessage(botResponse, true, false, timestamp);
+      conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
+  
+      // Send updated conversation to Azure
+      sendConversationToAzure(messages).then(() => {
+        // After sending to Azure, fetch and display the conversation
+        fetchAndDisplayConversation();
+      });
     } else {
       const userResponse = response === "yes" ? "Ja" : "Nej";
       addMessage(userResponse, false);
       
       setTimeout(() => {
-        addMessage(
-          response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!", 
-          true
-        );
+        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
+        addMessage(botResponse, true);
         updateChatWindow();
+        sendConversationToAzure(messages);
       }, 500);
     }
   }
