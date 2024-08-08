@@ -171,7 +171,7 @@
   
     return logoContainer;
   }
-  
+    
   function createInputArea() {
     const inputArea = document.createElement('div');
     inputArea.className = 'happyflops-input-area';
@@ -179,15 +179,15 @@
     const inputContainer = document.createElement('div');
     inputContainer.className = 'happyflops-input-container';
   
-    const emojiButton = document.createElement('button');
-    emojiButton.innerHTML = '😊';
-    emojiButton.className = 'happyflops-emoji-button';
-    emojiButton.addEventListener('click', toggleEmojiPicker);
-  
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
+  
+    const emojiButton = document.createElement('button');
+    emojiButton.innerHTML = '😊';
+    emojiButton.className = 'happyflops-emoji-button';
+    emojiButton.addEventListener('click', toggleEmojiPicker);
   
     const sendButton = document.createElement('button');
     sendButton.textContent = 'Skicka';
@@ -209,8 +209,8 @@
       }
     });
   
-    inputContainer.appendChild(emojiButton);
     inputContainer.appendChild(input);
+    inputContainer.appendChild(emojiButton);
     inputContainer.appendChild(sendButton);
     inputArea.appendChild(inputContainer);
   
