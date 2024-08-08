@@ -232,7 +232,7 @@
     console.log('Creating new emoji picker');
     const emojiPicker = document.createElement('div');
     emojiPicker.className = 'happyflops-emoji-picker';
-    
+  
     const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
     
     emojis.forEach(emoji => {
@@ -254,11 +254,9 @@
     const inputContainer = event.target.closest('.happyflops-input-container');
     inputContainer.appendChild(emojiPicker);
   
-    // Position the picker
-    const rect = event.target.getBoundingClientRect();
-    emojiPicker.style.position = 'absolute';
-    emojiPicker.style.bottom = `${inputContainer.offsetHeight}px`;
-    emojiPicker.style.left = '0';
+    // Ensure the picker is positioned to the right
+    emojiPicker.style.left = 'auto';
+    emojiPicker.style.right = '0';
   
     console.log('Emoji picker created and positioned');
   
