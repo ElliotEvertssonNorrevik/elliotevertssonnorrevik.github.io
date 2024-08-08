@@ -1,3 +1,4 @@
+
 (function() {
   const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation';
@@ -219,7 +220,7 @@
   function toggleEmojiPicker(event) {
     event.stopPropagation();
     console.log('Emoji button clicked');
-
+  
     const existingPicker = document.querySelector('.happyflops-emoji-picker-wrapper');
     
     if (existingPicker) {
@@ -227,27 +228,27 @@
       existingPicker.remove();
       return;
     }
-
+  
     console.log('Creating new emoji picker');
     const emojiPickerWrapper = document.createElement('div');
     emojiPickerWrapper.className = 'happyflops-emoji-picker-wrapper';
     
     const emojiPicker = createEmojiPicker();
     emojiPickerWrapper.appendChild(emojiPicker);
-
+  
     const inputContainer = event.target.closest('.happyflops-input-container');
     inputContainer.appendChild(emojiPickerWrapper);
-
+  
     // Position the picker
     const inputRect = inputContainer.getBoundingClientRect();
     emojiPickerWrapper.style.bottom = `${inputRect.height}px`;
     emojiPickerWrapper.style.right = '0';
-
+  
     // Ensure the picker is visible
     emojiPickerWrapper.style.display = 'block';
-
+  
     console.log('Emoji picker created and positioned');
-
+  
     function closeEmojiPicker(e) {
       if (!emojiPickerWrapper.contains(e.target) && e.target !== event.target) {
         console.log('Closing emoji picker');
@@ -255,11 +256,11 @@
         document.removeEventListener('click', closeEmojiPicker);
       }
     }
-
+  
     setTimeout(() => {
       document.addEventListener('click', closeEmojiPicker);
     }, 0);
-
+  
     const chatWindow = document.querySelector('.happyflops-chat-window');
     if (chatWindow) {
       chatWindow.addEventListener('scroll', () => {
@@ -359,7 +360,7 @@
     options.forEach(option => {
       const button = document.createElement('button');
       button.textContent = option;
-      button.className = 'happyflops-option-button.className = 'happyflops-option-button';
+      button.className = 'happyflops-option-button';
       button.addEventListener('click', () => {
         sendMessage(option);
         showInitialOptions = false;
@@ -369,7 +370,7 @@
     });
 
     return optionsElement;
-  }
+    }
 
   function createFollowUpButtons() {
     const followUpElement = document.createElement('div');
@@ -634,18 +635,6 @@
       var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
-  }
-
-  function handleFollowUpResponse(response) {
-    showFollowUp = false;
-    updateChatWindow();
-  
-    if (response === "customer_service") {
-      sendMessage("Prata med kundtjänst");
-    } else {
-      const userResponse = response === "yes" ? "Ja" : "Nej";
-      sendMessage(userResponse);
-    }
   }
 
   createChatbotUI();
