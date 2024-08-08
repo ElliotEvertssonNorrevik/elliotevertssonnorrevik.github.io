@@ -184,16 +184,18 @@
 .happyflops-input {
   flex-grow: 1;
   border: none;
-  padding: 15px 15px; /* Increased top padding */
+  padding: 10px 15px; /* Reduced top padding, equal padding all around */
   font-size: 14px;
   outline: none;
-  line-height: 20px; /* Adjust this value as needed */
+  line-height: 20px;
 }
 
 .happyflops-input::placeholder {
   position: relative;
-  top: 0px; /* Adjust this value to fine-tune the placeholder position */
+  top: 1px; /* Slight adjustment to lower the placeholder a bit */
 }
+
+
 
 .happyflops-emoji-button {
   background: none;
