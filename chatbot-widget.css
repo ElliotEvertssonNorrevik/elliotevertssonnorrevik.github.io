@@ -167,7 +167,6 @@
 }
 
 .happyflops-input-area {
-  position: relative;
   padding: 10px;
   background-color: #fff;
   border-top: 1px solid #eee;
@@ -180,22 +179,17 @@
   border: 1px solid #ccc;
   border-radius: 20px;
   overflow: hidden;
-  padding: 2px 5px;
 }
 
 .happyflops-input {
   flex-grow: 1;
   border: none;
-  padding: 10px 15px; /* Reduced top padding, equal padding all around */
+  padding: 10px 15px;
   font-size: 14px;
   outline: none;
-  line-height: 20px;
 }
 
-.happyflops-input::placeholder {
-  position: relative;
-  top: 1px; /* Slight adjustment to lower the placeholder a bit */
-}
+
 
 
 
