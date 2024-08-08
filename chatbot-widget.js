@@ -11,6 +11,7 @@
   let showInitialOptions = false;
   let showFollowUp = false;
   let isConnectedToCustomerService = false;
+  let customerServiceInterval;
   
   const config = {
     headerText: 'Vanbruun AI',
@@ -372,59 +373,65 @@
   
     conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
   
-    isLoading = true;
-    addMessage('', true, true);
-    updateChatWindow();
-  
-    try {
-      const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
-      const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
-  
-      const encodedQuery = encodeURIComponent(fullQuery);
-      const url = `${API_BASE_URL}?question=${encodedQuery}`;
-  
-      const response = await fetch(url, {
-        method: 'GET',
-      });
-  
-      const data = await response.json();
-      const answer = data.answer;
-  
-      const responseTime = new Date().toISOString();
-      conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
-  
-      messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
-      
+    if (isConnectedToCustomerService) {
+      // If connected to customer service, just send the message to Azure and update
       await sendConversationToAzure(messages);
-  
-      if (!answer.includes('?') && Math.random() < 0.5) {
-        setTimeout(() => {
-          const followUpTime = new Date().toISOString();
-          addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
-          conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
-          showFollowUp = true;
-          updateChatWindow();
-          sendConversationToAzure(messages);
-        }, 1000);
-      } else {
-        showFollowUp = false;
-      }
-  
-    } catch (error) {
-      console.error('Error fetching bot response:', error);
-      const errorTime = new Date().toISOString();
-      const errorMessage = 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se';
-      messages[messages.length - 1] = { 
-        text: errorMessage, 
-        isBot: true, 
-        isLoading: false,
-        timestamp: errorTime
-      };
-      conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
-      await sendConversationToAzure(messages);
-    } finally {
-      isLoading = false;
+      fetchAndDisplayConversation();
+    } else {
+      isLoading = true;
+      addMessage('', true, true);
       updateChatWindow();
+    
+      try {
+        const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+        const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
+    
+        const encodedQuery = encodeURIComponent(fullQuery);
+        const url = `${API_BASE_URL}?question=${encodedQuery}`;
+    
+        const response = await fetch(url, {
+          method: 'GET',
+        });
+    
+        const data = await response.json();
+        const answer = data.answer;
+    
+        const responseTime = new Date().toISOString();
+        conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
+    
+        messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+        
+        await sendConversationToAzure(messages);
+    
+        if (!answer.includes('?') && Math.random() < 0.5) {
+          setTimeout(() => {
+            const followUpTime = new Date().toISOString();
+            addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
+            conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
+            showFollowUp = true;
+            updateChatWindow();
+            sendConversationToAzure(messages);
+          }, 1000);
+        } else {
+          showFollowUp = false;
+        }
+    
+      } catch (error) {
+        console.error('Error fetching bot response:', error);
+        const errorTime = new Date().toISOString();
+        const errorMessage = 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se';
+        messages[messages.length - 1] = { 
+          text: errorMessage, 
+          isBot: true, 
+          isLoading: false,
+          timestamp: errorTime
+        };
+        conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
+        await sendConversationToAzure(messages);
+      } finally {
+        isLoading = false;
+        updateChatWindow();
+      }
     }
   }
 
@@ -446,12 +453,12 @@
       addMessage(customerServiceMessage, false, false, timestamp);
       conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
       
-      const botResponse = "Connecting you to customer service...";
+      const botResponse = "Kopplar dig till kundtjänst...";
       addMessage(botResponse, true, false, timestamp);
       conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
   
       sendConversationToAzure(messages).then(() => {
-        fetchAndDisplayConversation();
+        startCustomerServiceMode();
       });
     } else {
       const userResponse = response === "yes" ? "Ja" : "Nej";
@@ -467,6 +474,11 @@
     saveConversation();
   }
 
+  function startCustomerServiceMode() {
+    fetchAndDisplayConversation();
+    customerServiceInterval = setInterval(fetchAndDisplayConversation, 5000); // Fetch every 5 seconds
+  }
+
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
     const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
@@ -475,19 +487,28 @@
       const response = await fetch(url);
       const data = await response.json();
 
-      messages = [];
-
-      data.messages.forEach(msg => {
-        addMessage(msg.text, msg.isBot, false, msg.timestamp);
-      });
-
-      addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true);
+      // Clear existing messages only if this is the first fetch
+      if (messages.length === 0 || !isConnectedToCustomerService) {
+        messages = [];
+        data.messages.forEach(msg => {
+          addMessage(msg.text, msg.isBot, false, msg.timestamp);
+        });
+      } else {
+        // Add only new messages
+        const lastMessageTimestamp = messages[messages.length - 1].timestamp;
+        const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
+        newMessages.forEach(msg => {
+          addMessage(msg.text, msg.isBot, false, msg.timestamp);
+        });
+      }
 
       showFollowUp = false;
       updateChatWindow();
     } catch (error) {
       console.error('Error fetching conversation:', error);
-      addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
+      if (messages.length === 0) {
+        addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
+      }
     }
   }
 
@@ -613,6 +634,10 @@
   }
 
   function restartConversation() {
+    if (customerServiceInterval) {
+      clearInterval(customerServiceInterval);
+    }
+    isConnectedToCustomerService = false;
     messages = [];
     conversationHistory = [];
     isInitialized = false;
@@ -626,6 +651,7 @@
     localStorage.removeItem('vanbruunChatShowInitialOptions');
     localStorage.removeItem('vanbruunChatShowFollowUp');
     localStorage.removeItem('vanbruunChatLastMessage');
+    localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
 
     initializeChat();
   }
