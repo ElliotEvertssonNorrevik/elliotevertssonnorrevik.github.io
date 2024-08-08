@@ -185,7 +185,7 @@
     input.className = 'happyflops-input';
   
     const emojiButton = document.createElement('button');
-    emojiButton.innerHTML = '😊';
+    emojiButton.innerHTML = '☺️';
     emojiButton.className = 'happyflops-emoji-button';
     emojiButton.addEventListener('click', toggleEmojiPicker);
   
