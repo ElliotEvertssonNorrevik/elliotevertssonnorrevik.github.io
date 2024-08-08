@@ -218,13 +218,17 @@
 
   function toggleEmojiPicker(event) {
     event.stopPropagation();
+    console.log('Emoji button clicked');
+  
     const existingPicker = document.querySelector('.happyflops-emoji-picker-wrapper');
     
     if (existingPicker) {
+      console.log('Removing existing picker');
       existingPicker.remove();
       return;
     }
   
+    console.log('Creating new emoji picker');
     const emojiPickerWrapper = document.createElement('div');
     emojiPickerWrapper.className = 'happyflops-emoji-picker-wrapper';
     
@@ -239,8 +243,14 @@
     emojiPickerWrapper.style.bottom = `${inputRect.height}px`;
     emojiPickerWrapper.style.right = '0';
   
+    // Ensure the picker is visible
+    emojiPickerWrapper.style.display = 'block';
+  
+    console.log('Emoji picker created and positioned');
+  
     function closeEmojiPicker(e) {
       if (!emojiPickerWrapper.contains(e.target) && e.target !== event.target) {
+        console.log('Closing emoji picker');
         emojiPickerWrapper.remove();
         document.removeEventListener('click', closeEmojiPicker);
       }
@@ -253,6 +263,7 @@
     const chatWindow = document.querySelector('.happyflops-chat-window');
     if (chatWindow) {
       chatWindow.addEventListener('scroll', () => {
+        console.log('Chat window scrolled, removing emoji picker');
         emojiPickerWrapper.remove();
         document.removeEventListener('click', closeEmojiPicker);
       }, { once: true });
