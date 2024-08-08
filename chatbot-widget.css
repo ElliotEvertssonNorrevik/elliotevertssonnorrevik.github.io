@@ -167,6 +167,7 @@
 }
 
 .happyflops-input-area {
+  position: relative;
   padding: 10px;
   background-color: #fff;
   border-top: 1px solid #eee;
@@ -179,6 +180,7 @@
   border: 1px solid #ccc;
   border-radius: 20px;
   overflow: hidden;
+  padding: 2px 5px;
 }
 
 .happyflops-input {
@@ -228,8 +230,7 @@
 .happyflops-emoji-picker {
   position: absolute;
   bottom: 100%;
-  right: 0;
-  left: auto; /* Ensure left positioning is not interfering */
+  right: 10px; /* Align with the right padding of happyflops-input-area */
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -250,9 +251,6 @@
   cursor: pointer;
   padding: 5px;
   transition: transform 0.1s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .happyflops-emoji-picker button:hover {
