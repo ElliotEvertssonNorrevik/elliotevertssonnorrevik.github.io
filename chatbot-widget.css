@@ -192,7 +192,7 @@
 
 .happyflops-input::placeholder {
   position: relative;
-  top: 2px; /* Adjust this value to fine-tune the placeholder position */
+  top: 0px; /* Adjust this value to fine-tune the placeholder position */
 }
 
 .happyflops-emoji-button {
