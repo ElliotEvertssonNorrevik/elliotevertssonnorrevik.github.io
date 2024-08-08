@@ -220,7 +220,7 @@
 .happyflops-emoji-picker {
   position: absolute;
   bottom: 100%;
-  right: 0;
+  right: 0;  /* Change this from 'left: 0;' to 'right: 0;' */
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
