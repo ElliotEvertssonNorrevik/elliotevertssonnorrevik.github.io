@@ -184,7 +184,7 @@
 .happyflops-input {
   flex-grow: 1;
   border: none;
-  padding: 15px 15px 5px; /* Increased top padding */
+  padding: 15px 15px; /* Increased top padding */
   font-size: 14px;
   outline: none;
   line-height: 20px; /* Adjust this value as needed */
