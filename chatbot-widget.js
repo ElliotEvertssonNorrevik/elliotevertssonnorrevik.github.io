@@ -11,7 +11,7 @@
   let showInitialOptions = false;
   let showFollowUp = false;
   let isConnectedToCustomerService = false;
-  let needsCustomerService = false;
+  let customerServiceInterval;
   
   const config = {
     headerText: 'Vanbruun AI',
@@ -374,6 +374,7 @@
     conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
   
     if (isConnectedToCustomerService) {
+      // If connected to customer service, just send the message to Azure and update
       await sendConversationToAzure(messages);
       fetchAndDisplayConversation();
     } else {
@@ -446,7 +447,6 @@
   
     if (response === "customer_service") {
       isConnectedToCustomerService = true;
-      needsCustomerService = true;
       const customerServiceMessage = "Jag vill prata med kundtjänst.";
       const timestamp = new Date().toISOString();
       
@@ -458,7 +458,7 @@
       conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
   
       sendConversationToAzure(messages).then(() => {
-        fetchAndDisplayConversation();
+        startCustomerServiceMode();
       });
     } else {
       const userResponse = response === "yes" ? "Ja" : "Nej";
@@ -474,6 +474,11 @@
     saveConversation();
   }
 
+  function startCustomerServiceMode() {
+    fetchAndDisplayConversation();
+    customerServiceInterval = setInterval(fetchAndDisplayConversation, 5000); // Fetch every 5 seconds
+  }
+
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
     const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
@@ -482,19 +487,28 @@
       const response = await fetch(url);
       const data = await response.json();
 
-      messages = [];
-
-      data.messages.forEach(msg => {
-        addMessage(msg.text, msg.isBot, false, msg.timestamp);
-      });
-
-      addMessage("Du har kopplats till kundtjänst. En representant kommer att ansluta snart.", true);
+      // Clear existing messages only if this is the first fetch
+      if (messages.length === 0 || !isConnectedToCustomerService) {
+        messages = [];
+        data.messages.forEach(msg => {
+          addMessage(msg.text, msg.isBot, false, msg.timestamp);
+        });
+      } else {
+        // Add only new messages
+        const lastMessageTimestamp = messages[messages.length - 1].timestamp;
+        const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
+        newMessages.forEach(msg => {
+          addMessage(msg.text, msg.isBot, false, msg.timestamp);
+        });
+      }
 
       showFollowUp = false;
       updateChatWindow();
     } catch (error) {
       console.error('Error fetching conversation:', error);
-      addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
+      if (messages.length === 0) {
+        addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
+      }
     }
   }
 
@@ -574,7 +588,6 @@
     localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
     localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
     localStorage.setItem('vanbruunChatIsConnectedToCustomerService', JSON.stringify(isConnectedToCustomerService));
-    localStorage.setItem('vanbruunChatNeedsCustomerService', JSON.stringify(needsCustomerService));
   }
   
   function loadConversation() {
@@ -586,7 +599,6 @@
     const storedIsChatOpen = localStorage.getItem('vanbruunChatIsOpen');
     const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
     const storedIsConnectedToCustomerService = localStorage.getItem('vanbruunChatIsConnectedToCustomerService');
-    const storedNeedsCustomerService = localStorage.getItem('vanbruunChatNeedsCustomerService');
   
     if (storedMessages) {
       messages = JSON.parse(storedMessages);
@@ -611,9 +623,6 @@
     if (storedIsConnectedToCustomerService !== null) {
       isConnectedToCustomerService = JSON.parse(storedIsConnectedToCustomerService);
     }
-    if (storedNeedsCustomerService !== null) {
-      needsCustomerService = JSON.parse(storedNeedsCustomerService);
-    }
     if (storedLastMessage) {
       const lastMessage = JSON.parse(storedLastMessage);
       if (lastMessage && lastMessage.isBot && !lastMessage.text.includes('?') && !isConnectedToCustomerService) {
@@ -625,13 +634,15 @@
   }
 
   function restartConversation() {
+    if (customerServiceInterval) {
+      clearInterval(customerServiceInterval);
+    }
+    isConnectedToCustomerService = false;
     messages = [];
     conversationHistory = [];
     isInitialized = false;
     showInitialOptions = false;
     showFollowUp = false;
-    isConnectedToCustomerService = false;
-    needsCustomerService = false;
     window.conversationId = generateUUID();
 
     localStorage.removeItem('vanbruunChatMessages');
@@ -641,7 +652,6 @@
     localStorage.removeItem('vanbruunChatShowFollowUp');
     localStorage.removeItem('vanbruunChatLastMessage');
     localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
-    localStorage.removeItem('vanbruunChatNeedsCustomerService');
 
     initializeChat();
   }
@@ -661,8 +671,7 @@
         text: msg.text,
         isBot: msg.isBot,
         timestamp: msg.timestamp
-      })),
-      needsCustomerService: needsCustomerService
+      }))
     };
   
     try {
