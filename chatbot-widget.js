@@ -457,7 +457,7 @@
       addMessage(botResponse, true, false, timestamp);
       conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
   
-      sendConversationToAzure(messages).then(() => {
+      sendConversationToAzure(messages, true).then(() => {
         startCustomerServiceMode();
       });
     } else {
@@ -663,7 +663,7 @@
     });
   }
 
-  async function sendConversationToAzure(messages) {
+  async function sendConversationToAzure(messages, needsCustomerService = false) {
     const url = STORE_CONVERSATION_API_URL;
     const payload = {
       conversationId: window.conversationId || (window.conversationId = generateUUID()),
@@ -671,7 +671,8 @@
         text: msg.text,
         isBot: msg.isBot,
         timestamp: msg.timestamp
-      }))
+      })),
+      needsCustomerService: needsCustomerService
     };
   
     try {
