@@ -362,6 +362,8 @@
     return followUpElement;
   }
 
+  const API_KEY = 'your_rotated_api_key_here'; // Replace this regularly
+
   async function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
   
@@ -374,35 +376,37 @@
     conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
   
     if (isConnectedToCustomerService) {
-      // If connected to customer service, just send the message to Azure and update
       await sendConversationToAzure(messages);
       fetchAndDisplayConversation();
     } else {
       isLoading = true;
       addMessage('', true, true);
       updateChatWindow();
-    
+  
       try {
         const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
         const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
-    
+  
         const encodedQuery = encodeURIComponent(fullQuery);
         const url = `${API_BASE_URL}?question=${encodedQuery}`;
-    
+  
         const response = await fetch(url, {
           method: 'GET',
+          headers: {
+            'x-functions-key': API_KEY
+          }
         });
-    
+  
         const data = await response.json();
         const answer = data.answer;
-    
+  
         const responseTime = new Date().toISOString();
         conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
-    
+  
         messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
         
         await sendConversationToAzure(messages);
-    
+  
         if (!answer.includes('?') && Math.random() < 0.5) {
           setTimeout(() => {
             const followUpTime = new Date().toISOString();
@@ -415,7 +419,7 @@
         } else {
           showFollowUp = false;
         }
-    
+  
       } catch (error) {
         console.error('Error fetching bot response:', error);
         const errorTime = new Date().toISOString();
@@ -482,26 +486,28 @@
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
     const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
-
+  
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          'x-functions-key': API_KEY
+        }
+      });
       const data = await response.json();
-
-      // Clear existing messages only if this is the first fetch
+  
       if (messages.length === 0 || !isConnectedToCustomerService) {
         messages = [];
         data.messages.forEach(msg => {
           addMessage(msg.text, msg.isBot, false, msg.timestamp);
         });
       } else {
-        // Add only new messages
         const lastMessageTimestamp = messages[messages.length - 1].timestamp;
         const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
         newMessages.forEach(msg => {
           addMessage(msg.text, msg.isBot, false, msg.timestamp);
         });
       }
-
+  
       showFollowUp = false;
       updateChatWindow();
     } catch (error) {
@@ -511,7 +517,7 @@
       }
     }
   }
-
+  
   function updateChatWindow() {
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
@@ -680,6 +686,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-functions-key': API_KEY
         },
         body: JSON.stringify(payload)
       });
