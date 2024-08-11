@@ -1,5 +1,5 @@
 (function() {
-  const API_BASE_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/HttpTrigger';
+  const API_BASE_URL = 'https://chat-hghbamh9czdpebcx.z01.azurefd.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation';
   const STORE_CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation';
 
@@ -362,7 +362,7 @@
     return followUpElement;
   }
 
-  const API_KEY = 'your_rotated_api_key_here'; // Replace this regularly
+  const API_KEY = 'znGiNhz3AQpIWsBWgfy3MoS0YbvVzukP1kEzYL9EdFo-AzFupHRSFg==';
 
   async function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
