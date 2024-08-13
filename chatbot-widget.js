@@ -515,6 +515,15 @@
         });
       }
   
+      // Check if the user wants to talk to customer service
+      const lastUserMessage = data.messages.filter(msg => !msg.isBot).pop();
+      if (lastUserMessage && lastUserMessage.text.toLowerCase().includes('prata med kundtjänst')) {
+        isConnectedToCustomerService = true;
+        addMessage("Kopplar dig till kundtjänst...", true, false, new Date().toISOString());
+        await sendConversationToAzure(messages, true);
+        startCustomerServiceMode();
+      }
+  
       showFollowUp = false;
       updateChatWindow();
     } catch (error) {
@@ -523,7 +532,9 @@
         addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
       }
     }
-  }  
+  }
+
+  
   function updateChatWindow() {
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
