@@ -485,12 +485,13 @@
 
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
-    const url = `${CONVERSATION_API_URL}?conversationId=${conversationId}`;
+    const CONVERSATION_API_KEY = 'H0IFLNdgP96OmfK_GC77VSjKvbwGGZKxLf9i2RTDQLG_AzFup-YZ2g=='
+    const url = `${CONVERSATION_API_URL}?code=${CONVERSATION_API_KEY}`;
   
     try {
       const response = await fetch(url, {
-        headers: {
-          'x-functions-key': API_KEY
+        params: {
+          'x-conversationId': conversationId
         }
       });
       const data = await response.json();
@@ -670,6 +671,7 @@
   }
 
   async function sendConversationToAzure(messages, needsCustomerService = false) {
+    const STORE_CONVERSATION_API_KEY = 'AsRV7QFiKi6g2QjBQrV2WiwWtc_zo6MmwPTUXGL0vqVcAzFuTXR5Ew==';
     const url = STORE_CONVERSATION_API_URL;
     const payload = {
       conversationId: window.conversationId || (window.conversationId = generateUUID()),
@@ -682,11 +684,10 @@
     };
   
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${url}${STORE_CONVERSATION_API_KEY}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'x-functions-key': API_KEY
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
       });
