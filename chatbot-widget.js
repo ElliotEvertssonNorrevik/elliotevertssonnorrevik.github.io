@@ -1,7 +1,7 @@
 (function() {
   const API_BASE_URL = 'https://chat-hghbamh9czdpebcx.z01.azurefd.net/api/HttpTrigger';
-  const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation';
-  const STORE_CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation';
+  const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation?code=';
+  const STORE_CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation?code=';
 
   let messages = [];
   let conversationHistory = [];
