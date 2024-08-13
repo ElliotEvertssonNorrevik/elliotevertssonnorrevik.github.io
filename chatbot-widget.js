@@ -1,5 +1,5 @@
 (function() {
-  const API_BASE_URL = 'fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
+  const API_BASE_URL = 'https://fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getconversation?code=';
   const STORE_CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/storeconversation?code=';
 
