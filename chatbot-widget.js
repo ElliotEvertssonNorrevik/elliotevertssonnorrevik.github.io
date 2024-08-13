@@ -1,7 +1,7 @@
 (function() {
-  const API_BASE_URL = 'https://chat-hghbamh9czdpebcx.z01.azurefd.net/api/HttpTrigger';
-  const CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/getconversation?code=';
-  const STORE_CONVERSATION_API_URL = 'https://rosterai-fresh-function.azurewebsites.net/api/storeconversation?code=';
+  const API_BASE_URL = 'fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
+  const CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getconversation?code=';
+  const STORE_CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/storeconversation?code=';
 
   let messages = [];
   let conversationHistory = [];
@@ -362,7 +362,7 @@
     return followUpElement;
   }
 
-  const API_KEY = 'znGiNhz3AQpIWsBWgfy3MoS0YbvVzukP1kEzYL9EdFo-AzFupHRSFg==';
+  const API_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
 
   async function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
@@ -485,7 +485,7 @@
 
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
-    const CONVERSATION_API_KEY = 'H0IFLNdgP96OmfK_GC77VSjKvbwGGZKxLf9i2RTDQLG_AzFup-YZ2g==';
+    const CONVERSATION_API_KEY = 'tqrM0w0XHMSObpoVWwcq4h9vt8-3koXfb15whKZji48zAzFumJ2clA==';
     const url = `${CONVERSATION_API_URL}${CONVERSATION_API_KEY}&conversationId=${encodeURIComponent(conversationId)}`;
   
     try {
@@ -692,7 +692,7 @@
   }
 
   async function sendConversationToAzure(messages, needsCustomerService = false) {
-    const STORE_CONVERSATION_API_KEY = 'AsRV7QFiKi6g2QjBQrV2WiwWtc_zo6MmwPTUXGL0vqVcAzFuTXR5Ew==';
+    const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
     const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`;
     const payload = {
       conversationId: window.conversationId || (window.conversationId = generateUUID()),
