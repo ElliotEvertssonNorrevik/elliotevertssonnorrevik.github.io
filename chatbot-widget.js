@@ -486,18 +486,20 @@
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
     const CONVERSATION_API_KEY = 'H0IFLNdgP96OmfK_GC77VSjKvbwGGZKxLf9i2RTDQLG_AzFup-YZ2g==';
-    const url = `${CONVERSATION_API_URL}${CONVERSATION_API_KEY}`;
+    const url = `${CONVERSATION_API_URL}${CONVERSATION_API_KEY}&conversationId=${encodeURIComponent(conversationId)}`;
   
     try {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-        },
-        params: {
-          conversationId: conversationId
         }
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
   
       if (messages.length === 0 || !isConnectedToCustomerService) {
@@ -521,8 +523,7 @@
         addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
       }
     }
-  }
-  
+  }  
   function updateChatWindow() {
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
