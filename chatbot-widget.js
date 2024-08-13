@@ -517,11 +517,16 @@
   
       // Check if the user wants to talk to customer service
       const lastUserMessage = data.messages.filter(msg => !msg.isBot).pop();
-      if (lastUserMessage && lastUserMessage.text.toLowerCase().includes('prata med kundtjänst')) {
+      if (lastUserMessage && 
+          lastUserMessage.text.toLowerCase().includes('prata med kundtjänst') && 
+          !isConnectedToCustomerService) {
         isConnectedToCustomerService = true;
-        addMessage("Kopplar dig till kundtjänst...", true, false, new Date().toISOString());
-        await sendConversationToAzure(messages, true);
-        startCustomerServiceMode();
+        const connectingMessage = "Kopplar dig till kundtjänst...";
+        if (!messages.some(msg => msg.text === connectingMessage)) {
+          addMessage(connectingMessage, true, false, new Date().toISOString());
+          await sendConversationToAzure(messages, true);
+          startCustomerServiceMode();
+        }
       }
   
       showFollowUp = false;
