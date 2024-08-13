@@ -486,12 +486,17 @@
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
     const CONVERSATION_API_KEY = 'H0IFLNdgP96OmfK_GC77VSjKvbwGGZKxLf9i2RTDQLG_AzFup-YZ2g=='
-    const url = `${CONVERSATION_API_URL}?code=${CONVERSATION_API_KEY}`;
+    const url = `${CONVERSATION_API_URL}${CONVERSATION_API_KEY}`;
+
   
     try {
       const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
         params: {
-          'x-conversationId': conversationId
+          conversationId: conversationId
         }
       });
       const data = await response.json();
@@ -672,7 +677,6 @@
 
   async function sendConversationToAzure(messages, needsCustomerService = false) {
     const STORE_CONVERSATION_API_KEY = 'AsRV7QFiKi6g2QjBQrV2WiwWtc_zo6MmwPTUXGL0vqVcAzFuTXR5Ew==';
-    const url = STORE_CONVERSATION_API_URL;
     const payload = {
       conversationId: window.conversationId || (window.conversationId = generateUUID()),
       messages: messages.map(msg => ({
@@ -684,13 +688,14 @@
     };
   
     try {
-      const response = await fetch(`${url}${STORE_CONVERSATION_API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+  const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
   
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
