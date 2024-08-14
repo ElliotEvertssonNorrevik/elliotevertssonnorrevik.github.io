@@ -15,7 +15,7 @@
   
   const config = {
     headerText: 'Vanbruun AI',
-    subHeaderText: 'Chat with our digital assistant',
+    subHeaderText: 'Chatta med vår digitala assistent',
     mainColor: '#3f2b20',
     logoUrl: 'https://i.ibb.co/m6LBcpN/cd8ajn5t.jpg',
     launchAvatarUrl: 'https://i.ibb.co/DtZd3sB/Untitled-design-37.png'
@@ -118,7 +118,7 @@
     const reloadButton = document.createElement('button');
     reloadButton.innerHTML = '&#x21bb;'; // Reload symbol
     reloadButton.className = 'happyflops-button happyflops-reload-button';
-    reloadButton.title = 'Restart conversation';
+    reloadButton.title = 'Starta om konversation';
     reloadButton.addEventListener('click', restartConversation);
 
     const closeButton = document.createElement('button');
@@ -182,7 +182,7 @@
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.placeholder = 'Type a message...';
+    input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
 
     const emojiButton = document.createElement('button');
@@ -191,7 +191,7 @@
     emojiButton.addEventListener('click', toggleEmojiPicker);
 
     const sendButton = document.createElement('button');
-    sendButton.textContent = 'Send';
+    sendButton.textContent = 'Skicka';
     sendButton.className = 'happyflops-send-button';
     sendButton.style.backgroundColor = config.mainColor;
 
@@ -288,7 +288,27 @@
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
-  
+
+    // Create agent name element if available
+    if (message.agentName && !message.isBot) {
+      const agentNameElement = document.createElement('div');
+      agentNameElement.className = 'happyflops-agent-name';
+      agentNameElement.textContent = message.agentName;
+      messageElement.appendChild(agentNameElement);
+    }
+
+    const messageContentWrapper = document.createElement('div');
+    messageContentWrapper.className = 'happyflops-message-content-wrapper';
+
+    // Add agent photo for non-bot messages
+    if (!message.isBot && message.agentPhoto) {
+      const agentPhotoElement = document.createElement('img');
+      agentPhotoElement.src = message.agentPhoto;
+      agentPhotoElement.alt = 'Agent';
+      agentPhotoElement.className = 'happyflops-agent-photo';
+      messageContentWrapper.appendChild(agentPhotoElement);
+    }
+
     const textElement = document.createElement('div');
     textElement.className = 'happyflops-message-text';
     
@@ -300,17 +320,10 @@
     } else {
       textElement.textContent = message.text;
     }
-  
-    messageElement.appendChild(textElement);
 
-    // Add agent name if available
-    if (message.agentName) {
-      const agentNameElement = document.createElement('div');
-      agentNameElement.className = 'happyflops-agent-name';
-      agentNameElement.textContent = message.agentName;
-      messageElement.appendChild(agentNameElement);
-    }
-  
+    messageContentWrapper.appendChild(textElement);
+    messageElement.appendChild(messageContentWrapper);
+
     return messageElement;
   }
 
@@ -333,7 +346,7 @@
     const optionsElement = document.createElement('div');
     optionsElement.className = 'happyflops-initial-options';
 
-    const options = ['Track my order', 'Book a consultation'];
+    const options = ['Spåra min order', 'Boka en konsultation'];
     options.forEach(option => {
       const button = document.createElement('button');
       button.textContent = option;
@@ -354,9 +367,9 @@
     followUpElement.className = 'happyflops-initial-options';
     
     const options = [
-      { text: 'Yes', response: 'yes' },
-      { text: 'No', response: 'no' },
-      { text: 'Talk to customer service', response: 'customer_service' }
+      { text: 'Ja', response: 'yes' },
+      { text: 'Nej', response: 'no' },
+      { text: 'Prata med kundtjänst', response: 'customer_service' }
     ];
     
     options.forEach(option => {
@@ -369,7 +382,7 @@
   
     return followUpElement;
   }
-
+  
   const API_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
 
   async function sendMessage(text) {
@@ -418,8 +431,8 @@
         if (!answer.includes('?') && Math.random() < 0.5) {
           setTimeout(() => {
             const followUpTime = new Date().toISOString();
-            addMessage("Can I help you with anything else?", true, false, followUpTime);
-            conversationHistory.push({"role": "assistant", "content": "Can I help you with anything else?", "timestamp": followUpTime});
+            addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
+            conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
             showFollowUp = true;
             updateChatWindow();
             sendConversationToAzure(messages);
@@ -431,7 +444,7 @@
       } catch (error) {
         console.error('Error fetching bot response:', error);
         const errorTime = new Date().toISOString();
-        const errorMessage = 'Sorry, I couldn\'t connect right now. Please try again later or contact us at customer.service@happyflops.se';
+        const errorMessage = 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss via kundservice@happyflops.se';
         messages[messages.length - 1] = { 
           text: errorMessage, 
           isBot: true, 
@@ -447,8 +460,8 @@
     }
   }
 
-  function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null) {
-    messages.push({ text, isBot, isLoading, timestamp, agentName, agentId });
+  function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null, agentPhoto = null) {
+    messages.push({ text, isBot, isLoading, timestamp, agentName, agentId, agentPhoto });
     updateChatWindow();
     saveConversation();
   }
@@ -459,13 +472,13 @@
   
     if (response === "customer_service") {
       isConnectedToCustomerService = true;
-      const customerServiceMessage = "I want to talk to customer service.";
+      const customerServiceMessage = "Jag vill prata med kundtjänst.";
       const timestamp = new Date().toISOString();
       
       addMessage(customerServiceMessage, false, false, timestamp);
       conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
       
-      const botResponse = "Connecting you to customer service...";
+      const botResponse = "Kopplar dig till kundtjänst...";
       addMessage(botResponse, true, false, timestamp);
       conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
   
@@ -473,11 +486,11 @@
         startCustomerServiceMode();
       });
     } else {
-      const userResponse = response === "yes" ? "Yes" : "No";
+      const userResponse = response === "yes" ? "Ja" : "Nej";
       addMessage(userResponse, false);
       
       setTimeout(() => {
-        const botResponse = response === "yes" ? "What else can I help you with?" : "Okay, thanks for chatting with me!";
+        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
         addMessage(botResponse, true);
         updateChatWindow();
         sendConversationToAzure(messages);
@@ -513,23 +526,23 @@
       if (messages.length === 0 || !isConnectedToCustomerService) {
         messages = [];
         data.messages.forEach(msg => {
-          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId);
+          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhoto);
         });
       } else {
         const lastMessageTimestamp = messages[messages.length - 1].timestamp;
         const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
         newMessages.forEach(msg => {
-          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId);
+          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhoto);
         });
       }
   
       // Check if the user wants to talk to customer service
       const lastUserMessage = data.messages.filter(msg => !msg.isBot).pop();
       if (lastUserMessage && 
-          lastUserMessage.text.toLowerCase().includes('talk to customer service') && 
+          lastUserMessage.text.toLowerCase().includes('prata med kundtjänst') && 
           !isConnectedToCustomerService) {
         isConnectedToCustomerService = true;
-        const connectingMessage = "Connecting you to customer service...";
+        const connectingMessage = "Kopplar dig till kundtjänst...";
         if (!messages.some(msg => msg.text === connectingMessage)) {
           addMessage(connectingMessage, true, false, new Date().toISOString());
           await sendConversationToAzure(messages, true);
@@ -542,7 +555,7 @@
     } catch (error) {
       console.error('Error fetching conversation:', error);
       if (messages.length === 0) {
-        addMessage("An error occurred while connecting to customer service. Please try again later.", true);
+        addMessage("Det uppstod ett fel vid anslutning till kundtjänst. Vänligen försök igen senare.", true);
       }
     }
   }
@@ -586,10 +599,10 @@
 
   function initializeChat() {
     if (!isInitialized) {
-      const initialMessage = 'Hello! My name is Elliot and I\'m your virtual assistant here at Vanbruun.';
+      const initialMessage = 'Hej! Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun.';
       addMessageWithDelay(initialMessage, true, 1000, () => {
         conversationHistory.push({"role": "assistant", "content": initialMessage});
-        const followUpMessage = 'How can I help you today?😊';
+        const followUpMessage = 'Vad kan jag hjälpa dig med idag?😊';
         addMessageWithDelay(followUpMessage, true, 500, () => {
           conversationHistory.push({"role": "assistant", "content": followUpMessage});
           showInitialOptions = true;
@@ -708,7 +721,8 @@
         isBot: msg.isBot,
         timestamp: msg.timestamp,
         agentName: msg.agentName,
-        agentId: msg.agentId
+        agentId: msg.agentId,
+        agentPhoto: msg.agentPhoto
       })),
       needsCustomerService: needsCustomerService
     };
@@ -721,7 +735,8 @@
         },
         body: JSON.stringify(payload)
       });
-  
+      
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
