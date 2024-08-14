@@ -284,22 +284,30 @@
       }, { once: true });
     }
   }
-
+  
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
   
-    if (message.agentName) {
+    if (message.agentName || message.agentPhoto) {
       const agentInfoContainer = document.createElement('div');
       agentInfoContainer.className = 'happyflops-agent-info';
   
       const profileImage = document.createElement('div');
       profileImage.className = 'happyflops-profile-image';
-      profileImage.textContent = message.agentPhoto;
+      
+      if (message.agentPhoto) {
+        const img = document.createElement('img');
+        img.src = message.agentPhoto;
+        img.alt = message.agentName || 'Agent';
+        profileImage.appendChild(img);
+      } else if (message.agentName) {
+        profileImage.textContent = message.agentName.charAt(0).toUpperCase();
+      }
   
       const agentNameElement = document.createElement('div');
       agentNameElement.className = 'happyflops-agent-name';
-      agentNameElement.textContent = message.agentName;
+      agentNameElement.textContent = message.agentName || 'Agent';
   
       agentInfoContainer.appendChild(profileImage);
       agentInfoContainer.appendChild(agentNameElement);
