@@ -147,7 +147,6 @@
 .happyflops-message {
   position: relative;
   max-width: 80%;
-  margin-bottom: 15px;
   padding: 10px 15px;
   font-size: 14px;
   line-height: 1.4;
@@ -159,7 +158,7 @@
   background-color: #DEECE7;
   color: #000;
   border-radius: 18px 18px 18px 0;
-  margin-left: 40px;
+  margin-left: 20px;
 }
 
 .happyflops-message.user {
