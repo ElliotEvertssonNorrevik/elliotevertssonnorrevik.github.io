@@ -459,13 +459,13 @@
   
     if (response === "customer_service") {
       isConnectedToCustomerService = true;
-      const customerServiceMessage = "Prata med kundtjänst";
+      const customerServiceMessage = "Jag vill prata med kundtjänst.";
       const timestamp = new Date().toISOString();
       
       addMessage(customerServiceMessage, false, false, timestamp);
       conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
       
-      const botResponse = "Connecting you to customer service...";
+      const botResponse = "Kopplar dig till kundtjänst...";
       addMessage(botResponse, true, false, timestamp);
       conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
   
@@ -473,11 +473,11 @@
         startCustomerServiceMode();
       });
     } else {
-      const userResponse = response === "yes" ? "Yes" : "No";
+      const userResponse = response === "yes" ? "Ja" : "Nej";
       addMessage(userResponse, false);
       
       setTimeout(() => {
-        const botResponse = response === "ja" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig. Ha en bra dag!";
+        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattade med mig!";
         addMessage(botResponse, true);
         updateChatWindow();
         sendConversationToAzure(messages);
@@ -485,7 +485,6 @@
     }
     saveConversation();
   }
-
   function startCustomerServiceMode() {
     fetchAndDisplayConversation();
     customerServiceInterval = setInterval(fetchAndDisplayConversation, 2000); // Fetch every 5 seconds
