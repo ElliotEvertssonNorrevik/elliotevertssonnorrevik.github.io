@@ -456,11 +456,11 @@
     }
   }
 
-  function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null) {
-    messages.push({ text, isBot, isLoading, timestamp, agentName, agentId });
+  function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null, agentPhoto = null) {
+    messages.push({ text, isBot, isLoading, timestamp, agentName, agentId, agentPhoto });
     updateChatWindow();
     saveConversation();
-  }
+  }  
   
   function handleFollowUpResponse(response) {
     showFollowUp = false;
@@ -521,7 +521,7 @@
       if (messages.length === 0 || !isConnectedToCustomerService) {
         messages = [];
         data.messages.forEach(msg => {
-          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId);
+          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhoto);
         });
       } else {
         const lastMessageTimestamp = messages[messages.length - 1].timestamp;
