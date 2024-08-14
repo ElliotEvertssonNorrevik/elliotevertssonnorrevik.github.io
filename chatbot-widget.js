@@ -1,4 +1,3 @@
-
 (function() {
   const API_BASE_URL = 'https://fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getconversation?code=';
@@ -291,21 +290,10 @@
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
   
     if (message.agentName) {
-      const agentInfoContainer = document.createElement('div');
-      agentInfoContainer.className = 'happyflops-agent-info';
-  
-      const profileImage = document.createElement('div');
-      profileImage.className = 'happyflops-profile-image';
-      // You can set a default image or use initials as a fallback
-      profileImage.textContent = message.agentName.charAt(0).toUpperCase();
-  
       const agentNameElement = document.createElement('div');
       agentNameElement.className = 'happyflops-agent-name';
       agentNameElement.textContent = message.agentName;
-  
-      agentInfoContainer.appendChild(profileImage);
-      agentInfoContainer.appendChild(agentNameElement);
-      messageElement.appendChild(agentInfoContainer);
+      messageElement.appendChild(agentNameElement);
     }
   
     const textElement = document.createElement('div');
