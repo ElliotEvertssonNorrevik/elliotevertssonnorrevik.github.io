@@ -15,7 +15,7 @@
   
   const config = {
     headerText: 'Vanbruun AI',
-    subHeaderText: 'Chat with our digital assistant',
+    subHeaderText: 'Chatta med vår digitala assistent',
     mainColor: '#3f2b20',
     logoUrl: 'https://i.ibb.co/m6LBcpN/cd8ajn5t.jpg',
     launchAvatarUrl: 'https://i.ibb.co/DtZd3sB/Untitled-design-37.png'
@@ -160,7 +160,7 @@
   
     const logo = document.createElement('img');
     logo.src = config.logoUrl;
-    logo.alt = 'Happyflops Logo';
+    logo.alt = 'Vanbruun Logo';
     logo.className = 'happyflops-logo';
   
     const logoText = document.createElement('div');
@@ -191,7 +191,7 @@
     emojiButton.addEventListener('click', toggleEmojiPicker);
 
     const sendButton = document.createElement('button');
-    sendButton.textContent = 'Send';
+    sendButton.textContent = 'Skicka';
     sendButton.className = 'happyflops-send-button';
     sendButton.style.backgroundColor = config.mainColor;
 
@@ -333,7 +333,7 @@
     const optionsElement = document.createElement('div');
     optionsElement.className = 'happyflops-initial-options';
 
-    const options = ['Track my order', 'Book a consultation'];
+    const options = ['Spåra min order', 'Boka konsultation'];
     options.forEach(option => {
       const button = document.createElement('button');
       button.textContent = option;
@@ -354,9 +354,9 @@
     followUpElement.className = 'happyflops-initial-options';
     
     const options = [
-      { text: 'Yes', response: 'yes' },
-      { text: 'No', response: 'no' },
-      { text: 'Talk to customer service', response: 'customer_service' }
+      { text: 'Ja', response: 'ja' },
+      { text: 'Nej', response: 'nej' },
+      { text: 'Prata med kundtjänst', response: 'customer_service' }
     ];
     
     options.forEach(option => {
@@ -459,7 +459,7 @@
   
     if (response === "customer_service") {
       isConnectedToCustomerService = true;
-      const customerServiceMessage = "I want to talk to customer service.";
+      const customerServiceMessage = "Prata med kundtjänst";
       const timestamp = new Date().toISOString();
       
       addMessage(customerServiceMessage, false, false, timestamp);
@@ -477,7 +477,7 @@
       addMessage(userResponse, false);
       
       setTimeout(() => {
-        const botResponse = response === "yes" ? "What else can I help you with?" : "Okay, thanks for chatting with me!";
+        const botResponse = response === "ja" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig. Ha en bra dag!";
         addMessage(botResponse, true);
         updateChatWindow();
         sendConversationToAzure(messages);
@@ -488,7 +488,7 @@
 
   function startCustomerServiceMode() {
     fetchAndDisplayConversation();
-    customerServiceInterval = setInterval(fetchAndDisplayConversation, 5000); // Fetch every 5 seconds
+    customerServiceInterval = setInterval(fetchAndDisplayConversation, 2000); // Fetch every 5 seconds
   }
 
   async function fetchAndDisplayConversation() {
@@ -526,7 +526,7 @@
       // Check if the user wants to talk to customer service
       const lastUserMessage = data.messages.filter(msg => !msg.isBot).pop();
       if (lastUserMessage && 
-          lastUserMessage.text.toLowerCase().includes('talk to customer service') && 
+          lastUserMessage.text.toLowerCase().includes('prata med kundtjänst') && 
           !isConnectedToCustomerService) {
         isConnectedToCustomerService = true;
         const connectingMessage = "Connecting you to customer service...";
@@ -542,7 +542,7 @@
     } catch (error) {
       console.error('Error fetching conversation:', error);
       if (messages.length === 0) {
-        addMessage("An error occurred while connecting to customer service. Please try again later.", true);
+        addMessage("Ett fel kom upp när vi försökte koppla ihop dig med kundtjänst, försök igen senare.", true);
       }
     }
   }
@@ -586,10 +586,10 @@
 
   function initializeChat() {
     if (!isInitialized) {
-      const initialMessage = 'Hello! My name is Elliot and I\'m your virtual assistant here at Vanbruun.';
+      const initialMessage = 'Hej! \n Mitt namn är Elliot och jag är din virtuella assistent här på Vanbruun..';
       addMessageWithDelay(initialMessage, true, 1000, () => {
         conversationHistory.push({"role": "assistant", "content": initialMessage});
-        const followUpMessage = 'How can I help you today?😊';
+        const followUpMessage = 'Hur kan jag hjälpa dig idag?😊';
         addMessageWithDelay(followUpMessage, true, 500, () => {
           conversationHistory.push({"role": "assistant", "content": followUpMessage});
           showInitialOptions = true;
