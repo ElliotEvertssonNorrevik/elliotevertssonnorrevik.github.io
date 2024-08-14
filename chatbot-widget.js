@@ -295,8 +295,7 @@
   
       const profileImage = document.createElement('div');
       profileImage.className = 'happyflops-profile-image';
-      // You can set a default image or use initials as a fallback
-      profileImage.textContent = message.agentName.charAt(0).toUpperCase();
+      profileImage.textContent = message.agentPhoto;
   
       const agentNameElement = document.createElement('div');
       agentNameElement.className = 'happyflops-agent-name';
