@@ -1,3 +1,4 @@
+
 (function() {
   const API_BASE_URL = 'https://fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getconversation?code=';
@@ -284,30 +285,23 @@
       }, { once: true });
     }
   }
-  
+
   function createMessageElement(message) {
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
   
-    if (message.agentName || message.agentPhoto) {
+    if (message.agentName) {
       const agentInfoContainer = document.createElement('div');
       agentInfoContainer.className = 'happyflops-agent-info';
   
       const profileImage = document.createElement('div');
       profileImage.className = 'happyflops-profile-image';
-      
-      if (message.agentPhoto) {
-        const img = document.createElement('img');
-        img.src = message.agentPhoto;
-        img.alt = message.agentName || 'Agent';
-        profileImage.appendChild(img);
-      } else if (message.agentName) {
-        profileImage.textContent = message.agentName.charAt(0).toUpperCase();
-      }
+      // You can set a default image or use initials as a fallback
+      profileImage.textContent = message.agentName.charAt(0).toUpperCase();
   
       const agentNameElement = document.createElement('div');
       agentNameElement.className = 'happyflops-agent-name';
-      agentNameElement.textContent = message.agentName || 'Agent';
+      agentNameElement.textContent = message.agentName;
   
       agentInfoContainer.appendChild(profileImage);
       agentInfoContainer.appendChild(agentNameElement);
@@ -456,11 +450,11 @@
     }
   }
 
-  function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null, agentPhoto = null) {
-    messages.push({ text, isBot, isLoading, timestamp, agentName, agentId, agentPhoto });
+  function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null) {
+    messages.push({ text, isBot, isLoading, timestamp, agentName, agentId });
     updateChatWindow();
     saveConversation();
-  }  
+  }
   
   function handleFollowUpResponse(response) {
     showFollowUp = false;
@@ -521,7 +515,7 @@
       if (messages.length === 0 || !isConnectedToCustomerService) {
         messages = [];
         data.messages.forEach(msg => {
-          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhoto);
+          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId);
         });
       } else {
         const lastMessageTimestamp = messages[messages.length - 1].timestamp;
