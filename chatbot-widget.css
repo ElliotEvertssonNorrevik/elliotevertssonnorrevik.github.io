@@ -144,10 +144,19 @@
   color: #666;
 }
 
+.happyflops-agent-name {
+  position: absolute;
+  top: -5px; /* Positions the name above the message bubble */
+  left: 10px; /* Aligns with the left edge of the message bubble */
+  font-size: 12px;
+  color: #666;
+  font-weight: bold;
+}
+
 .happyflops-message {
   position: relative;
   max-width: 80%;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   padding: 10px 15px;
   font-size: 14px;
   line-height: 1.4;
@@ -159,7 +168,6 @@
   background-color: #DEECE7;
   color: #000;
   border-radius: 18px 18px 18px 0;
-  margin-left: 40px;
 }
 
 .happyflops-message.user {
@@ -167,40 +175,6 @@
   background-color: #60463C;
   color: #fff;
   border-radius: 18px 18px 0 18px;
-}
-
-.happyflops-agent-info {
-  position: absolute;
-  top: -25px;
-  left: -40px;
-  display: flex;
-  align-items: center;
-}
-
-.happyflops-profile-image {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: #FCBE08;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  margin-right: 8px;
-  overflow: hidden;
-}
-
-.happyflops-profile-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.happyflops-agent-name {
-  font-size: 12px;
-  color: #666;
-  font-weight: bold;
 }
 
 .happyflops-input-area {
@@ -225,6 +199,10 @@
   font-size: 14px;
   outline: none;
 }
+
+
+
+
 
 .happyflops-emoji-button {
   background: none;
@@ -257,7 +235,7 @@
 .happyflops-emoji-picker {
   position: absolute;
   bottom: 100%;
-  right: 10px;
+  right: 10px; /* Align with the right padding of happyflops-input-area */
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
