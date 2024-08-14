@@ -419,7 +419,7 @@
           setTimeout(() => {
             const followUpTime = new Date().toISOString();
             addMessage("Can I help you with anything else?", true, false, followUpTime);
-            conversationHistory.push({"role": "assistant", "content": "Can I help you with anything else?", "timestamp": followUpTime});
+            conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
             showFollowUp = true;
             updateChatWindow();
             sendConversationToAzure(messages);
@@ -459,7 +459,7 @@
   
     if (response === "customer_service") {
       isConnectedToCustomerService = true;
-      const customerServiceMessage = "Jag vill prata med kundtjänst.";
+      const customerServiceMessage = "Prata med kundtjänst.";
       const timestamp = new Date().toISOString();
       
       addMessage(customerServiceMessage, false, false, timestamp);
