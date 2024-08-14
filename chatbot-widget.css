@@ -144,6 +144,15 @@
   color: #666;
 }
 
+.happyflops-agent-name {
+  position: absolute;
+  top: -20px; /* Positions the name above the message bubble */
+  left: 10px; /* Aligns with the left edge of the message bubble */
+  font-size: 12px;
+  color: #666;
+  font-weight: bold;
+}
+
 .happyflops-message {
   max-width: 80%;
   margin-bottom: 10px;
