@@ -289,6 +289,14 @@
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
   
+    // Create a container for the agent name
+    if (message.agentName) {
+      const agentNameElement = document.createElement('div');
+      agentNameElement.className = 'happyflops-agent-name';
+      agentNameElement.textContent = message.agentName;
+      messageElement.appendChild(agentNameElement);
+    }
+  
     const textElement = document.createElement('div');
     textElement.className = 'happyflops-message-text';
     
@@ -302,14 +310,6 @@
     }
   
     messageElement.appendChild(textElement);
-
-    // Add agent name if available
-    if (message.agentName) {
-      const agentNameElement = document.createElement('div');
-      agentNameElement.className = 'happyflops-agent-name';
-      agentNameElement.textContent = message.agentName;
-      messageElement.appendChild(agentNameElement);
-    }
   
     return messageElement;
   }
