@@ -182,7 +182,7 @@
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.placeholder = 'Type a message...';
+    input.placeholder = 'Skriv ett meddelande...';
     input.className = 'happyflops-input';
 
     const emojiButton = document.createElement('button');
