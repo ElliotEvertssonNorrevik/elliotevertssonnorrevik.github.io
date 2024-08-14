@@ -156,7 +156,7 @@
 .happyflops-message {
   position: relative;
   max-width: 80%;
-  margin-bottom: 15px;
+  margin-bottom: 25px; /* Changed from 15px to 25px */
   padding: 10px 15px;
   font-size: 14px;
   line-height: 1.4;
@@ -168,6 +168,7 @@
   background-color: #DEECE7;
   color: #000;
   border-radius: 18px 18px 18px 0;
+  margin-left: 40px; /* New property added */
 }
 
 .happyflops-message.user {
@@ -177,14 +178,31 @@
   border-radius: 18px 18px 0 18px;
 }
 
-.happyflops-agent-name {
+
+.happyflops-agent-info {
   position: absolute;
-  top: -20px;
-  left: 10px;
-  font-size: 12px;
-  color: #666;
-  font-weight: bold;
+  top: -25px;
+  left: -40px;
+  display: flex;
+  align-items: center;
 }
+
+.happyflops-profile-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #FCBE08;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+
+
+
 
 .happyflops-input-area {
   padding: 10px;
