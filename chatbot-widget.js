@@ -289,7 +289,6 @@
     const messageElement = document.createElement('div');
     messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
   
-    // Create a container for the agent name
     if (message.agentName) {
       const agentNameElement = document.createElement('div');
       agentNameElement.className = 'happyflops-agent-name';
@@ -299,15 +298,7 @@
   
     const textElement = document.createElement('div');
     textElement.className = 'happyflops-message-text';
-    
-    if (message.isLoading) {
-      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
-    } else if (message.isBot) {
-      const formattedMessage = formatMessage(message.text);
-      textElement.innerHTML = formattedMessage;
-    } else {
-      textElement.textContent = message.text;
-    }
+    textElement.textContent = message.text;
   
     messageElement.appendChild(textElement);
   
