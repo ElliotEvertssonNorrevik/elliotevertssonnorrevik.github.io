@@ -40,7 +40,7 @@
 
 .happyflops-chat-header {
   padding: 15px;
-  border-radius: 15px 15px 0 0;
+  border-radius: 15px 15px 15px 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
