@@ -384,6 +384,15 @@
   
     conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
   
+    // New: Check if the message is a request for customer service
+    if (text.toLowerCase().includes('prata med kundtjänst') && !isConnectedToCustomerService) {
+      isConnectedToCustomerService = true;
+      addMessage("Kopplar dig till kundtjänst...", true, false, new Date().toISOString());
+      await sendConversationToAzure(messages, true);
+      startCustomerServiceMode();
+      return;
+    }
+  
     if (isConnectedToCustomerService) {
       await sendConversationToAzure(messages);
       fetchAndDisplayConversation();
@@ -419,7 +428,7 @@
         if (!answer.includes('?') && Math.random() < 0.5) {
           setTimeout(() => {
             const followUpTime = new Date().toISOString();
-            addMessage("Can I help you with anything else?", true, false, followUpTime);
+            addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
             conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
             showFollowUp = true;
             updateChatWindow();
@@ -447,6 +456,8 @@
       }
     }
   }
+
+
 
   function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null) {
     messages.push({ text, isBot, isLoading, timestamp, agentName, agentId });
@@ -547,6 +558,7 @@
     }
   }
 
+  
   function updateChatWindow() {
     const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
     if (messagesWrapper) {
