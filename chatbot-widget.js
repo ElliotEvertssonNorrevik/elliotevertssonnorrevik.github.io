@@ -14,7 +14,7 @@
   let customerServiceInterval;
   
   const config = {
-    headerText: 'Vanbruun AI',
+    headerText: 'VANBRUUN AI',
     subHeaderText: 'Chatta med vår digitala assistent',
     mainColor: '#3f2b20',
     logoUrl: 'https://i.ibb.co/m6LBcpN/cd8ajn5t.jpg',
