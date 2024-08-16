@@ -715,24 +715,7 @@
   }
   
 
-    // Reset showFollowUp to false by default
-    showFollowUp = false;
-  
-    if (storedLastMessage) {
-      const lastMessage = JSON.parse(storedLastMessage);
-      // Only show follow-up if the last message was a specific prompt from the bot
-      if (lastMessage && lastMessage.isBot && lastMessage.text === "Kan jag hjälpa dig med något mer?") {
-        showFollowUp = true;
-      }
-    }
-  
-    isInitialized = messages.length > 0;
-  
-    // If chat is connected to customer service, ensure follow-up buttons are not shown
-    if (isConnectedToCustomerService) {
-      showFollowUp = false;
-    }
-  }
+
 
   function restartConversation() {
     if (customerServiceInterval) {
