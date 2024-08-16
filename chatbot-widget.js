@@ -384,7 +384,7 @@
   
     conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
   
-    // New: Check if the message is a request for customer service
+    // Check if the message is a request for customer service
     if (text.toLowerCase().includes('prata med kundtjänst') && !isConnectedToCustomerService) {
       isConnectedToCustomerService = true;
       addMessage("Kopplar dig till kundtjänst...", true, false, new Date().toISOString());
