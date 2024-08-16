@@ -635,6 +635,11 @@
     localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
     localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
     localStorage.setItem('vanbruunChatIsConnectedToCustomerService', JSON.stringify(isConnectedToCustomerService));
+    if (isLoading) {
+      localStorage.setItem('vanbruunChatIsLoading', JSON.stringify(isLoading));
+    } else {
+      localStorage.removeItem('vanbruunChatIsLoading');
+    }
   }
   
   function loadConversation() {
@@ -646,9 +651,12 @@
     const storedIsChatOpen = localStorage.getItem('vanbruunChatIsOpen');
     const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
     const storedIsConnectedToCustomerService = localStorage.getItem('vanbruunChatIsConnectedToCustomerService');
+    const storedIsLoading = localStorage.getItem('vanbruunChatIsLoading');
   
     if (storedMessages) {
       messages = JSON.parse(storedMessages);
+      // Remove any incomplete (loading) messages
+      messages = messages.filter(msg => !msg.isLoading);
     }
     if (storedHistory) {
       conversationHistory = JSON.parse(storedHistory);
@@ -670,14 +678,36 @@
     if (storedIsConnectedToCustomerService !== null) {
       isConnectedToCustomerService = JSON.parse(storedIsConnectedToCustomerService);
     }
+  
+    // Always reset isLoading to false on page load
+    isLoading = false;
+  
+    // Reset showFollowUp to false by default
+    showFollowUp = false;
+  
     if (storedLastMessage) {
       const lastMessage = JSON.parse(storedLastMessage);
-      if (lastMessage && lastMessage.isBot && !lastMessage.text.includes('?') && !isConnectedToCustomerService) {
+      // Only show follow-up if the last message was a specific prompt from the bot
+      if (lastMessage && lastMessage.isBot && lastMessage.text === "Kan jag hjälpa dig med något mer?") {
         showFollowUp = true;
       }
-      
-
     }
+  
+    isInitialized = messages.length > 0;
+  
+    // If chat is connected to customer service, ensure follow-up buttons are not shown
+    if (isConnectedToCustomerService) {
+      showFollowUp = false;
+    }
+  
+    // If the last message was incomplete, add an error message
+    if (storedIsLoading === 'true') {
+      const errorMessage = 'Det uppstod ett fel när svaret genererades. Vänligen försök igen.';
+      addMessage(errorMessage, true, false, new Date().toISOString());
+    }
+  
+    updateChatWindow();
+  }
   
 
     // Reset showFollowUp to false by default
