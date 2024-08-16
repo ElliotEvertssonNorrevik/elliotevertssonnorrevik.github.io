@@ -27,7 +27,7 @@
     chatbotContainer.style.position = 'fixed';
     chatbotContainer.style.bottom = '20px';
     chatbotContainer.style.right = '20px';
-    chatbotContainer.style.fontFamily = 'Arial, sans-serif';
+    chatbotContainer.style.fontFamily = 'Montserrat, sans-serif';
 
     document.body.appendChild(chatbotContainer);
 
