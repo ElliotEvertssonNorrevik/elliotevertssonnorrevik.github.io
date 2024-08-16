@@ -394,7 +394,7 @@
     }
   
     if (isConnectedToCustomerService) {
-      await sendConversationToAzure(messages);
+      await sendConversationToAzure(messages, true);
       fetchAndDisplayConversation();
     } else {
       isLoading = true;
@@ -456,7 +456,6 @@
       }
     }
   }
-
 
 
   function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null) {
@@ -759,7 +758,7 @@
         agentName: msg.agentName,
         agentId: msg.agentId
       })),
-      needsCustomerService: needsCustomerService
+      needsCustomerService: needsCustomerService || isConnectedToCustomerService
     };
   
     try {
@@ -781,6 +780,7 @@
     }
   }
 
+  
   createChatbotUI();
 
   window.openVanbruunChat = function() {
