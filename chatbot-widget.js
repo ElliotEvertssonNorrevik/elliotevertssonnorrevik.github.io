@@ -635,11 +635,16 @@
     localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
     localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
     localStorage.setItem('vanbruunChatIsConnectedToCustomerService', JSON.stringify(isConnectedToCustomerService));
+    
+    // Only save isLoading state if it's true
     if (isLoading) {
       localStorage.setItem('vanbruunChatIsLoading', JSON.stringify(isLoading));
     } else {
       localStorage.removeItem('vanbruunChatIsLoading');
     }
+  
+    // Save the current timestamp
+    localStorage.setItem('vanbruunChatLastSaved', new Date().toISOString());
   }
   
   function loadConversation() {
