@@ -378,10 +378,17 @@
 
   const API_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
 
+  function getCETTimestamp() {
+    const now = new Date();
+    const utcOffset = now.getTimezoneOffset();
+    const cetOffset = utcOffset + 60; // CET is UTC+1
+    return new Date(now.getTime() + cetOffset * 60000).toISOString();
+  }
+
   async function sendMessage(text) {
     if (text.trim() === '' || isLoading) return;
   
-    const currentTime = new Date().toISOString();
+    const currentTime = getCETTimestamp();
   
     addMessage(text, false, false, currentTime);
     showInitialOptions = false;
@@ -389,10 +396,9 @@
   
     conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
   
-    // Check if the message is a request for customer service
     if (text.toLowerCase().includes('prata med kundtjänst') && !isConnectedToCustomerService) {
       isConnectedToCustomerService = true;
-      addMessage("Kopplar dig till kundtjänst...", true, false, new Date().toISOString());
+      addMessage("Kopplar dig till kundtjänst...", true, false, getCETTimestamp());
       await sendConversationToAzure(messages, true);
       startCustomerServiceMode();
       return;
@@ -423,7 +429,7 @@
         const data = await response.json();
         const answer = data.answer;
   
-        const responseTime = new Date().toISOString();
+        const responseTime = getCETTimestamp();
         conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
   
         messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
@@ -432,7 +438,7 @@
   
         if (!answer.includes('?') && Math.random() < 0.5) {
           setTimeout(() => {
-            const followUpTime = new Date().toISOString();
+            const followUpTime = getCETTimestamp();
             addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
             conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
             showFollowUp = true;
@@ -445,7 +451,7 @@
   
       } catch (error) {
         console.error('Error fetching bot response:', error);
-        const errorTime = new Date().toISOString();
+        const errorTime = getCETTimestamp();
         const errorMessage = 'Sorry, I couldn\'t connect right now. Please try again later or contact us at customer.service@happyflops.se';
         messages[messages.length - 1] = { 
           text: errorMessage, 
@@ -461,6 +467,8 @@
       }
     }
   }
+
+
 
 
   function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null) {
@@ -504,12 +512,19 @@
     });
     sendRating(rating);
   }
+
+  function addMessage(text, isBot, isLoading = false, timestamp = getCETTimestamp(), agentName = null, agentId = null) {
+    messages.push({ text, isBot, isLoading, timestamp, agentName, agentId });
+    updateChatWindow();
+    saveConversation();
+  }
   
   async function sendRating(rating) {
     const payload = {
       conversationId: window.conversationId,
       rating: rating,
-      ConversationOver: true
+      ConversationOver: true,
+      timestamp: getCETTimestamp()
     };
   
     try {
@@ -527,10 +542,10 @@
       }
   
       console.log('Rating stored successfully');
-      addMessage('Thank you for your feedback!', true);
+      addMessage('Thank you for your feedback!', true, false, getCETTimestamp());
     } catch (error) {
       console.error('Error storing rating:', error);
-      addMessage('Thank you for your feedback!', true);
+      addMessage('Thank you for your feedback!', true, false, getCETTimestamp());
     }
   }
 
@@ -544,7 +559,7 @@
     if (response === "customer_service") {
       isConnectedToCustomerService = true;
       const customerServiceMessage = "Prata med kundtjänst.";
-      const timestamp = new Date().toISOString();
+      const timestamp = getCETTimestamp();
       
       addMessage(customerServiceMessage, false, false, timestamp);
       conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
@@ -558,20 +573,19 @@
       });
     } else {
       const userResponse = response === "yes" ? "Ja" : "Nej";
-      addMessage(userResponse, false);
+      addMessage(userResponse, false, false, getCETTimestamp());
       
       setTimeout(() => {
         if (response === "yes") {
           const botResponse = "Vad mer kan jag hjälpa dig med?";
-          addMessage(botResponse, true);
+          addMessage(botResponse, true, false, getCETTimestamp());
           updateChatWindow();
           sendConversationToAzure(messages);
         } else {
           const botResponse = "Okej, tack för att du chattat med mig!";
-          addMessage(botResponse, true);
+          addMessage(botResponse, true, false, getCETTimestamp());
           updateChatWindow();
           sendConversationToAzure(messages).then(() => {
-            // New feature: Send conversation_over status
             sendConversationOverStatus();
           });
         }
@@ -852,8 +866,37 @@
     });
   }
 
+
+  async function sendConversationOverStatus() {
+    const payload = {
+      conversationId: window.conversationId,
+      conversation_over: true,
+      timestamp: getCETTimestamp()
+    };
+  
+    try {
+      const response = await fetch(STORE_CONVERSATION_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-functions-key': STORE_CONVERSATION_API_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      console.log('Conversation over status sent successfully');
+    } catch (error) {
+      console.error('Error sending conversation over status:', error);
+    }
+  }
+
+  
+
   async function sendConversationToAzure(messages, needsCustomerService = false) {
-    const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
     const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`;
     const payload = {
       conversationId: window.conversationId || (window.conversationId = generateUUID()),
@@ -864,7 +907,8 @@
         agentName: msg.agentName,
         agentId: msg.agentId
       })),
-      needsCustomerService: needsCustomerService || isConnectedToCustomerService
+      needsCustomerService: needsCustomerService || isConnectedToCustomerService,
+      timestamp: getCETTimestamp()
     };
   
     try {
