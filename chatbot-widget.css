@@ -153,6 +153,31 @@
   font-weight: bold;
 }
 
+.happyflops-rating-container {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin-top: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.happyflops-stars-container {
+  display: inline-block;
+}
+
+.happyflops-star {
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--main-color); /* Assuming you have a CSS variable for your main color */
+  transition: color 0.2s;
+}
+
+.happyflops-star:hover,
+.happyflops-star.active {
+  color: #ffd700;
+}
+
+
 .happyflops-message {
   position: relative;
   max-width: 80%;
