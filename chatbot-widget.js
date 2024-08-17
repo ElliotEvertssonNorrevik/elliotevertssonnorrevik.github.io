@@ -541,32 +541,30 @@
     updateChatWindow();
   
     if (response === "customer_service") {
-      // Existing customer service code...
+      isConnectedToCustomerService = true;
+      const customerServiceMessage = "Prata med kundtjänst.";
+      const timestamp = new Date().toISOString();
+      
+      addMessage(customerServiceMessage, false, false, timestamp);
+      conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
+      
+      const botResponse = "Kopplar dig till kundtjänst...";
+      addMessage(botResponse, true, false, timestamp);
+      conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
+  
+      sendConversationToAzure(messages, true).then(() => {
+        startCustomerServiceMode();
+      });
     } else {
       const userResponse = response === "yes" ? "Ja" : "Nej";
       addMessage(userResponse, false);
       
-      if (response === "no") {
-        setTimeout(() => {
-          const botResponse = "Okej, tack för att du chattade med mig!";
-          addMessage(botResponse, true);
-          updateChatWindow();
-          sendConversationToAzure(messages);
-          
-          // Add star rating UI
-          const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
-          const ratingElement = createStarRating();
-          messagesWrapper.appendChild(ratingElement);
-          scrollToBottom();
-        }, 500);
-      } else {
-        setTimeout(() => {
-          const botResponse = "Vad mer kan jag hjälpa dig med?";
-          addMessage(botResponse, true);
-          updateChatWindow();
-          sendConversationToAzure(messages);
-        }, 500);
-      }
+      setTimeout(() => {
+        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattade med mig!";
+        addMessage(botResponse, true);
+        updateChatWindow();
+        sendConversationToAzure(messages);
+      }, 500);
     }
     saveConversation();
   }
