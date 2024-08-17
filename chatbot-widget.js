@@ -1,3 +1,4 @@
+
 (function() {
   const API_BASE_URL = 'https://fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getconversation?code=';
@@ -560,17 +561,19 @@
       addMessage(userResponse, false);
       
       setTimeout(() => {
-        const conversationOver = response === "yes" ? "false" : "true";
-        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
+        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattade med mig!";
         addMessage(botResponse, true);
         updateChatWindow();
-        sendConversationToAzure(messages, false, response === "no", conversationOver===conversationOver);
+        sendConversationToAzure(messages);
       }, 500);
     }
     saveConversation();
   }
-
-
+  
+  function startCustomerServiceMode() {
+    fetchAndDisplayConversation();
+    customerServiceInterval = setInterval(fetchAndDisplayConversation, 2000); // Fetch every 5 seconds
+  }
 
   async function fetchAndDisplayConversation() {
     const conversationId = window.conversationId || generateUUID();
@@ -817,7 +820,7 @@
     });
   }
 
-  async function sendConversationToAzure(messages, needsCustomerService = false, conversationOver = false) {
+  async function sendConversationToAzure(messages, needsCustomerService = false) {
     const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
     const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`;
     const payload = {
@@ -829,8 +832,7 @@
         agentName: msg.agentName,
         agentId: msg.agentId
       })),
-      needsCustomerService: needsCustomerService || isConnectedToCustomerService,
-      conversation_over: conversationOver
+      needsCustomerService: needsCustomerService || isConnectedToCustomerService
     };
   
     try {
