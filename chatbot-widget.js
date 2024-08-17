@@ -560,10 +560,11 @@
       addMessage(userResponse, false);
       
       setTimeout(() => {
+        const conversationOver = response === "yes" ? "false" : "true";
         const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattat med mig!";
         addMessage(botResponse, true);
         updateChatWindow();
-        sendConversationToAzure(messages, false, response === "no");
+        sendConversationToAzure(messages, false, response === "no", conversationOver===conversationOver);
       }, 500);
     }
     saveConversation();
