@@ -829,7 +829,7 @@
         agentId: msg.agentId
       })),
       needsCustomerService: needsCustomerService || isConnectedToCustomerService,
-      conversationOver: conversationOver
+      conversation_over: conversationOver
     };
   
     try {
