@@ -561,18 +561,50 @@
       addMessage(userResponse, false);
       
       setTimeout(() => {
-        const botResponse = response === "yes" ? "Vad mer kan jag hjälpa dig med?" : "Okej, tack för att du chattade med mig!";
-        addMessage(botResponse, true);
-        updateChatWindow();
-        sendConversationToAzure(messages);
+        if (response === "yes") {
+          const botResponse = "Vad mer kan jag hjälpa dig med?";
+          addMessage(botResponse, true);
+          updateChatWindow();
+          sendConversationToAzure(messages);
+        } else {
+          const botResponse = "Okej, tack för att du chattat med mig!";
+          addMessage(botResponse, true);
+          updateChatWindow();
+          sendConversationToAzure(messages).then(() => {
+            // New feature: Send conversation_over status
+            sendConversationOverStatus();
+          });
+        }
       }, 500);
     }
     saveConversation();
   }
+
+  // New function to send conversation_over status
+  async function sendConversationOverStatus() {
+    const payload = {
+      conversationId: window.conversationId,
+      conversation_over: true
+    };
   
-  function startCustomerServiceMode() {
-    fetchAndDisplayConversation();
-    customerServiceInterval = setInterval(fetchAndDisplayConversation, 2000); // Fetch every 5 seconds
+    try {
+      const response = await fetch(STORE_CONVERSATION_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-functions-key': STORE_CONVERSATION_API_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      console.log('Conversation over status sent successfully');
+    } catch (error) {
+      console.error('Error sending conversation over status:', error);
+    }
   }
 
   async function fetchAndDisplayConversation() {
