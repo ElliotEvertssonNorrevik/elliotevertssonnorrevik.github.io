@@ -897,6 +897,7 @@
   
 
   async function sendConversationToAzure(messages, needsCustomerService = false) {
+    const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ=='
     const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`;
     const payload = {
       conversationId: window.conversationId || (window.conversationId = generateUUID()),
