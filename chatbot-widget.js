@@ -187,7 +187,7 @@
     input.className = 'happyflops-input';
 
     const emojiButton = document.createElement('button');
-    emojiButton.innerHTML = '☺️';
+    emojiButton.innerHTML = '😈'; 
     emojiButton.className = 'happyflops-emoji-button';
     emojiButton.addEventListener('click', toggleEmojiPicker);
 
@@ -596,17 +596,18 @@
 
   // New function to send conversation_over status
   async function sendConversationOverStatus() {
+    const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
+    const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`
     const payload = {
       conversationId: window.conversationId,
       conversation_over: true
     };
-  
+    console.log('Sending conversation_over')
     try {
-      const response = await fetch(STORE_CONVERSATION_API_URL, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'x-functions-key': STORE_CONVERSATION_API_KEY
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
       });
