@@ -1,16 +1,16 @@
 (function() {
   const API_BASE_URL = 'https://fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
   const CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getconversation?code=';
-  const STORE_CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/storeconversation?code=';
+  const STORE_CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/storeconversation';
   
   let userId;
 
   function getUserId() {
     if (!userId) {
-      userId = localStorage.getItem('happyflops_user_id');
+      userId = localStorage.getItem('chat_user_id');
       if (!userId) {
         userId = generateUUID();
-        localStorage.setItem('happyflops_user_id', userId);
+        localStorage.setItem('chat_user_id', userId);
       }
     }
     return userId;
@@ -46,7 +46,7 @@
 
   function createChatbotUI() {
     const chatbotContainer = document.createElement('div');
-    chatbotContainer.id = 'happyflops-chatbot';
+    chatbotContainer.id = 'chat-chatbot';
     chatbotContainer.style.position = 'fixed';
     chatbotContainer.style.bottom = '20px';
     chatbotContainer.style.right = '20px';
@@ -82,19 +82,19 @@
 
   function createInitialPage() {
     const initialPage = document.createElement('div');
-    initialPage.className = 'happyflops-initial-page';
+    initialPage.className = 'chat-initial-page';
   
     const header = document.createElement('div');
-    header.className = 'happyflops-initial-header';
+    header.className = 'chat-initial-header';
     
     const logoImg = document.createElement('img');
     logoImg.src = config.logoUrl;
     logoImg.alt = 'Logo';
-    logoImg.className = 'happyflops-initial-logo';
+    logoImg.className = 'chat-initial-logo';
     
     const closeButton = document.createElement('button');
     closeButton.innerHTML = '&times;';
-    closeButton.className = 'happyflops-initial-close';
+    closeButton.className = 'chat-initial-close';
     closeButton.addEventListener('click', () => {
       isChatOpen = false;
       isInitialPageVisible = false;
@@ -105,14 +105,14 @@
     header.appendChild(closeButton);
   
     const content = document.createElement('div');
-    content.className = 'happyflops-initial-content';
+    content.className = 'chat-initial-content';
     content.innerHTML = `
       <h2>Välkommen till VANBRUUN</h2>
       <p>Hur kan vi assistera dig idag?</p>
     `;
   
     const askButton = document.createElement('button');
-    askButton.className = 'happyflops-initial-ask-button';
+    askButton.className = 'chat-initial-ask-button';
     
     const existingConversation = messages.length > 0;
     
@@ -129,7 +129,7 @@
     }
   
     const quickLinks = document.createElement('div');
-    quickLinks.className = 'happyflops-initial-quick-links';
+    quickLinks.className = 'chat-initial-quick-links';
     quickLinks.innerHTML = `
       <button id="track-order">Boka Konsultation</button>
       <button id="new-arrivals">Spåra Min Order</button>
@@ -139,17 +139,17 @@
     quickLinks.querySelector('#new-arrivals').addEventListener('click', () => openChatAndSendMessage('Spåra min order'));
   
     const recentConversation = document.createElement('div');
-    recentConversation.className = 'happyflops-initial-recent';
+    recentConversation.className = 'chat-initial-recent';
     recentConversation.innerHTML = `
       <h3>Recent Conversation</h3>
-      <div class="happyflops-initial-recent-item">
+      <div class="chat-initial-recent-item">
         <span>How can I assist you today? 😊</span>
         <span>31 minutes ago</span>
       </div>
     `;
   
     const talkToHuman = document.createElement('div');
-    talkToHuman.className = 'happyflops-initial-talk-human';
+    talkToHuman.className = 'chat-initial-talk-human';
     talkToHuman.style.display = 'none'; // Hide by default
   
 
@@ -157,19 +157,19 @@
       const onlineAgents = agents.filter(agent => agent.isOnline).slice(0, 3);
       if (onlineAgents.length > 0) {
         const agentPhotosContainer = document.createElement('div');
-        agentPhotosContainer.className = 'happyflops-agent-photos';
+        agentPhotosContainer.className = 'chat-agent-photos';
         
         onlineAgents.forEach((agent, index) => {
           const agentPhotoWrapper = document.createElement('div');
-          agentPhotoWrapper.className = 'happyflops-agent-photo-wrapper';
+          agentPhotoWrapper.className = 'chat-agent-photo-wrapper';
           
           const agentPhoto = document.createElement('img');
           agentPhoto.src = agent.photoUrl || 'https://i.ibb.co/vzMrv94/person.png';
           agentPhoto.alt = agent.name;
-          agentPhoto.className = 'happyflops-agent-photo';
+          agentPhoto.className = 'chat-agent-photo';
           
           const onlineIndicator = document.createElement('div');
-          onlineIndicator.className = 'happyflops-online-indicator';
+          onlineIndicator.className = 'chat-online-indicator';
           
           agentPhotoWrapper.appendChild(agentPhoto);
           agentPhotoWrapper.appendChild(onlineIndicator);
@@ -228,14 +228,14 @@
   }
 
   async function renderChatbot() {
-    const chatbotContainer = document.getElementById('happyflops-chatbot');
+    const chatbotContainer = document.getElementById('chat-chatbot');
     chatbotContainer.innerHTML = '';
-  
-    if (isChatOpen || isInitialPageVisible || isChatHistoryVisible) {
+
+    if (isChatOpen || isInitialPageVisible) {
       const contentWrapper = document.createElement('div');
-      contentWrapper.className = 'happyflops-content-wrapper';
+      contentWrapper.className = 'chat-content-wrapper';
       chatbotContainer.appendChild(contentWrapper);
-  
+
       let view;
       if (isInitialPageVisible) {
         view = createInitialPage();
@@ -244,9 +244,9 @@
       } else {
         view = createChatWindow();
       }
-  
+
       contentWrapper.appendChild(view);
-  
+
       if (isChatOpen) {
         await updateChatWindow();
       }
@@ -260,33 +260,33 @@
     const conversations = await fetchUserConversations();
     
     const chatHistoryContainer = document.createElement('div');
-    chatHistoryContainer.className = 'happyflops-chat-history';
+    chatHistoryContainer.className = 'chat-chat-history';
   
     const header = document.createElement('div');
     const messageCircleSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>`;
-    header.className = 'happyflops-chat-history-header';
+    header.className = 'chat-chat-history-header';
     header.innerHTML = `
       ${messageCircleSvg}
       <h2>Chats</h2>
-      <button class="happyflops-close-button">×</button>
+      <button class="chat-close-button">×</button>
     `;
-    header.querySelector('.happyflops-close-button').addEventListener('click', () => {
+    header.querySelector('.chat-close-button').addEventListener('click', () => {
       isInitialPageVisible = true;
       isChatHistoryVisible = false;
       renderChatbot();
     });
   
     const newChatButton = document.createElement('button');
-    newChatButton.className = 'happyflops-new-chat-button';
+    newChatButton.className = 'chat-new-chat-button';
     newChatButton.innerHTML = 'New Chat <span>&gt;</span>';
     newChatButton.addEventListener('click', restartConversation);
   
     const conversationsList = document.createElement('div');
-    conversationsList.className = 'happyflops-conversations-list';
+    conversationsList.className = 'chat-conversations-list';
   
     if (conversations.length === 0) {
       const noConversations = document.createElement('div');
-      noConversations.className = 'happyflops-no-conversations';
+      noConversations.className = 'chat-no-conversations';
       noConversations.textContent = 'No conversations';
       conversationsList.appendChild(noConversations);
     } else {
@@ -296,7 +296,7 @@
         
         if (index === 0 && conversations.length > 1) {
           const previousHeader = document.createElement('h3');
-          previousHeader.className = 'happyflops-previous-header';
+          previousHeader.className = 'chat-previous-header';
           previousHeader.textContent = 'Previous conversations';
           conversationsList.appendChild(previousHeader);
         }
@@ -319,8 +319,7 @@
     const messageCircleSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>`;
   
     const footer = document.createElement('div');
-    footer.className = 'happyflops-initial-footer';
-    
+    footer.className = 'chat-initial-footer';
     const homeButton = document.createElement('button');
     homeButton.className = 'home-button';
     homeButton.innerHTML = `
@@ -390,13 +389,13 @@
 
   function createLaunchButton() {
     const button = document.createElement('button');
-    button.className = 'happyflops-launch-button';
+    button.className = 'chat-launch-button';
     button.style.backgroundColor = config.mainColor;
     
     const img = document.createElement('img');
     img.src = config.launchAvatarUrl;
     img.alt = 'Chat Avatar';
-    img.className = 'happyflops-launch-avatar';
+    img.className = 'chat-launch-avatar';
     
     button.appendChild(img);
     button.addEventListener('click', () => {
@@ -409,7 +408,7 @@
 
   function createChatWindow() {
     const chatWindow = document.createElement('div');
-    chatWindow.className = 'happyflops-chat-window';
+    chatWindow.className = 'chat-chat-window';
   
     const header = createChatHeader();
     const messagesContainer = createMessagesContainer();
@@ -424,14 +423,14 @@
 
   function createChatHeader() {
     const header = document.createElement('div');
-    header.className = 'happyflops-chat-header';
+    header.className = 'chat-chat-header';
     header.style.backgroundColor = config.mainColor;
   
     const headerContent = document.createElement('div');
-    headerContent.className = 'happyflops-header-content';
+    headerContent.className = 'chat-header-content';
   
     const backButton = document.createElement('button');
-    backButton.className = 'happyflops-back-button';
+    backButton.className = 'chat-back-button';
     backButton.innerHTML = '&#10094;';
     backButton.addEventListener('click', () => {
       isInitialPageVisible = true;
@@ -440,7 +439,7 @@
     });
   
     const headerText = document.createElement('div');
-    headerText.className = 'happyflops-header-text';
+    headerText.className = 'chat-header-text';
   
     const title = document.createElement('h1');
     title.textContent = config.headerText;
@@ -451,17 +450,17 @@
     headerContent.appendChild(headerText);
   
     const buttonsContainer = document.createElement('div');
-    buttonsContainer.className = 'happyflops-header-buttons';
+    buttonsContainer.className = 'chat-header-buttons';
   
     const reloadButton = document.createElement('button');
     reloadButton.innerHTML = '&#x21bb;';
-    reloadButton.className = 'happyflops-button happyflops-reload-button';
+    reloadButton.className = 'chat-button chat-reload-button';
     reloadButton.title = 'Restart conversation';
     reloadButton.addEventListener('click', restartChatFromWindow);
   
     const closeButton = document.createElement('button');
     closeButton.textContent = '×';
-    closeButton.className = 'happyflops-button happyflops-close-button';
+    closeButton.className = 'chat-button chat-close-button';
     closeButton.addEventListener('click', () => {
       isChatOpen = false;
       isInitialPageVisible = false;
@@ -480,10 +479,10 @@
 
   function createMessagesContainer() {
     const container = document.createElement('div');
-    container.className = 'happyflops-messages-container';
+    container.className = 'chat-messages-container';
   
     const messagesWrapper = document.createElement('div');
-    messagesWrapper.className = 'happyflops-messages-wrapper';
+    messagesWrapper.className = 'chat-messages-wrapper';
   
     const logoContainer = createChatLogo();
     messagesWrapper.appendChild(logoContainer);
@@ -495,15 +494,15 @@
 
   function createChatLogo() {
     const logoContainer = document.createElement('div');
-    logoContainer.className = 'happyflops-logo-container';
+    logoContainer.className = 'chat-logo-container';
   
     const logo = document.createElement('img');
     logo.src = config.logoUrl;
     logo.alt = 'Vanbruun Logo';
-    logo.className = 'happyflops-logo';
+    logo.className = 'chat-logo';
   
     const logoText = document.createElement('div');
-    logoText.className = 'happyflops-logo-text';
+    logoText.className = 'chat-logo-text';
     logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
   
     logoContainer.appendChild(logo);
@@ -514,25 +513,25 @@
 
   function createInputArea() {
     const inputArea = document.createElement('div');
-    inputArea.className = 'happyflops-input-area';
+    inputArea.className = 'chat-input-area';
   
     if (!isConversationEnded) {
       const inputContainer = document.createElement('div');
-      inputContainer.className = 'happyflops-input-container';
+      inputContainer.className = 'chat-input-container';
   
       const input = document.createElement('input');
       input.type = 'text';
       input.placeholder = 'Skriv ett meddelande...';
-      input.className = 'happyflops-input';
+      input.className = 'chat-input';
   
       const emojiButton = document.createElement('button');
       emojiButton.innerHTML = '😈'; 
-      emojiButton.className = 'happyflops-emoji-button';
+      emojiButton.className = 'chat-emoji-button';
       emojiButton.addEventListener('click', toggleEmojiPicker);
   
       const sendButton = document.createElement('button');
       sendButton.textContent = 'Skicka';
-      sendButton.className = 'happyflops-send-button';
+      sendButton.className = 'chat-send-button';
       sendButton.style.backgroundColor = config.mainColor;
   
       const handleSendMessage = () => {
@@ -563,7 +562,7 @@
     event.stopPropagation();
     console.log('Emoji button clicked');
   
-    const existingPicker = document.querySelector('.happyflops-emoji-picker');
+    const existingPicker = document.querySelector('.chat-emoji-picker');
     
     if (existingPicker) {
       console.log('Removing existing picker');
@@ -573,7 +572,7 @@
   
     console.log('Creating new emoji picker');
     const emojiPicker = document.createElement('div');
-    emojiPicker.className = 'happyflops-emoji-picker';
+    emojiPicker.className = 'chat-emoji-picker';
   
     const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
     
@@ -582,7 +581,7 @@
       emojiButton.textContent = emoji;
       emojiButton.addEventListener('click', (e) => {
         e.stopPropagation();
-        const input = document.querySelector('.happyflops-input');
+        const input = document.querySelector('.chat-input');
         const startPos = input.selectionStart;
         const endPos = input.selectionEnd;
         input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos);
@@ -593,7 +592,7 @@
       emojiPicker.appendChild(emojiButton);
     });
   
-    const inputArea = event.target.closest('.happyflops-input-area');
+    const inputArea = event.target.closest('.chat-input-area');
     inputArea.appendChild(emojiPicker);
   
     const rect = event.target.getBoundingClientRect();
@@ -615,7 +614,7 @@
       document.addEventListener('click', closeEmojiPicker);
     }, 0);
   
-    const chatWindow = document.querySelector('.happyflops-chat-window');
+    const chatWindow = document.querySelector('.chat-chat-window');
     if (chatWindow) {
       chatWindow.addEventListener('scroll', () => {
         console.log('Chat window scrolled, removing emoji picker');
@@ -642,13 +641,13 @@
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
-    optionsElement.className = 'happyflops-initial-options';
+    optionsElement.className = 'chat-initial-options';
   
     const options = ['Spåra min order', 'Boka konsultation'];
     options.forEach(option => {
       const button = document.createElement('button');
       button.textContent = option;
-      button.className = 'happyflops-option-button';
+      button.className = 'chat-option-button';
       button.addEventListener('click', () => {
         sendMessage(option);
         showInitialOptions = false;
@@ -667,23 +666,23 @@
   }
   
   function createEndConversationOverlay() {
-    const chatWindow = document.querySelector('.happyflops-chat-window');
+    const chatWindow = document.querySelector('.chat-chat-window');
     const overlay = document.createElement('div');
-    overlay.className = 'happyflops-end-conversation-overlay';
+    overlay.className = 'chat-end-conversation-overlay';
     
     const content = document.createElement('div');
-    content.className = 'happyflops-end-conversation-content';
+    content.className = 'chat-end-conversation-content';
     
     const message = document.createElement('p');
     message.textContent = "Okay, thanks for the chat! If you have any questions in the future, don't hesitate to contact me. I wish you a fantastic day ahead! 👋";
     
     const endedMessage = document.createElement('p');
-    endedMessage.className = 'happyflops-chat-ended';
+    endedMessage.className = 'chat-chat-ended';
     endedMessage.textContent = 'Chat has Ended.';
     
     const newChatButton = document.createElement('button');
     newChatButton.textContent = 'Start New Conversation';
-    newChatButton.className = 'happyflops-new-conversation-button';
+    newChatButton.className = 'chat-new-conversation-button';
     newChatButton.addEventListener('click', restartConversation);
     
     content.appendChild(message);
@@ -700,7 +699,7 @@
 
   function createMessageElement(message) {
     const messageWrapper = document.createElement('div');
-    messageWrapper.className = `happyflops-message-wrapper ${message.isBot ? 'bot' : 'user'}`;
+    messageWrapper.className = `chat-message-wrapper ${message.isBot ? 'bot' : 'user'}`;
   
     if (message.isBot) {
       const profileImage = document.createElement('img');
@@ -710,12 +709,12 @@
         profileImage.src = config.logoUrl;
       }
       profileImage.alt = isConnectedToCustomerService ? 'Agent Profile' : 'Bot Profile';
-      profileImage.className = 'happyflops-bot-profile-image';
+      profileImage.className = 'chat-bot-profile-image';
       messageWrapper.appendChild(profileImage);
     }
   
     const messageElement = document.createElement('div');
-    messageElement.className = `happyflops-message ${message.isBot ? 'bot' : 'user'}`;
+    messageElement.className = `chat-message ${message.isBot ? 'bot' : 'user'}`;
     
     if (message.className) {
       messageElement.classList.add(message.className);
@@ -723,16 +722,16 @@
   
     if (message.isBot && message.agentName) {
       const agentNameElement = document.createElement('div');
-      agentNameElement.className = 'happyflops-agent-name';
+      agentNameElement.className = 'chat-agent-name';
       agentNameElement.textContent = message.agentName;
       messageElement.appendChild(agentNameElement);
     }
   
     const textElement = document.createElement('div');
-    textElement.className = 'happyflops-message-text';
+    textElement.className = 'chat-message-text';
     
     if (message.isLoading) {
-      textElement.innerHTML = '<div class="happyflops-loading-dots"><div></div><div></div><div></div></div>';
+      textElement.innerHTML = '<div class="chat-loading-dots"><div></div><div></div><div></div></div>';
     } else if (message.isBot) {
       const formattedMessage = formatMessage(message.text);
       textElement.innerHTML = formattedMessage;
@@ -746,14 +745,13 @@
     return messageWrapper;
   }
   
-  fetchAndDisplayConversation
   function createNewChatButton() {
     const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'happyflops-new-chat-button-container';
+    buttonContainer.className = 'chat-new-chat-button-container';
   
     const newChatButton = document.createElement('button');
     newChatButton.textContent = 'Start New Conversation';
-    newChatButton.className = 'happyflops-new-conversation-button';
+    newChatButton.className = 'chat-new-conversation-button';
     newChatButton.addEventListener('click', restartConversation);
   
     buttonContainer.appendChild(newChatButton);
@@ -762,7 +760,7 @@
 
   function createFollowUpButtons() {
     const followUpElement = document.createElement('div');
-    followUpElement.className = 'happyflops-initial-options';
+    followUpElement.className = 'chat-initial-options';
     
     const options = [
       { text: 'Ja', response: 'ja' },
@@ -773,7 +771,7 @@
     options.forEach(option => {
       const button = document.createElement('button');
       button.textContent = option.text;
-      button.className = 'happyflops-option-button';
+      button.className = 'chat-option-button';
       button.addEventListener('click', () => handleFollowUpResponse(option.response));
       followUpElement.appendChild(button);
     });
@@ -782,12 +780,6 @@
   }
 
   const API_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
-
-  function getStockholmTimestamp() {
-    const now = new Date();
-    const stockholmTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Stockholm' }));
-    return stockholmTime.toISOString();
-  }
 
   function getCETTimestamp() {
     const now = new Date();
@@ -847,7 +839,7 @@
             'x-functions-key': API_KEY
           }
         });
-  formatMessage
+  
         const data = await response.json();
         const answer = data.answer;
   
@@ -889,7 +881,6 @@
       }
     }
   }
-
 
   function handleFollowUpResponse(response) {
     showFollowUp = false;
@@ -962,26 +953,33 @@
       console.error('Error sending conversation over status:', error);
     }
   }
-
   async function fetchAndDisplayConversation() {
-    const conversationId = window.conversationId || generateUUID();
     const CONVERSATION_API_KEY = 'tqrM0w0XHMSObpoVWwcq4h9vt8-3koXfb15whKZji48zAzFumJ2clA==';
-    const url = `${CONVERSATION_API_URL}${CONVERSATION_API_KEY}&conversationId=${encodeURIComponent(conversationId)}`;
-  
+    const url = `${CONVERSATION_API_URL}${CONVERSATION_API_KEY}&conversationId=${encodeURIComponent(window.conversationId)}`;
+
+    console.log('Fetching conversation:', url);
+
     try {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         },
-        mode: 'cors', // This ensures the request is always a CORS request
+        mode: 'cors',
       });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+        console.log('Received conversation data:', data);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        throw new Error('Invalid response format');
+      }
 
       if (data.HandledChat && isWaitingForAgent) {
         // Remove the loading message
@@ -992,94 +990,93 @@
         isWaitingForAgent = false;
         enableInputArea();
       }
-  
+
       if (Array.isArray(data.messages)) {
         const lastMessageTimestamp = messages.length > 0 ? messages[messages.length - 1].timestamp : new Date(0).toISOString();
         const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
+        
+        console.log(`Found ${newMessages.length} new messages`);
+        
         newMessages.forEach(msg => {
           addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhotoUrl);
         });
+
+        if (newMessages.length > 0) {
+          showFollowUp = false;
+          updateChatWindow();
+        }
+      } else {
+        console.warn('No messages array in the response:', data);
       }
-  
-      showFollowUp = false;
-      updateChatWindow();
-  
+
       if (data.conversation_over) {
+        console.log('Conversation is over, displaying star rating');
         displayStarRating();
+        clearInterval(customerServiceInterval);
       }
-  
+
     } catch (error) {
       console.error('Error fetching conversation:', error);
+      
       if (error.message.includes('CORS')) {
         console.error('CORS error detected. Please ensure your server is configured to allow CORS requests.');
       }
+      
       if (messages.length === 0) {
         addMessage("Ett fel uppstod när vi försökte hämta konversationen. Vänligen försök igen senare.", true);
       }
       
+      updateChatWindow();
+      
+      // Optionally, you might want to stop polling if there's a persistent error
+      // clearInterval(customerServiceInterval);
     }
   }
-sendMessage
 
-  function addMessage(text, isBot, isLoading = false, timestamp = new Date().toISOString(), agentName = null, agentId = null, agentPhotoUrl = null) {
-    messages.push({ text, isBot, isLoading, timestamp, agentName, agentId, agentPhotoUrl });
+  function addLoadingMessage() {
+    const loadingMessage = {
+      text: 'Vänligen vänta, vi meddelar teamet..',
+      isBot: true,
+      isLoading: true
+    };
+    messages.push(loadingMessage);
     updateChatWindow();
-    saveConversation();
-  }
-
-
-  function startCustomerServiceMode() {
-    console.log("Entering customer service mode");
-    isWaitingForAgent = true; // Add this flag
-    addLoadingMessage();
-    disableInputArea();
-    customerServiceInterval = setInterval(fetchAndDisplayConversation, 500);
   }
   
-function addLoadingMessage() {
-  const loadingMessage = {
-    text: 'Vänligen vänta, vi meddelar teamet..',
-    isBot: true,
-    isLoading: true
-  };
-  messages.push(loadingMessage);
-  updateChatWindow();
-}
-  
-function disableInputArea() {
-  const inputArea = document.querySelector('.happyflops-input-area');
-  const input = document.querySelector('.happyflops-input');
-  const sendButton = document.querySelector('.happyflops-send-button');
-  if (inputArea && input && sendButton) {
-    input.disabled = true;
-    sendButton.disabled = true;
-    inputArea.style.opacity = '0.5';
+  function disableInputArea() {
+    const inputArea = document.querySelector('.chat-input-area');
+    const input = document.querySelector('.chat-input');
+    const sendButton = document.querySelector('.chat-send-button');
+    if (inputArea && input && sendButton) {
+      input.disabled = true;
+      sendButton.disabled = true;
+      inputArea.style.opacity = '0.5';
+    }
   }
-}
   
-function enableInputArea() {
-  const inputArea = document.querySelector('.happyflops-input-area');
-  const input = document.querySelector('.happyflops-input');
-  const sendButton = document.querySelector('.happyflops-send-button');
-  if (inputArea && input && sendButton) {
-    input.disabled = false;
-    sendButton.disabled = false;
-    inputArea.style.opacity = '1';
+  function enableInputArea() {
+    const inputArea = document.querySelector('.chat-input-area');
+    const input = document.querySelector('.chat-input');
+    const sendButton = document.querySelector('.chat-send-button');
+    if (inputArea && input && sendButton) {
+      input.disabled = false;
+      sendButton.disabled = false;
+      inputArea.style.opacity = '1';
+    }
   }
-}
 
   function displayStarRating() {
     const ratingContainer = createStarRating();
-    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
     if (messagesWrapper) {
       messagesWrapper.appendChild(ratingContainer);
       scrollToBottom();
     }
   }
-createMessageElement
+
   function createStarRating() {
     const ratingContainer = document.createElement('div');
-    ratingContainer.className = 'happyflops-rating-container';
+    ratingContainer.className = 'chat-rating-container';
     ratingContainer.style.textAlign = 'center';
     ratingContainer.style.padding = '10px';
     ratingContainer.style.display = 'flex';
@@ -1097,11 +1094,11 @@ createMessageElement
     ratingPrompt.style.fontWeight = 'bold';
 
     const starsContainer = document.createElement('div');
-    starsContainer.className = 'happyflops-stars-container';
+    starsContainer.className = 'chat-stars-container';
   
     for (let i = 1; i <= 5; i++) {
       const star = document.createElement('span');
-      star.className = 'happyflops-star';
+      star.className = 'chat-star';
       star.innerHTML = '☆';
       star.setAttribute('data-rating', i);
       star.style.fontSize = '40px';
@@ -1115,7 +1112,7 @@ createMessageElement
       });
   
       star.addEventListener('mouseout', () => {
-        const currentRating = document.querySelector('.happyflops-star.active')?.getAttribute('data-rating') || 0;
+        const currentRating = document.querySelector('.chat-star.active')?.getAttribute('data-rating') || 0;
         updateStars(currentRating);
       });
   
@@ -1127,9 +1124,9 @@ createMessageElement
   
     return ratingContainer;
   }
-  createMessageElement
+  
   function setRating(rating) {
-    const stars = document.querySelectorAll('.happyflops-star');
+    const stars = document.querySelectorAll('.chat-star');
     stars.forEach((star) => star.classList.remove('active'));
     if (rating > 0) {
       stars[rating - 1].classList.add('active');
@@ -1144,7 +1141,7 @@ createMessageElement
   }
 
   function updateStars(rating) {
-    const stars = document.querySelectorAll('.happyflops-star');
+    const stars = document.querySelectorAll('.chat-star');
     stars.forEach((star, index) => {
       if (index < rating) {
         star.innerHTML = '★';
@@ -1188,7 +1185,7 @@ createMessageElement
   }
 
   function scrollToBottom() {
-    const messagesContainer = document.querySelector('.happyflops-messages-container');
+    const messagesContainer = document.querySelector('.chat-messages-container');
     if (messagesContainer) {
       setTimeout(() => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -1226,7 +1223,7 @@ createMessageElement
   
     localStorage.setItem('vanbruunChatLastSaved', new Date().toISOString());
   }
-  fetchAndDisplayConversation
+  
   function loadConversation() {
     const storedMessages = localStorage.getItem('vanbruunChatMessages');
     const storedHistory = localStorage.getItem('vanbruunChatHistory');
@@ -1234,11 +1231,9 @@ createMessageElement
     const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
     const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
     const storedShowRatingSystem = localStorage.getItem('vanbruunChatShowRatingSystem');
-    const storedIsChatOpen = localStorage.getItem('vanbruunChatIsOpen');
-    const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
     const storedIsConnectedToCustomerService = localStorage.getItem('vanbruunChatIsConnectedToCustomerService');
-    const storedIsLoading = localStorage.getItem('vanbruunChatIsLoading');
-  
+    const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
+
     if (storedMessages) {
       messages = JSON.parse(storedMessages);
       messages = messages.filter(msg => !msg.isLoading);
@@ -1260,13 +1255,14 @@ createMessageElement
     if (storedShowRatingSystem !== null) {
       showRatingSystem = JSON.parse(storedShowRatingSystem);
     }
-    if (storedIsChatOpen !== null) {
-      isChatOpen = JSON.parse(storedIsChatOpen);
-    }
     if (storedIsConnectedToCustomerService !== null) {
       isConnectedToCustomerService = JSON.parse(storedIsConnectedToCustomerService);
     }
-  
+
+    // Always set isChatOpen and isInitialPageVisible to false when the page loads
+    isChatOpen = false;
+    isInitialPageVisible = false;
+
     isLoading = false;
     isInitialized = messages.length > 0;
 
@@ -1276,17 +1272,10 @@ createMessageElement
         showFollowUp = true;
       }
     }
-  
+
     if (isConnectedToCustomerService) {
       showFollowUp = false;
     }
-  
-    if (storedIsLoading === 'true') {
-      const errorMessage = 'Det uppstod ett fel när svaret genererades. Vänligen försök igen.';
-      addMessage(errorMessage, true, false, new Date().toISOString());
-    }
-  
-    updateChatWindow();
   }
   
   function restartConversation() {
@@ -1350,9 +1339,9 @@ createMessageElement
   function updateChatWindow() {
     console.log('Updating chat window');
     
-    const messagesWrapper = document.querySelector('.happyflops-messages-wrapper');
+    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
     if (messagesWrapper) {
-      const logoContainer = messagesWrapper.querySelector('.happyflops-logo-container');
+      const logoContainer = messagesWrapper.querySelector('.chat-logo-container');
       messagesWrapper.innerHTML = '';
       if (logoContainer) {
         messagesWrapper.appendChild(logoContainer);
@@ -1380,7 +1369,7 @@ createMessageElement
       scrollToBottom();
     }
     
-    const inputArea = document.querySelector('.happyflops-input-area');
+    const inputArea = document.querySelector('.chat-input-area');
     if (inputArea) {
       inputArea.style.pointerEvents = isConversationEnded ? 'none' : 'auto';
       inputArea.style.opacity = isConversationEnded ? '0.5' : '1';
@@ -1389,41 +1378,94 @@ createMessageElement
     saveConversation();
   }
 
+  function formatTimestamp(date) {
+    const pad = (num) => (num < 10 ? '0' + num : num);
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${date.getMilliseconds().toString().padStart(3, '0')}`;
+  }
+  
+  function addMessage(text, isBot, isLoading = false, timestamp = null, agentName = null, agentId = null, agentPhotoUrl = null) {
+    const messageTimestamp = timestamp || getStockholmTimestamp();
+    messages.push({ text, isBot, isLoading, timestamp: messageTimestamp, agentName, agentId, agentPhotoUrl });
+    updateChatWindow();
+    saveConversation();
+  }
+
+  function getStockholmTimestamp() {
+    const now = new Date();
+    const stockholmTime = new Date(now.toLocaleString('sv-SE', { timeZone: 'Europe/Stockholm' }));
+    
+    const pad = (num) => String(num).padStart(2, '0');
+    
+    const year = stockholmTime.getFullYear();
+    const month = pad(stockholmTime.getMonth() + 1); // getMonth() is zero-indexed
+    const day = pad(stockholmTime.getDate());
+    const hours = pad(stockholmTime.getHours());
+    const minutes = pad(stockholmTime.getMinutes());
+    const seconds = pad(stockholmTime.getSeconds());
+    const milliseconds = String(stockholmTime.getMilliseconds()).padStart(3, '0');
+  
+    // Construct the ISO string manually
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+  }
+  
+  // Test the function
+  console.log(getStockholmTimestamp());
+  
   async function sendConversationToAzure(messages, needsCustomerService = false) {
-      const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
-      const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`;
-      const payload = {
-        conversationId: window.conversationId || (window.conversationId = generateUUID()),
-        userId: getUserId(),
-        messages: messages.map(msg => ({
-          text: msg.text,
-          isBot: msg.isBot,
-          timestamp: msg.timestamp,
-          agentName: msg.agentName,
-          agentId: msg.agentId
-        })),
-        needsCustomerService: needsCustomerService || isConnectedToCustomerService,
-      };
-    
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-    
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-    
-        console.log('Conversation stored successfully');
-      } catch (error) {
-        console.error('Error storing conversation:', error);
+    const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
+    const url = STORE_CONVERSATION_API_URL;
+  
+    const payload = {
+      conversationId: window.conversationId || (window.conversationId = generateUUID()),
+      userId: getUserId(),
+      messages: messages.map(msg => ({
+        text: msg.text,
+        isBot: msg.isBot,
+        timestamp: msg.timestamp || getStockholmTimestamp(),
+        agentName: msg.agentName,
+        agentId: msg.agentId
+      })),
+      needsCustomerService: needsCustomerService || isConnectedToCustomerService,
+    };
+  
+    console.log('Sending payload:', JSON.stringify(payload));
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-functions-key': STORE_CONVERSATION_API_KEY,
+        },
+        body: JSON.stringify(payload),
+        mode: 'cors',
+      });
+  
+      const responseText = await response.text();
+      console.log('Response status:', response.status);
+      console.log('Response headers:', JSON.stringify(Object.fromEntries(response.headers)));
+      console.log('Raw response:', responseText);
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
       }
+  
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Error parsing JSON response:', e);
+        responseData = { message: responseText };
+      }
+  
+      console.log('Conversation stored successfully:', responseData);
+      return responseData;
+    } catch (error) {
+      console.error('Error storing conversation:', error);
+      throw error;
     }
-    sendRating
+  }
+    
   async function fetchUserConversations() {
       const GET_ALL_CONVOS_API_KEY = 'PHHQPngwJo_TFnB28E1D2GCIfuisZgMvkO_lsXduoTwyAzFuaFBLNg==';
       const url = `https://rosterai-chat-function.azurewebsites.net/api/getallconvos?code=${GET_ALL_CONVOS_API_KEY}`;
@@ -1457,10 +1499,10 @@ createMessageElement
 
   function createConversationSnippet(conversation, isRecent) {
       const convSnippet = document.createElement('div');
-      convSnippet.className = `happyflops-conversation-snippet ${isRecent ? 'recent' : ''}`;
+      convSnippet.className = `chat-conversation-snippet ${isRecent ? 'recent' : ''}`;
       
       const snippetContent = document.createElement('div');
-      snippetContent.className = 'happyflops-snippet-content';
+      snippetContent.className = 'chat-snippet-content';
       
       const title = document.createElement('h4');
       title.textContent = isRecent ? 'Recent Conversation' : 'Conversation';
@@ -1477,7 +1519,7 @@ createMessageElement
       convSnippet.appendChild(snippetContent);
     
       const arrowIcon = document.createElement('span');
-      arrowIcon.className = 'happyflops-snippet-arrow';
+      arrowIcon.className = 'chat-snippet-arrow';
       arrowIcon.innerHTML = '&gt;';
       convSnippet.appendChild(arrowIcon);
     
@@ -1489,30 +1531,19 @@ createMessageElement
       return convSnippet;
   }
     
-  function formatTimestamp(timestamp) {
-      const date = new Date(timestamp);
-      const now = new Date();
-      const diffTime = Math.abs(now - date);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-      if (diffDays < 1) {
-        return 'Today';
-      } else if (diffDays === 1) {
-        return 'Yesterday';
-      } else {
-        return `${diffDays} days ago`;
-      }
-  }
-createMessageElement
   function startCustomerServiceMode() {
     console.log("Entering customer service mode");
-    customerServiceInterval = setInterval(fetchAndDisplayConversation, 500);
+    isWaitingForAgent = true;
+    addLoadingMessage();
+    disableInputArea();
+    customerServiceInterval = setInterval(fetchAndDisplayConversation, 1000); // Changed from 500ms to 1000ms (1 second)
   }
 
   createChatbotUI();  
 
   window.openVanbruunChat = function() {
     isInitialPageVisible = true;
+    isChatOpen = true;
     renderChatbot();
   };
 
