@@ -132,21 +132,13 @@
     quickLinks.className = 'chat-initial-quick-links';
     quickLinks.innerHTML = `
       <button id="track-order">Boka Konsultation</button>
-      <button id="new-arrivals">Spåra Min Order</button>
+      <button id="new-arrivals">Rekommendation</button>
     `;
   
     quickLinks.querySelector('#track-order').addEventListener('click', () => openChatAndSendMessage('Boka konsultation'));
-    quickLinks.querySelector('#new-arrivals').addEventListener('click', () => openChatAndSendMessage('Spåra min order'));
+    quickLinks.querySelector('#new-arrivals').addEventListener('click', () => openChatAndSendMessage('Rekommendation'));
   
-    const recentConversation = document.createElement('div');
-    recentConversation.className = 'chat-initial-recent';
-    recentConversation.innerHTML = `
-      <h3>Recent Conversation</h3>
-      <div class="chat-initial-recent-item">
-        <span>How can I assist you today? 😊</span>
-        <span>31 minutes ago</span>
-      </div>
-    `;
+
   
     const talkToHuman = document.createElement('div');
     talkToHuman.className = 'chat-initial-talk-human';
@@ -191,7 +183,7 @@
   
     const homeSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
     const messageCircleSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>`;
-  
+
 
     
 
@@ -199,7 +191,6 @@
   
     content.appendChild(askButton);
     content.appendChild(quickLinks);
-    content.appendChild(recentConversation);
     content.appendChild(talkToHuman);
   
     initialPage.appendChild(header);
@@ -518,22 +509,29 @@
     if (!isConversationEnded) {
       const inputContainer = document.createElement('div');
       inputContainer.className = 'chat-input-container';
-  
       const input = document.createElement('input');
       input.type = 'text';
       input.placeholder = 'Skriv ett meddelande...';
       input.className = 'chat-input';
-  
-      const emojiButton = document.createElement('button');
-      emojiButton.innerHTML = '😈'; 
-      emojiButton.className = 'chat-emoji-button';
-      emojiButton.addEventListener('click', toggleEmojiPicker);
-  
+      
+      const smileySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round">
+      <circle cx="50" cy="50" r="42" />
+      <path d="M30 60 Q50 75 70 60" />
+      <circle cx="35" cy="40" r="6" fill="currentColor" stroke="none" />
+      <circle cx="65" cy="40" r="6" fill="currentColor" stroke="none" />
+    </svg>`;
+    
+    const emojiButton = document.createElement('button');
+    emojiButton.innerHTML = smileySvg; 
+    emojiButton.className = 'chat-emoji-button';
+    emojiButton.addEventListener('click', toggleEmojiPicker);
+      
       const sendButton = document.createElement('button');
       sendButton.textContent = 'Skicka';
       sendButton.className = 'chat-send-button';
       sendButton.style.backgroundColor = config.mainColor;
-  
+
+
       const handleSendMessage = () => {
         const message = input.value.trim();
         if (message !== '') {
