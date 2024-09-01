@@ -2,14 +2,13 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 9999; /* High z-index to ensure it's above other elements */
+  z-index: 9999;
 }
 
-/* Update the chat window styles */
 .chat-chat-window,
 .chat-initial-page {
   position: absolute;
-  bottom: 20px; /* Adjust based on the size of your launch button */
+  bottom: 20px;
   right: 0;
   width: 440px;
   height: 600px;
@@ -19,8 +18,10 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  z-index: 9999; /* Ensure it's above other elements */
+  z-index: 9999;
 }
+
+
 
 /* Update the launch button styles */
 .chat-launch-button {
@@ -508,11 +509,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  border-radius: 15px 15px 15px 15px;
-  position: relative;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(135deg, #3f2b20 0%, #5a3d2c 100%); /* Gradient from darker to lighter brown */
+  padding: 0 15px;
+  background: linear-gradient(135deg, #3f2b20 0%, #5a3d2c 100%);
+  height: 60px; /* Set a fixed height for the header */
+  min-height: 60px; /* Ensure minimum height */
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .chat-back-button {
@@ -1030,7 +1032,30 @@
     background: #555;
   }
   
+
+  
+
+
+
   @media (max-width: 480px) {
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Prevent body scrolling */
+    }
+  
+    #chat-chatbot {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      max-height: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  
     .chat-chat-window,
     .chat-initial-page {
       width: 100%;
@@ -1041,42 +1066,33 @@
       right: 0;
       bottom: 0;
       border-radius: 0;
-      max-width: none;
-      max-height: none;
+      display: flex;
+      flex-direction: column;
     }
-
+  
     .chat-chat-header {
       border-radius: 0;
+      flex-shrink: 0;
     }
-
+  
     .chat-messages-container {
-      height: calc(100% - 60px - 60px); /* Adjust based on your header and input area heights */
+      flex-grow: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
     }
-
+  
     .chat-input-area {
-      position: fixed;
+      position: sticky;
       bottom: 0;
       left: 0;
       right: 0;
       width: 100%;
       box-sizing: border-box;
+      flex-shrink: 0;
     }
-
+  
     .chat-launch-button {
       width: 60px;
       height: 60px;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-
-    #chat-chatbot {
-      width: 100vw;
-      height: 100vh;
-      max-width: none;
-      max-height: none;
     }
   }
