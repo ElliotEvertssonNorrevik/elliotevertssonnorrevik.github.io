@@ -16,7 +16,6 @@
     return userId;
   }
 
-
   let isWaitingForAgent = false;
   let isQuicklinkPressed = false;
   let quicklinkMessage = '';
@@ -138,13 +137,10 @@
     quickLinks.querySelector('#track-order').addEventListener('click', () => openChatAndSendMessage('Boka konsultation'));
     quickLinks.querySelector('#new-arrivals').addEventListener('click', () => openChatAndSendMessage('Rekommendation'));
   
-
-  
     const talkToHuman = document.createElement('div');
     talkToHuman.className = 'chat-initial-talk-human';
     talkToHuman.style.display = 'none'; // Hide by default
   
-
     fetchAgentProfiles().then(agents => {
       const onlineAgents = agents.filter(agent => agent.isOnline).slice(0, 3);
       if (onlineAgents.length > 0) {
@@ -177,18 +173,33 @@
           openChatAndSendMessage('Prata med kundtjänst');
         });
         talkToHuman.style.display = 'flex'; // Show the button
+
+      } else {
+        const agentPhotosContainer = document.createElement('div');
+        agentPhotosContainer.className = 'chat-agent-photos';
+        
+        onlineAgents.forEach((agent, index) => {
+          const agentPhotoWrapper = document.createElement('div');
+          agentPhotoWrapper.className = 'chat-agent-photo-wrapper';
+          
+          agentPhotosContainer.appendChild(agentPhotoWrapper);
+        });
+
+        talkToHuman.innerHTML = '';
+        talkToHuman.appendChild(agentPhotosContainer);
+        talkToHuman.innerHTML += '<span>Talk to a human agent</span>';
+
+        talkToHuman.innerHTML = '';
+        talkToHuman.appendChild(agentPhotosContainer);
+        talkToHuman.innerHTML += '<span>No agents currently available</span>';
+
+        talkToHuman.style.display = 'flex'; // Show the button
       }
     });
-  
   
     const homeSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
     const messageCircleSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>`;
 
-
-    
-
-
-  
     content.appendChild(askButton);
     content.appendChild(quickLinks);
     content.appendChild(talkToHuman);
@@ -198,8 +209,6 @@
   
     return initialPage;
   }
-
-  
 
   async function fetchAgentProfiles() {
     const API_KEY = 'qoFEiCbbZLZkPtzSG_H5YxdKw4SdWFiq5glgoIttX6GrAzFuo67mqg=='; // Replace with your actual API key
@@ -531,7 +540,6 @@
       sendButton.className = 'chat-send-button';
       sendButton.style.backgroundColor = config.mainColor;
 
-
       const handleSendMessage = () => {
         const message = input.value.trim();
         if (message !== '') {
@@ -728,781 +736,779 @@
     const textElement = document.createElement('div');
     textElement.className = 'chat-message-text';
     
-    if (message.isLoading) {
-      textElement.innerHTML = '<div class="chat-loading-dots"><div></div><div></div><div></div></div>';
-    } else if (message.isBot) {
-      const formattedMessage = formatMessage(message.text);
-      textElement.innerHTML = formattedMessage;
-    } else {
-      textElement.textContent = message.text;
+
+      if (message.isLoading) {
+        textElement.innerHTML = '<div class="chat-loading-dots"><div></div><div></div><div></div></div>';
+      } else if (message.isBot) {
+        const formattedMessage = formatMessage(message.text);
+        textElement.innerHTML = formattedMessage;
+      } else {
+        textElement.textContent = message.text;
+      }
+    
+      messageElement.appendChild(textElement);
+      messageWrapper.appendChild(messageElement);
+    
+      return messageWrapper;
+    }
+    
+    function createNewChatButton() {
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'chat-new-chat-button-container';
+    
+      const newChatButton = document.createElement('button');
+      newChatButton.textContent = 'Start New Conversation';
+      newChatButton.className = 'chat-new-conversation-button';
+      newChatButton.addEventListener('click', restartConversation);
+    
+      buttonContainer.appendChild(newChatButton);
+      return buttonContainer;
     }
   
-    messageElement.appendChild(textElement);
-    messageWrapper.appendChild(messageElement);
-  
-    return messageWrapper;
-  }
-  
-  function createNewChatButton() {
-    const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'chat-new-chat-button-container';
-  
-    const newChatButton = document.createElement('button');
-    newChatButton.textContent = 'Start New Conversation';
-    newChatButton.className = 'chat-new-conversation-button';
-    newChatButton.addEventListener('click', restartConversation);
-  
-    buttonContainer.appendChild(newChatButton);
-    return buttonContainer;
-  }
-
-  function createFollowUpButtons() {
-    const followUpElement = document.createElement('div');
-    followUpElement.className = 'chat-initial-options';
+    function createFollowUpButtons() {
+      const followUpElement = document.createElement('div');
+      followUpElement.className = 'chat-initial-options';
+      
+      const options = [
+        { text: 'Ja', response: 'ja' },
+        { text: 'Nej', response: 'nej' },
+        { text: 'Prata med kundtjänst', response: 'customer_service' }
+      ];
+      
+      options.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option.text;
+        button.className = 'chat-option-button';
+        button.addEventListener('click', () => handleFollowUpResponse(option.response));
+        followUpElement.appendChild(button);
+      });
     
-    const options = [
-      { text: 'Ja', response: 'ja' },
-      { text: 'Nej', response: 'nej' },
-      { text: 'Prata med kundtjänst', response: 'customer_service' }
-    ];
-    
-    options.forEach(option => {
-      const button = document.createElement('button');
-      button.textContent = option.text;
-      button.className = 'chat-option-button';
-      button.addEventListener('click', () => handleFollowUpResponse(option.response));
-      followUpElement.appendChild(button);
-    });
-  
-    return followUpElement;
-  }
-
-  const API_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
-
-  function getCETTimestamp() {
-    const now = new Date();
-    const utcOffset = now.getTimezoneOffset();
-    const cetOffset = utcOffset + 60; // CET is UTC+1
-    return new Date(now.getTime() + cetOffset * 60000).toISOString();
-  }
-
-  async function sendMessage(text) {
-    if (text.trim() === '' || isLoading || isWaitingForAgent) return;
-  
-    const currentTime = getStockholmTimestamp();
-
-    addMessage(text, false, false, currentTime);
-    
-    // Only add loading message if not connected to customer service
-    if (!isConnectedToCustomerService) {
-      addMessage('', true, true); // Add loading message
-      isLoading = true;
+      return followUpElement;
     }
   
-    showInitialOptions = false;
-    showFollowUp = false;
+    const API_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
   
-    conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
+    function getCETTimestamp() {
+      const now = new Date();
+      const utcOffset = now.getTimezoneOffset();
+      const cetOffset = utcOffset + 60; // CET is UTC+1
+      return new Date(now.getTime() + cetOffset * 60000).toISOString();
+    }
   
-    await sendConversationToAzure(messages);
+    async function sendMessage(text) {
+      if (text.trim() === '' || isLoading || isWaitingForAgent) return;
+    
+      const currentTime = getStockholmTimestamp();
   
-    updateChatWindow();
-  
-    if (text.toLowerCase() === 'prata med kundtjänst' && !isConnectedToCustomerService) {
-      isConnectedToCustomerService = true;
-      const response = "Kopplar dig till kundtjänst...";
-      messages[messages.length - 1] = { text: response, isBot: true, isLoading: false, timestamp: getStockholmTimestamp() };
-      conversationHistory.push({"role": "assistant", "content": response, "timestamp": getStockholmTimestamp()});
-      await sendConversationToAzure(messages, true);
-      startCustomerServiceMode();
-      isLoading = false;
+      addMessage(text, false, false, currentTime);
+      
+      // Only add loading message if not connected to customer service
+      if (!isConnectedToCustomerService) {
+        addMessage('', true, true); // Add loading message
+        isLoading = true;
+      }
+    
+      showInitialOptions = false;
+      showFollowUp = false;
+    
+      conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
+    
+      await sendConversationToAzure(messages);
+    
       updateChatWindow();
-      return;
-    }
-  
-    if (isConnectedToCustomerService) {
-      await sendConversationToAzure(messages, true);
-      fetchAndDisplayConversation();
-    } else {
-      try {
-        const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
-        const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
-  
-        const encodedQuery = encodeURIComponent(fullQuery);
-        const url = `${API_BASE_URL}?question=${encodedQuery}`;
-  
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'x-functions-key': API_KEY
-          }
-        });
-  
-        const data = await response.json();
-        const answer = data.answer;
-  
-        const responseTime = getStockholmTimestamp();
-        conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
-  
-        messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
-        
-        await sendConversationToAzure(messages);
-  
-        if (!answer.includes('?') && Math.random() < 0.5) {
-          setTimeout(() => {
-            const followUpTime = getStockholmTimestamp();
-            addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
-            conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
-            showFollowUp = true;
-            updateChatWindow();
-            sendConversationToAzure(messages);
-          }, 1000);
-        } else {
-          showFollowUp = false;
-        }
-  
-      } catch (error) {
-        console.error('Error fetching bot response:', error);
-        const errorTime = getStockholmTimestamp();
-        const errorMessage = 'Sorry, I couldn\'t connect right now. Please try again later or contact us at customer.service@happyflops.se';
-        messages[messages.length - 1] = { 
-          text: errorMessage, 
-          isBot: true, 
-          isLoading: false,
-          timestamp: errorTime
-        };
-        conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
-        await sendConversationToAzure(messages);
-      } finally {
+    
+      if (text.toLowerCase() === 'prata med kundtjänst' && !isConnectedToCustomerService) {
+        isConnectedToCustomerService = true;
+        const response = "Kopplar dig till kundtjänst...";
+        messages[messages.length - 1] = { text: response, isBot: true, isLoading: false, timestamp: getStockholmTimestamp() };
+        conversationHistory.push({"role": "assistant", "content": response, "timestamp": getStockholmTimestamp()});
+        await sendConversationToAzure(messages, true);
+        startCustomerServiceMode();
         isLoading = false;
         updateChatWindow();
+        return;
       }
-    }
-  }
-
-  function handleFollowUpResponse(response) {
-    showFollowUp = false;
-    updateChatWindow();
-  
-    if (response === "customer_service") {
-      isConnectedToCustomerService = true;
-      const customerServiceMessage = "Prata med kundtjänst.";
-      const timestamp = getStockholmTimestamp();
-      
-      addMessage(customerServiceMessage, false, false, timestamp);
-      conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
-      
-      const botResponse = "Kopplar dig till kundtjänst...";
-      addMessage(botResponse, true, false, timestamp);
-      conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
-  
-      sendConversationToAzure(messages, true).then(() => {
-        startCustomerServiceMode();
-      });
-    } else {
-      const userResponse = response === "yes" ? "Ja" : "Nej";
-      addMessage(userResponse, false, false, getStockholmTimestamp());
-      
-      setTimeout(() => {
-        if (response === "yes") {
-          const botResponse = "Vad mer kan jag hjälpa dig med?";
-          addMessage(botResponse, true, false, getStockholmTimestamp());
-          updateChatWindow();
-          sendConversationToAzure(messages);
-        } else {
-          const botResponse = "Okej, tack för att du chattat med mig!";
-          addMessage(botResponse, true, false, getStockholmTimestamp());
-          updateChatWindow();
-          sendConversationToAzure(messages).then(() => {
-            sendConversationOverStatus();
+    
+      if (isConnectedToCustomerService) {
+        await sendConversationToAzure(messages, true);
+        fetchAndDisplayConversation();
+      } else {
+        try {
+          const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+          const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
+    
+          const encodedQuery = encodeURIComponent(fullQuery);
+          const url = `${API_BASE_URL}?question=${encodedQuery}`;
+    
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'x-functions-key': API_KEY
+            }
           });
-        }
-      }, 500);
-    }
-    saveConversation();
-  }
-
-  async function sendConversationOverStatus() {
-    const STORE_CONVERSATION_API_KEY = `bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==`
-    const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`
-
-    const payload = {
-      conversationId: window.conversationId,
-      conversation_over: true
-    };
-    console.log('Sending conversation_over');
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      showRatingSystem = true;
-      console.log('Conversation over status sent successfully');
-      console.log('showRatingSystem set to:', showRatingSystem);
-      updateChatWindow();
-    } catch (error) {
-      console.error('Error sending conversation over status:', error);
-    }
-  }
-  async function fetchAndDisplayConversation() {
-    const CONVERSATION_API_KEY = 'tqrM0w0XHMSObpoVWwcq4h9vt8-3koXfb15whKZji48zAzFumJ2clA==';
-    const url = `${CONVERSATION_API_URL}${CONVERSATION_API_KEY}&conversationId=${encodeURIComponent(window.conversationId)}`;
-
-    console.log('Fetching conversation:', url);
-
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        mode: 'cors',
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      let data;
-      try {
-        data = await response.json();
-        console.log('Received conversation data:', data);
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
-        throw new Error('Invalid response format');
-      }
-
-      if (data.HandledChat && isWaitingForAgent) {
-        // Remove the loading message
-        messages = messages.filter(msg => !msg.isLoading);
-        
-        const agentConnectedMessage = `Du pratar nu med ${data.HandledChat}`;
-        addMessage(agentConnectedMessage, true, false, new Date().toISOString());
-        isWaitingForAgent = false;
-        enableInputArea();
-      }
-
-      if (Array.isArray(data.messages)) {
-        const lastMessageTimestamp = messages.length > 0 ? messages[messages.length - 1].timestamp : new Date(0).toISOString();
-        const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
-        
-        console.log(`Found ${newMessages.length} new messages`);
-        
-        newMessages.forEach(msg => {
-          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhotoUrl);
-        });
-
-        if (newMessages.length > 0) {
-          showFollowUp = false;
+    
+          const data = await response.json();
+          const answer = data.answer;
+    
+          const responseTime = getStockholmTimestamp();
+          conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
+    
+          messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+          
+          await sendConversationToAzure(messages);
+    
+          if (!answer.includes('?') && Math.random() < 0.5) {
+            setTimeout(() => {
+              const followUpTime = getStockholmTimestamp();
+              addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
+              conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
+              showFollowUp = true;
+              updateChatWindow();
+              sendConversationToAzure(messages);
+            }, 1000);
+          } else {
+            showFollowUp = false;
+          }
+    
+        } catch (error) {
+          console.error('Error fetching bot response:', error);
+          const errorTime = getStockholmTimestamp();
+          const errorMessage = 'Sorry, I couldn\'t connect right now. Please try again later or contact us at customer.service@happyflops.se';
+          messages[messages.length - 1] = { 
+            text: errorMessage, 
+            isBot: true, 
+            isLoading: false,
+            timestamp: errorTime
+          };
+          conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
+          await sendConversationToAzure(messages);
+        } finally {
+          isLoading = false;
           updateChatWindow();
         }
-      } else {
-        console.warn('No messages array in the response:', data);
-      }
-
-      if (data.conversation_over) {
-        console.log('Conversation is over, displaying star rating');
-        displayStarRating();
-        clearInterval(customerServiceInterval);
-      }
-
-    } catch (error) {
-      console.error('Error fetching conversation:', error);
-      
-      if (error.message.includes('CORS')) {
-        console.error('CORS error detected. Please ensure your server is configured to allow CORS requests.');
-      }
-      
-      if (messages.length === 0) {
-        addMessage("Ett fel uppstod när vi försökte hämta konversationen. Vänligen försök igen senare.", true);
-      }
-      
-      updateChatWindow();
-      
-      // Optionally, you might want to stop polling if there's a persistent error
-      // clearInterval(customerServiceInterval);
-    }
-  }
-
-  function addLoadingMessage() {
-    const loadingMessage = {
-      text: 'Vänligen vänta, vi meddelar teamet..',
-      isBot: true,
-      isLoading: true
-    };
-    messages.push(loadingMessage);
-    updateChatWindow();
-  }
-  
-  function disableInputArea() {
-    const inputArea = document.querySelector('.chat-input-area');
-    const input = document.querySelector('.chat-input');
-    const sendButton = document.querySelector('.chat-send-button');
-    if (inputArea && input && sendButton) {
-      input.disabled = true;
-      sendButton.disabled = true;
-      inputArea.style.opacity = '0.5';
-    }
-  }
-  
-  function enableInputArea() {
-    const inputArea = document.querySelector('.chat-input-area');
-    const input = document.querySelector('.chat-input');
-    const sendButton = document.querySelector('.chat-send-button');
-    if (inputArea && input && sendButton) {
-      input.disabled = false;
-      sendButton.disabled = false;
-      inputArea.style.opacity = '1';
-    }
-  }
-
-  function displayStarRating() {
-    const ratingContainer = createStarRating();
-    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
-    if (messagesWrapper) {
-      messagesWrapper.appendChild(ratingContainer);
-      scrollToBottom();
-    }
-  }
-
-  function createStarRating() {
-    const ratingContainer = document.createElement('div');
-    ratingContainer.className = 'chat-rating-container';
-    ratingContainer.style.textAlign = 'center';
-    ratingContainer.style.padding = '10px';
-    ratingContainer.style.display = 'flex';
-    ratingContainer.style.flexDirection = 'column';
-    ratingContainer.style.alignItems = 'center';
-    ratingContainer.style.justifyContent = 'center';
-  
-    const ratingPrompt = document.createElement('p');
-    ratingPrompt.textContent = 'Betygsätt din upplevelse:';
-    ratingPrompt.style.margin = '0 0 0 0';
-    ratingPrompt.style.display = 'flex';
-    ratingPrompt.style.alignItems = 'center';
-    ratingPrompt.style.height = '40px';
-    ratingPrompt.style.color = '#ffffff';
-    ratingPrompt.style.fontWeight = 'bold';
-
-    const starsContainer = document.createElement('div');
-    starsContainer.className = 'chat-stars-container';
-  
-    for (let i = 1; i <= 5; i++) {
-      const star = document.createElement('span');
-      star.className = 'chat-star';
-      star.innerHTML = '☆';
-      star.setAttribute('data-rating', i);
-      star.style.fontSize = '40px';
-      star.style.cursor = 'pointer';
-      star.style.color = '#ffd700';
-      
-      star.addEventListener('click', () => handleStarClick(i));
-      
-      star.addEventListener('mouseover', () => {
-        updateStars(i);
-      });
-  
-      star.addEventListener('mouseout', () => {
-        const currentRating = document.querySelector('.chat-star.active')?.getAttribute('data-rating') || 0;
-        updateStars(currentRating);
-      });
-  
-      starsContainer.appendChild(star);
-    }
-  
-    ratingContainer.appendChild(ratingPrompt);
-    ratingContainer.appendChild(starsContainer);
-  
-    return ratingContainer;
-  }
-  
-  function setRating(rating) {
-    const stars = document.querySelectorAll('.chat-star');
-    stars.forEach((star) => star.classList.remove('active'));
-    if (rating > 0) {
-      stars[rating - 1].classList.add('active');
-    }
-    updateStars(rating);
-  }
-
-  function handleStarClick(rating) {
-    console.log('Star clicked:', rating);
-    updateStars(rating);
-    sendRating(rating);
-  }
-
-  function updateStars(rating) {
-    const stars = document.querySelectorAll('.chat-star');
-    stars.forEach((star, index) => {
-      if (index < rating) {
-        star.innerHTML = '★';
-      } else {
-        star.innerHTML = '☆';
-      }
-    });
-  }
-
-  async function sendRating(rating) {
-    const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
-    const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`;
-    const payload = {
-      conversationId: window.conversationId,
-      Rating: rating,
-      timestamp: getStockholmTimestamp()
-    };
-  
-    console.log('Sending rating:', payload);
-  
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-    
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      console.log('Rating stored successfully');
-      showRatingSystem = false;
-      endConversation();
-    } catch (error) {
-      console.error('Error storing rating:', error);
-      endConversation();
-    }
-  }
-
-  function scrollToBottom() {
-    const messagesContainer = document.querySelector('.chat-messages-container');
-    if (messagesContainer) {
-      setTimeout(() => {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }, 100);
-    }
-  }
-
-  function addMessageWithDelay(text, isBot, delay, callback) {
-    addMessage('', isBot, true);
-    updateChatWindow();
-    
-    setTimeout(() => {
-      messages[messages.length - 1] = { text, isBot, isLoading: false };
-      updateChatWindow();
-      if (callback) callback();
-    }, delay);
-  }
-
-  function saveConversation() {
-    localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
-    localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
-    localStorage.setItem('vanbruunChatId', window.conversationId || '');
-    localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
-    localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
-    localStorage.setItem('vanbruunChatShowRatingSystem', JSON.stringify(showRatingSystem));
-    localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
-    localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
-    localStorage.setItem('vanbruunChatIsConnectedToCustomerService', JSON.stringify(isConnectedToCustomerService));
-    
-    if (isLoading) {
-      localStorage.setItem('vanbruunChatIsLoading', JSON.stringify(isLoading));
-    } else {
-      localStorage.removeItem('vanbruunChatIsLoading');
-    }
-  
-    localStorage.setItem('vanbruunChatLastSaved', new Date().toISOString());
-  }
-  
-  function loadConversation() {
-    const storedMessages = localStorage.getItem('vanbruunChatMessages');
-    const storedHistory = localStorage.getItem('vanbruunChatHistory');
-    const storedId = localStorage.getItem('vanbruunChatId');
-    const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
-    const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
-    const storedShowRatingSystem = localStorage.getItem('vanbruunChatShowRatingSystem');
-    const storedIsConnectedToCustomerService = localStorage.getItem('vanbruunChatIsConnectedToCustomerService');
-    const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
-
-    if (storedMessages) {
-      messages = JSON.parse(storedMessages);
-      messages = messages.filter(msg => !msg.isLoading);
-    }
-    if (storedHistory) {
-      conversationHistory = JSON.parse(storedHistory);
-    }
-    if (storedId) {
-      window.conversationId = storedId;
-    } else {
-      window.conversationId = generateUUID();
-    }
-    if (storedShowInitialOptions !== null) {
-      showInitialOptions = JSON.parse(storedShowInitialOptions);
-    }
-    if (storedShowFollowUp !== null) {
-      showFollowUp = JSON.parse(storedShowFollowUp);
-    }
-    if (storedShowRatingSystem !== null) {
-      showRatingSystem = JSON.parse(storedShowRatingSystem);
-    }
-    if (storedIsConnectedToCustomerService !== null) {
-      isConnectedToCustomerService = JSON.parse(storedIsConnectedToCustomerService);
-    }
-
-    // Always set isChatOpen and isInitialPageVisible to false when the page loads
-    isChatOpen = false;
-    isInitialPageVisible = false;
-
-    isLoading = false;
-    isInitialized = messages.length > 0;
-
-    if (storedLastMessage) {
-      const lastMessage = JSON.parse(storedLastMessage);
-      if (lastMessage && lastMessage.isBot && lastMessage.text === "Kan jag hjälpa dig med något mer?") {
-        showFollowUp = true;
       }
     }
-
-    if (isConnectedToCustomerService) {
+  
+    function handleFollowUpResponse(response) {
       showFollowUp = false;
+      updateChatWindow();
+    
+      if (response === "customer_service") {
+        isConnectedToCustomerService = true;
+        const customerServiceMessage = "Prata med kundtjänst.";
+        const timestamp = getStockholmTimestamp();
+        
+        addMessage(customerServiceMessage, false, false, timestamp);
+        conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
+        
+        const botResponse = "Kopplar dig till kundtjänst...";
+        addMessage(botResponse, true, false, timestamp);
+        conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
+    
+        sendConversationToAzure(messages, true).then(() => {
+          startCustomerServiceMode();
+        });
+      } else {
+        const userResponse = response === "yes" ? "Ja" : "Nej";
+        addMessage(userResponse, false, false, getStockholmTimestamp());
+        
+        setTimeout(() => {
+          if (response === "yes") {
+            const botResponse = "Vad mer kan jag hjälpa dig med?";
+            addMessage(botResponse, true, false, getStockholmTimestamp());
+            updateChatWindow();
+            sendConversationToAzure(messages);
+          } else {
+            const botResponse = "Okej, tack för att du chattat med mig!";
+            addMessage(botResponse, true, false, getStockholmTimestamp());
+            updateChatWindow();
+            sendConversationToAzure(messages).then(() => {
+              sendConversationOverStatus();
+            });
+          }
+        }, 500);
+      }
+      saveConversation();
     }
-  }
   
-  function restartConversation() {
-    if (customerServiceInterval) {
-      clearInterval(customerServiceInterval);
-    }
-    isConnectedToCustomerService = false;
-    messages = [];
-    conversationHistory = [];
-    isInitialized = false;
-    showInitialOptions = false;
-    showFollowUp = false;
-    showRatingSystem = false;
-    isConversationEnded = false;
-    window.conversationId = generateUUID();
+    async function sendConversationOverStatus() {
+      const STORE_CONVERSATION_API_KEY = `bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==`
+      const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`
   
-    localStorage.removeItem('vanbruunChatMessages');
-    localStorage.removeItem('vanbruunChatHistory');
-    localStorage.removeItem('vanbruunChatId');
-    localStorage.removeItem('vanbruunChatShowInitialOptions');
-    localStorage.removeItem('vanbruunChatShowFollowUp');
-    localStorage.removeItem('vanbruunChatLastMessage');
-    localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
-    localStorage.removeItem('vanbruunChatShowRatingSystem');
-  
-    openChat();
-  }
-
-  function restartChatFromWindow() {
-    messages = [];
-    conversationHistory = [];
-    
-    isInitialized = false;
-    showInitialOptions = false;
-    showFollowUp = false;
-    showRatingSystem = false;
-    isConversationEnded = false;
-    isConnectedToCustomerService = false;
-    
-    window.conversationId = generateUUID();
-    
-    localStorage.removeItem('vanbruunChatMessages');
-    localStorage.removeItem('vanbruunChatHistory');
-    localStorage.removeItem('vanbruunChatId');
-    localStorage.removeItem('vanbruunChatShowInitialOptions');
-    localStorage.removeItem('vanbruunChatShowFollowUp');
-    localStorage.removeItem('vanbruunChatLastMessage');
-    localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
-    localStorage.removeItem('vanbruunChatShowRatingSystem');
-    
-    initializeChat();
-  }
-
-  function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-
-  function updateChatWindow() {
-    console.log('Updating chat window');
-    
-    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
-    if (messagesWrapper) {
-      const logoContainer = messagesWrapper.querySelector('.chat-logo-container');
-      messagesWrapper.innerHTML = '';
-      if (logoContainer) {
-        messagesWrapper.appendChild(logoContainer);
-      }
-      
-      messages.forEach(message => {
-        const messageElement = createMessageElement(message);
-        messagesWrapper.appendChild(messageElement);
-      });
-      
-      if (showInitialOptions && !isConnectedToCustomerService && !isConversationEnded) {
-        const optionsElement = createInitialOptions();
-        messagesWrapper.appendChild(optionsElement);
-      }
-      if (showFollowUp && !isConnectedToCustomerService && !isConversationEnded) {
-        const followUpElement = createFollowUpButtons();
-        messagesWrapper.appendChild(followUpElement);
-      }
-      if (showRatingSystem && !isConversationEnded) {
-        console.log('Displaying rating system');
-        const ratingElement = createStarRating();
-        messagesWrapper.appendChild(ratingElement);
-      }
-      
-      scrollToBottom();
-    }
-    
-    const inputArea = document.querySelector('.chat-input-area');
-    if (inputArea) {
-      inputArea.style.pointerEvents = isConversationEnded ? 'none' : 'auto';
-      inputArea.style.opacity = isConversationEnded ? '0.5' : '1';
-    }
-    
-    saveConversation();
-  }
-
-  function formatTimestamp(date) {
-    const pad = (num) => (num < 10 ? '0' + num : num);
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${date.getMilliseconds().toString().padStart(3, '0')}`;
-  }
-  
-  function addMessage(text, isBot, isLoading = false, timestamp = null, agentName = null, agentId = null, agentPhotoUrl = null) {
-    const messageTimestamp = timestamp || getStockholmTimestamp();
-    messages.push({ text, isBot, isLoading, timestamp: messageTimestamp, agentName, agentId, agentPhotoUrl });
-    updateChatWindow();
-    saveConversation();
-  }
-
-  function getStockholmTimestamp() {
-    const now = new Date();
-    const stockholmTime = new Date(now.toLocaleString('sv-SE', { timeZone: 'Europe/Stockholm' }));
-    
-    const pad = (num) => String(num).padStart(2, '0');
-    
-    const year = stockholmTime.getFullYear();
-    const month = pad(stockholmTime.getMonth() + 1); // getMonth() is zero-indexed
-    const day = pad(stockholmTime.getDate());
-    const hours = pad(stockholmTime.getHours());
-    const minutes = pad(stockholmTime.getMinutes());
-    const seconds = pad(stockholmTime.getSeconds());
-    const milliseconds = String(stockholmTime.getMilliseconds()).padStart(3, '0');
-  
-    // Construct the ISO string manually
-    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-  }
-  
-  // Test the function
-  console.log(getStockholmTimestamp());
-  
-  async function sendConversationToAzure(messages, needsCustomerService = false) {
-    const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
-    const url = STORE_CONVERSATION_API_URL;
-  
-    const payload = {
-      conversationId: window.conversationId || (window.conversationId = generateUUID()),
-      userId: getUserId(),
-      messages: messages.map(msg => ({
-        text: msg.text,
-        isBot: msg.isBot,
-        timestamp: msg.timestamp || getStockholmTimestamp(),
-        agentName: msg.agentName,
-        agentId: msg.agentId
-      })),
-      needsCustomerService: needsCustomerService || isConnectedToCustomerService,
-    };
-  
-    console.log('Sending payload:', JSON.stringify(payload));
-  
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-functions-key': STORE_CONVERSATION_API_KEY,
-        },
-        body: JSON.stringify(payload),
-        mode: 'cors',
-      });
-  
-      const responseText = await response.text();
-      console.log('Response status:', response.status);
-      console.log('Response headers:', JSON.stringify(Object.fromEntries(response.headers)));
-      console.log('Raw response:', responseText);
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
-      }
-  
-      let responseData;
+      const payload = {
+        conversationId: window.conversationId,
+        conversation_over: true
+      };
+      console.log('Sending conversation_over');
       try {
-        responseData = JSON.parse(responseText);
-      } catch (e) {
-        console.error('Error parsing JSON response:', e);
-        responseData = { message: responseText };
-      }
-  
-      console.log('Conversation stored successfully:', responseData);
-      return responseData;
-    } catch (error) {
-      console.error('Error storing conversation:', error);
-      throw error;
-    }
-  }
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
     
-  async function fetchUserConversations() {
-      const GET_ALL_CONVOS_API_KEY = 'PHHQPngwJo_TFnB28E1D2GCIfuisZgMvkO_lsXduoTwyAzFuaFBLNg==';
-      const url = `https://rosterai-chat-function.azurewebsites.net/api/getallconvos?code=${GET_ALL_CONVOS_API_KEY}`;
-
-      try {
-        const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        
-        console.log('Received data:', data);
-    
-        if (!data || !Array.isArray(data.conversations)) {
-          console.error('Unexpected data structure:', data);
-          return [];
-        }
-    
-        const currentUserId = getUserId();
-        
-        const userConversations = data.conversations.filter(conv => conv.userId === currentUserId);
-        
-        userConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        return userConversations;
+        showRatingSystem = true;
+        console.log('Conversation over status sent successfully');
+        console.log('showRatingSystem set to:', showRatingSystem);
+        updateChatWindow();
       } catch (error) {
-        console.error('Error fetching user conversations:', error);
-        return [];
+        console.error('Error sending conversation over status:', error);
       }
     }
-
-  function createConversationSnippet(conversation, isRecent) {
-      const convSnippet = document.createElement('div');
-      convSnippet.className = `chat-conversation-snippet ${isRecent ? 'recent' : ''}`;
+  
+    async function fetchAndDisplayConversation() {
+      const CONVERSATION_API_KEY = 'tqrM0w0XHMSObpoVWwcq4h9vt8-3koXfb15whKZji48zAzFumJ2clA==';
+      const url = `${CONVERSATION_API_URL}${CONVERSATION_API_KEY}&conversationId=${encodeURIComponent(window.conversationId)}`;
+  
+      console.log('Fetching conversation:', url);
+  
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          mode: 'cors',
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        let data;
+        try {
+          data = await response.json();
+          console.log('Received conversation data:', data);
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+          throw new Error('Invalid response format');
+        }
+  
+        if (data.HandledChat && isWaitingForAgent) {
+          // Remove the loading message
+          messages = messages.filter(msg => !msg.isLoading);
+          
+          const agentConnectedMessage = `Du pratar nu med ${data.HandledChat}`;
+          addMessage(agentConnectedMessage, true, false, new Date().toISOString());
+          isWaitingForAgent = false;
+          enableInputArea();
+        }
+  
+        if (Array.isArray(data.messages)) {
+          const lastMessageTimestamp = messages.length > 0 ? messages[messages.length - 1].timestamp : new Date(0).toISOString();
+          const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
+          
+          console.log(`Found ${newMessages.length} new messages`);
+          
+          newMessages.forEach(msg => {
+            addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhotoUrl);
+          });
+  
+          if (newMessages.length > 0) {
+            showFollowUp = false;
+            updateChatWindow();
+          }
+        } else {
+          console.warn('No messages array in the response:', data);
+        }
+  
+        if (data.conversation_over) {
+          console.log('Conversation is over, displaying star rating');
+          displayStarRating();
+          clearInterval(customerServiceInterval);
+        }
+  
+      } catch (error) {
+        console.error('Error fetching conversation:', error);
+        
+        if (error.message.includes('CORS')) {
+          console.error('CORS error detected. Please ensure your server is configured to allow CORS requests.');
+        }
+        
+        if (messages.length === 0) {
+          addMessage("Ett fel uppstod när vi försökte hämta konversationen. Vänligen försök igen senare.", true);
+        }
+        
+        updateChatWindow();
+      }
+    }
+  
+    function addLoadingMessage() {
+      const loadingMessage = {
+        text: 'Vänligen vänta, vi meddelar teamet..',
+        isBot: true,
+        isLoading: true
+      };
+      messages.push(loadingMessage);
+      updateChatWindow();
+    }
+    
+    function disableInputArea() {
+      const inputArea = document.querySelector('.chat-input-area');
+      const input = document.querySelector('.chat-input');
+      const sendButton = document.querySelector('.chat-send-button');
+      if (inputArea && input && sendButton) {
+        input.disabled = true;
+        sendButton.disabled = true;
+        inputArea.style.opacity = '0.5';
+      }
+    }
+    
+    function enableInputArea() {
+      const inputArea = document.querySelector('.chat-input-area');
+      const input = document.querySelector('.chat-input');
+      const sendButton = document.querySelector('.chat-send-button');
+      if (inputArea && input && sendButton) {
+        input.disabled = false;
+        sendButton.disabled = false;
+        inputArea.style.opacity = '1';
+      }
+    }
+  
+    function displayStarRating() {
+      const ratingContainer = createStarRating();
+      const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+      if (messagesWrapper) {
+        messagesWrapper.appendChild(ratingContainer);
+        scrollToBottom();
+      }
+    }
+  
+    function createStarRating() {
+      const ratingContainer = document.createElement('div');
+      ratingContainer.className = 'chat-rating-container';
+      ratingContainer.style.textAlign = 'center';
+      ratingContainer.style.padding = '10px';
+      ratingContainer.style.display = 'flex';
+      ratingContainer.style.flexDirection = 'column';
+      ratingContainer.style.alignItems = 'center';
+      ratingContainer.style.justifyContent = 'center';
+    
+      const ratingPrompt = document.createElement('p');
+      ratingPrompt.textContent = 'Betygsätt din upplevelse:';
+      ratingPrompt.style.margin = '0 0 0 0';
+      ratingPrompt.style.display = 'flex';
+      ratingPrompt.style.alignItems = 'center';
+      ratingPrompt.style.height = '40px';
+      ratingPrompt.style.color = '#ffffff';
+      ratingPrompt.style.fontWeight = 'bold';
+  
+      const starsContainer = document.createElement('div');
+      starsContainer.className = 'chat-stars-container';
+    
+      for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('span');
+        star.className = 'chat-star';
+        star.innerHTML = '☆';
+        star.setAttribute('data-rating', i);
+        star.style.fontSize = '40px';
+        star.style.cursor = 'pointer';
+        star.style.color = '#ffd700';
+        
+        star.addEventListener('click', () => handleStarClick(i));
+        
+        star.addEventListener('mouseover', () => {
+          updateStars(i);
+        });
+    
+        star.addEventListener('mouseout', () => {
+          const currentRating = document.querySelector('.chat-star.active')?.getAttribute('data-rating') || 0;
+          updateStars(currentRating);
+        });
+    
+        starsContainer.appendChild(star);
+      }
+    
+      ratingContainer.appendChild(ratingPrompt);
+      ratingContainer.appendChild(starsContainer);
+    
+      return ratingContainer;
+    }
+    
+    function setRating(rating) {
+      const stars = document.querySelectorAll('.chat-star');
+      stars.forEach((star) => star.classList.remove('active'));
+      if (rating > 0) {
+        stars[rating - 1].classList.add('active');
+      }
+      updateStars(rating);
+    }
+  
+    function handleStarClick(rating) {
+      console.log('Star clicked:', rating);
+      updateStars(rating);
+      sendRating(rating);
+    }
+  
+    function updateStars(rating) {
+      const stars = document.querySelectorAll('.chat-star');
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.innerHTML = '★';
+        } else {
+          star.innerHTML = '☆';
+        }
+      });
+    }
+  
+    async function sendRating(rating) {
+      const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
+      const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`;
+      const payload = {
+        conversationId: window.conversationId,
+        Rating: rating,
+        timestamp: getStockholmTimestamp()
+      };
+    
+      console.log('Sending rating:', payload);
+    
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
       
-      const snippetContent = document.createElement('div');
-      snippetContent.className = 'chat-snippet-content';
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    
+        console.log('Rating stored successfully');
+        showRatingSystem = false;
+        endConversation();
+      } catch (error) {
+        console.error('Error storing rating:', error);
+        endConversation();
+      }
+    }
+  
+    function scrollToBottom() {
+      const messagesContainer = document.querySelector('.chat-messages-container');
+      if (messagesContainer) {
+        setTimeout(() => {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 100);
+      }
+    }
+  
+    function addMessageWithDelay(text, isBot, delay, callback) {
+      addMessage('', isBot, true);
+      updateChatWindow();
       
-      const title = document.createElement('h4');
+      setTimeout(() => {
+        messages[messages.length - 1] = { text, isBot, isLoading: false };
+        updateChatWindow();
+        if (callback) callback();
+      }, delay);
+    }
+  
+    function saveConversation() {
+      localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
+      localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
+      localStorage.setItem('vanbruunChatId', window.conversationId || '');
+      localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
+      localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
+      localStorage.setItem('vanbruunChatShowRatingSystem', JSON.stringify(showRatingSystem));
+      localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
+      localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
+      localStorage.setItem('vanbruunChatIsConnectedToCustomerService', JSON.stringify(isConnectedToCustomerService));
+      
+      if (isLoading) {
+        localStorage.setItem('vanbruunChatIsLoading', JSON.stringify(isLoading));
+      } else {
+        localStorage.removeItem('vanbruunChatIsLoading');
+      }
+    
+      localStorage.setItem('vanbruunChatLastSaved', new Date().toISOString());
+    }
+    
+    function loadConversation() {
+      const storedMessages = localStorage.getItem('vanbruunChatMessages');
+      const storedHistory = localStorage.getItem('vanbruunChatHistory');
+      const storedId = localStorage.getItem('vanbruunChatId');
+      const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
+      const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
+      const storedShowRatingSystem = localStorage.getItem('vanbruunChatShowRatingSystem');
+      const storedIsConnectedToCustomerService = localStorage.getItem('vanbruunChatIsConnectedToCustomerService');
+      const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
+  
+      if (storedMessages) {
+        messages = JSON.parse(storedMessages);
+        messages = messages.filter(msg => !msg.isLoading);
+      }
+      if (storedHistory) {
+        conversationHistory = JSON.parse(storedHistory);
+      }
+      if (storedId) {
+        window.conversationId = storedId;
+      } else {
+        window.conversationId = generateUUID();
+      }
+      if (storedShowInitialOptions !== null) {
+        showInitialOptions = JSON.parse(storedShowInitialOptions);
+      }
+      if (storedShowFollowUp !== null) {
+        showFollowUp = JSON.parse(storedShowFollowUp);
+      }
+      if (storedShowRatingSystem !== null) {
+        showRatingSystem = JSON.parse(storedShowRatingSystem);
+      }
+      if (storedIsConnectedToCustomerService !== null) {
+        isConnectedToCustomerService = JSON.parse(storedIsConnectedToCustomerService);
+      }
+  
+      // Always set isChatOpen and isInitialPageVisible to false when the page loads
+      isChatOpen = false;
+      isInitialPageVisible = false;
+  
+      isLoading = false;
+      isInitialized = messages.length > 0;
+  
+      if (storedLastMessage) {
+        const lastMessage = JSON.parse(storedLastMessage);
+        if (lastMessage && lastMessage.isBot && lastMessage.text === "Kan jag hjälpa dig med något mer?") {
+          showFollowUp = true;
+        }
+      }
+  
+      if (isConnectedToCustomerService) {
+        showFollowUp = false;
+      }
+    }
+    
+    function restartConversation() {
+      if (customerServiceInterval) {
+        clearInterval(customerServiceInterval);
+      }
+      isConnectedToCustomerService = false;
+      messages = [];
+      conversationHistory = [];
+      isInitialized = false;
+      showInitialOptions = false;
+      showFollowUp = false;
+      showRatingSystem = false;
+      isConversationEnded = false;
+      window.conversationId = generateUUID();
+    
+      localStorage.removeItem('vanbruunChatMessages');
+      localStorage.removeItem('vanbruunChatHistory');
+      localStorage.removeItem('vanbruunChatId');
+      localStorage.removeItem('vanbruunChatShowInitialOptions');
+      localStorage.removeItem('vanbruunChatShowFollowUp');
+      localStorage.removeItem('vanbruunChatLastMessage');
+      localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
+      localStorage.removeItem('vanbruunChatShowRatingSystem');
+    
+      openChat();
+    }
+  
+    function restartChatFromWindow() {
+      messages = [];
+      conversationHistory = [];
+      
+      isInitialized = false;
+      showInitialOptions = false;
+      showFollowUp = false;
+      showRatingSystem = false;
+      isConversationEnded = false;
+      isConnectedToCustomerService = false;
+      
+      window.conversationId = generateUUID();
+      
+      localStorage.removeItem('vanbruunChatMessages');
+      localStorage.removeItem('vanbruunChatHistory');
+      localStorage.removeItem('vanbruunChatId');
+      localStorage.removeItem('vanbruunChatShowInitialOptions');
+      localStorage.removeItem('vanbruunChatShowFollowUp');
+      localStorage.removeItem('vanbruunChatLastMessage');
+      localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
+      localStorage.removeItem('vanbruunChatShowRatingSystem');
+      
+      initializeChat();
+    }
+  
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+  
+    function updateChatWindow() {
+      console.log('Updating chat window');
+      
+      const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+      if (messagesWrapper) {
+        const logoContainer = messagesWrapper.querySelector('.chat-logo-container');
+        messagesWrapper.innerHTML = '';
+        if (logoContainer) {
+          messagesWrapper.appendChild(logoContainer);
+        }
+        
+        messages.forEach(message => {
+          const messageElement = createMessageElement(message);
+          messagesWrapper.appendChild(messageElement);
+        });
+        
+        if (showInitialOptions && !isConnectedToCustomerService && !isConversationEnded) {
+          const optionsElement = createInitialOptions();
+          messagesWrapper.appendChild(optionsElement);
+        }
+        if (showFollowUp && !isConnectedToCustomerService && !isConversationEnded) {
+          const followUpElement = createFollowUpButtons();
+          messagesWrapper.appendChild(followUpElement);
+        }
+        if (showRatingSystem && !isConversationEnded) {
+          console.log('Displaying rating system');
+          const ratingElement = createStarRating();
+          messagesWrapper.appendChild(ratingElement);
+        }
+        
+        scrollToBottom();
+      }
+      
+      const inputArea = document.querySelector('.chat-input-area');
+      if (inputArea) {
+        inputArea.style.pointerEvents = isConversationEnded ? 'none' : 'auto';
+        inputArea.style.opacity = isConversationEnded ? '0.5' : '1';
+      }
+      
+      saveConversation();
+    }
+  
+    function formatTimestamp(date) {
+      const pad = (num) => (num < 10 ? '0' + num : num);
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${date.getMilliseconds().toString().padStart(3, '0')}`;
+    }
+    
+    function addMessage(text, isBot, isLoading = false, timestamp = null, agentName = null, agentId = null, agentPhotoUrl = null) {
+      const messageTimestamp = timestamp || getStockholmTimestamp();
+      messages.push({ text, isBot, isLoading, timestamp: messageTimestamp, agentName, agentId, agentPhotoUrl });
+      updateChatWindow();
+      saveConversation();
+    }
+  
+    function getStockholmTimestamp() {
+      const now = new Date();
+      const stockholmTime = new Date(now.toLocaleString('sv-SE', { timeZone: 'Europe/Stockholm' }));
+      
+      const pad = (num) => String(num).padStart(2, '0');
+      
+      const year = stockholmTime.getFullYear();
+      const month = pad(stockholmTime.getMonth() + 1); // getMonth() is zero-indexed
+      const day = pad(stockholmTime.getDate());
+      const hours = pad(stockholmTime.getHours());
+      const minutes = pad(stockholmTime.getMinutes());
+      const seconds = pad(stockholmTime.getSeconds());
+      const milliseconds = String(stockholmTime.getMilliseconds()).padStart(3, '0');
+    
+      // Construct the ISO string manually
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+    }
+    
+    // Test the function
+    console.log(getStockholmTimestamp());
+    
+    async function sendConversationToAzure(messages, needsCustomerService = false) {
+      const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
+      const url = STORE_CONVERSATION_API_URL;
+    
+      const payload = {
+        conversationId: window.conversationId || (window.conversationId = generateUUID()),
+        userId: getUserId(),
+        messages: messages.map(msg => ({
+          text: msg.text,
+          isBot: msg.isBot,
+          timestamp: msg.timestamp || getStockholmTimestamp(),
+          agentName: msg.agentName,
+          agentId: msg.agentId
+        })),
+        needsCustomerService: needsCustomerService || isConnectedToCustomerService,
+      };
+    
+      console.log('Sending payload:', JSON.stringify(payload));
+    
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-functions-key': STORE_CONVERSATION_API_KEY,
+          },
+          body: JSON.stringify(payload),
+          mode: 'cors',
+        });
+    
+        const responseText = await response.text();
+        console.log('Response status:', response.status);
+        console.log('Response headers:', JSON.stringify(Object.fromEntries(response.headers)));
+        console.log('Raw response:', responseText);
+    
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
+        }
+    
+        let responseData;
+        try {
+          responseData = JSON.parse(responseText);
+        } catch (e) {
+          console.error('Error parsing JSON response:', e);
+          responseData = { message: responseText };
+        }
+    
+        console.log('Conversation stored successfully:', responseData);
+        return responseData;
+      } catch (error) {
+        console.error('Error storing conversation:', error);
+        throw error;
+      }
+    }
+      
+    async function fetchUserConversations() {
+        const GET_ALL_CONVOS_API_KEY = 'PHHQPngwJo_TFnB28E1D2GCIfuisZgMvkO_lsXduoTwyAzFuaFBLNg==';
+        const url = `https://rosterai-chat-function.azurewebsites.net/api/getallconvos?code=${GET_ALL_CONVOS_API_KEY}`;
+  
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          
+          console.log('Received data:', data);
+      
+          if (!data || !Array.isArray(data.conversations)) {
+            console.error('Unexpected data structure:', data);
+            return [];
+          }
+      
+          const currentUserId = getUserId();
+          
+          const userConversations = data.conversations.filter(conv => conv.userId === currentUserId);
+          
+          userConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          
+          return userConversations;
+        } catch (error) {
+          console.error('Error fetching user conversations:', error);
+          return [];
+        }
+      }
+  
+    function createConversationSnippet(conversation, isRecent) {
+        const convSnippet = document.createElement('div');
+        convSnippet.className = `chat-conversation-snippet ${isRecent ? 'recent' : ''}`;
+        
+        const snippetContent = document.createElement('div');
+        snippetContent.className = 'chat-snippet-content';
+        const title = document.createElement('h4');
       title.textContent = isRecent ? 'Recent Conversation' : 'Conversation';
       snippetContent.appendChild(title);
       
@@ -1534,7 +1540,7 @@
     isWaitingForAgent = true;
     addLoadingMessage();
     disableInputArea();
-    customerServiceInterval = setInterval(fetchAndDisplayConversation, 1000); // Changed from 500ms to 1000ms (1 second)
+    customerServiceInterval = setInterval(fetchAndDisplayConversation, 500); // Changed from 500ms to 1000ms (1 second)
   }
 
   createChatbotUI();  
