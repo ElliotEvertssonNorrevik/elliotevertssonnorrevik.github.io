@@ -1,8 +1,12 @@
 (function() {
-  const API_BASE_URL = 'https://fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
-  const CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getconversation?code=';
-  const STORE_CONVERSATION_API_URL = 'https://rosterai-chat-function.azurewebsites.net/api/storeconversation';
-  
+  const RESPONSE_URL = 'https://fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
+  const CONVO_OPERATIONS_URL = 'https://rosterai-chat-function.azurewebsites.net/api/ConversationOperations';
+  const CONVO_OPERATIONS_KEY = 'tnW-7-CC7Up5N9QI_RNW-iAiREZ7OsYOi6W1uPfjt1_FAzFuU3IMJA=='; // Replace with your actual function key
+  const RESPONSE_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
+  const GET_ALL_PROFILES_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getallprofiles'
+  const GET_ALL_PROFILES_KEY = 'qoFEiCbbZLZkPtzSG_H5YxdKw4SdWFiq5glgoIttX6GrAzFuo67mqg=='; // Replace with your actual API key
+
+
   let userId;
 
   function getUserId() {
@@ -16,6 +20,7 @@
     return userId;
   }
 
+  let currentRequest = null;
   let isWaitingForAgent = false;
   let isQuicklinkPressed = false;
   let quicklinkMessage = '';
@@ -211,8 +216,7 @@
   }
 
   async function fetchAgentProfiles() {
-    const API_KEY = 'qoFEiCbbZLZkPtzSG_H5YxdKw4SdWFiq5glgoIttX6GrAzFuo67mqg=='; // Replace with your actual API key
-    const url = `https://rosterai-chat-function.azurewebsites.net/api/getallprofiles?code=${API_KEY}`;
+    const url = `${GET_ALL_PROFILES_URL}?code=${GET_ALL_PROFILES_KEY}`;
   
     try {
       const response = await fetch(url);
@@ -347,10 +351,17 @@
   }
 
   function openChat(initialMessage = null) {
+    // Cancel any ongoing request when opening a new chat
+    if (currentRequest) {
+      currentRequest.abort();
+      currentRequest = null;
+    }
+  
     isInitialPageVisible = false;
     isChatOpen = true;
     renderChatbot().then(() => {
-      if (messages.length === 0) {
+      if (messages.length === 0 || isQuicklinkPressed) {
+        isQuicklinkPressed = false; // Reset the flag
         initializeChat();
       } else {
         updateChatWindow();
@@ -360,6 +371,7 @@
       }
     }).catch(error => console.error('Error rendering chatbot:', error));
   }
+
 
   function openChatAndSendMessage(message) {
     isQuicklinkPressed = true;
@@ -510,7 +522,7 @@
   
     return logoContainer;
   }
-
+fetchAndDisplayConversation
   function createInputArea() {
     const inputArea = document.createElement('div');
     inputArea.className = 'chat-input-area';
@@ -786,7 +798,6 @@
       return followUpElement;
     }
   
-    const API_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
   
     function getCETTimestamp() {
       const now = new Date();
@@ -799,10 +810,9 @@
       if (text.trim() === '' || isLoading || isWaitingForAgent) return;
     
       const currentTime = getStockholmTimestamp();
-  
+    
       addMessage(text, false, false, currentTime);
       
-      // Only add loading message if not connected to customer service
       if (!isConnectedToCustomerService) {
         addMessage('', true, true); // Add loading message
         isLoading = true;
@@ -834,17 +844,27 @@
         fetchAndDisplayConversation();
       } else {
         try {
+          // Cancel any ongoing request
+          if (currentRequest) {
+            currentRequest.abort();
+          }
+    
           const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
           const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
     
           const encodedQuery = encodeURIComponent(fullQuery);
-          const url = `${API_BASE_URL}?question=${encodedQuery}`;
+          const url = `${RESPONSE_URL}?question=${encodedQuery}`;
+    
+          // Create a new AbortController for this request
+          const controller = new AbortController();
+          currentRequest = controller;
     
           const response = await fetch(url, {
             method: 'GET',
             headers: {
-              'x-functions-key': API_KEY
-            }
+              'x-functions-key': RESPONSE_KEY
+            },
+            signal: controller.signal
           });
     
           const data = await response.json();
@@ -853,7 +873,13 @@
           const responseTime = getStockholmTimestamp();
           conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
     
-          messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+          // Find the loading message and replace it
+          const loadingIndex = messages.findIndex(msg => msg.isLoading);
+          if (loadingIndex !== -1) {
+            messages[loadingIndex] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+          } else {
+            messages.push({ text: answer, isBot: true, isLoading: false, timestamp: responseTime });
+          }
           
           await sendConversationToAzure(messages);
     
@@ -871,24 +897,32 @@
           }
     
         } catch (error) {
-          console.error('Error fetching bot response:', error);
-          const errorTime = getStockholmTimestamp();
-          const errorMessage = 'Sorry, I couldn\'t connect right now. Please try again later or contact us at customer.service@happyflops.se';
-          messages[messages.length - 1] = { 
-            text: errorMessage, 
-            isBot: true, 
-            isLoading: false,
-            timestamp: errorTime
-          };
-          conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
-          await sendConversationToAzure(messages);
+          if (error.name === 'AbortError') {
+            console.log('Fetch aborted');
+          } else {
+            console.error('Error fetching bot response:', error);
+            const errorTime = getStockholmTimestamp();
+            const errorMessage = 'Sorry, I couldn\'t connect right now. Please try again later or contact us at customer.service@happyflops.se';
+            
+            // Find the loading message and replace it with the error message
+            const loadingIndex = messages.findIndex(msg => msg.isLoading);
+            if (loadingIndex !== -1) {
+              messages[loadingIndex] = { text: errorMessage, isBot: true, isLoading: false, timestamp: errorTime };
+            } else {
+              messages.push({ text: errorMessage, isBot: true, isLoading: false, timestamp: errorTime });
+            }
+            
+            conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
+            await sendConversationToAzure(messages);
+          }
         } finally {
           isLoading = false;
+          currentRequest = null;
           updateChatWindow();
         }
       }
     }
-  
+    
     function handleFollowUpResponse(response) {
       showFollowUp = false;
       updateChatWindow();
@@ -932,111 +966,138 @@
     }
   
     async function sendConversationOverStatus() {
-      const STORE_CONVERSATION_API_KEY = `bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==`
-      const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`
-  
-      const payload = {
-        conversationId: window.conversationId,
-        conversation_over: true
-      };
-      console.log('Sending conversation_over');
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-    
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        showRatingSystem = true;
-        console.log('Conversation over status sent successfully');
-        console.log('showRatingSystem set to:', showRatingSystem);
-        updateChatWindow();
-      } catch (error) {
-        console.error('Error sending conversation over status:', error);
-      }
-    }
-  
-    async function fetchAndDisplayConversation() {
-      const CONVERSATION_API_KEY = 'tqrM0w0XHMSObpoVWwcq4h9vt8-3koXfb15whKZji48zAzFumJ2clA==';
-      const url = `${CONVERSATION_API_URL}${CONVERSATION_API_KEY}&conversationId=${encodeURIComponent(window.conversationId)}`;
-  
-      console.log('Fetching conversation:', url);
-  
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          mode: 'cors',
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        let data;
+
+      
+        const payload = {
+          operation: 'store',
+          conversationId: window.conversationId,
+          conversation_over: true
+        };
+      
+        console.log('Sending conversation_over');
         try {
-          data = await response.json();
-          console.log('Received conversation data:', data);
-        } catch (error) {
-          console.error('Error parsing JSON:', error);
-          throw new Error('Invalid response format');
-        }
-  
-        if (data.HandledChat && isWaitingForAgent) {
-          // Remove the loading message
-          messages = messages.filter(msg => !msg.isLoading);
-          
-          const agentConnectedMessage = `Du pratar nu med ${data.HandledChat}`;
-          addMessage(agentConnectedMessage, true, false, new Date().toISOString());
-          isWaitingForAgent = false;
-          enableInputArea();
-        }
-  
-        if (Array.isArray(data.messages)) {
-          const lastMessageTimestamp = messages.length > 0 ? messages[messages.length - 1].timestamp : new Date(0).toISOString();
-          const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
-          
-          console.log(`Found ${newMessages.length} new messages`);
-          
-          newMessages.forEach(msg => {
-            addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhotoUrl);
+          const response = await fetch(CONVO_OPERATIONS_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-functions-key': CONVO_OPERATIONS_KEY
+            },
+            body: JSON.stringify(payload)
           });
-  
-          if (newMessages.length > 0) {
-            showFollowUp = false;
-            updateChatWindow();
+      
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        } else {
-          console.warn('No messages array in the response:', data);
+          
+          const result = await response.json();
+          console.log('Conversation over status sent successfully:', result);
+          
+          showRatingSystem = true;
+          console.log('showRatingSystem set to:', showRatingSystem);
+          updateChatWindow();
+        } catch (error) {
+          console.error('Error sending conversation over status:', error);
         }
-  
-        if (data.conversation_over) {
-          console.log('Conversation is over, displaying star rating');
-          displayStarRating();
-          clearInterval(customerServiceInterval);
-        }
-  
-      } catch (error) {
-        console.error('Error fetching conversation:', error);
-        
-        if (error.message.includes('CORS')) {
-          console.error('CORS error detected. Please ensure your server is configured to allow CORS requests.');
-        }
-        
-        if (messages.length === 0) {
-          addMessage("Ett fel uppstod när vi försökte hämta konversationen. Vänligen försök igen senare.", true);
-        }
-        
-        updateChatWindow();
       }
-    }
+  
+      async function fetchAndDisplayConversation() {
+        const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}&operation=get&conversationId=${encodeURIComponent(window.conversationId)}`;
+      
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          console.log('Received conversation data:', data);
+      
+          if (data.HandledChat && isWaitingForAgent) {
+            messages = messages.filter(msg => !msg.isLoading);
+            
+            const agentConnectedMessage = `Du pratar nu med ${data.HandledChat}`;
+            addMessage(agentConnectedMessage, true, false, new Date().toISOString());
+            isWaitingForAgent = false;
+            enableInputArea();
+          }
+      
+          if (Array.isArray(data.messages)) {
+            const lastMessageTimestamp = messages.length > 0 ? messages[messages.length - 1].timestamp : new Date(0).toISOString();
+            const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
+            
+            console.log(`Found ${newMessages.length} new messages`);
+            
+            newMessages.forEach(msg => {
+              addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhotoUrl);
+            });
+      
+            if (newMessages.length > 0) {
+              showFollowUp = false;
+              updateChatWindow();
+            }
+          } else {
+            console.warn('No messages array in the response:', data);
+          }
+      
+          if (data.conversation_over) {
+            console.log('Conversation is over, displaying star rating');
+            showRatingSystem = true;
+            updateChatWindow();
+            clearInterval(customerServiceInterval);
+          }
+      
+        } catch (error) {
+          console.error('Error fetching conversation:', error);
+          
+          if (messages.length === 0) {
+            addMessage("Ett fel uppstod när vi försökte hämta konversationen. Vänligen försök igen senare.", true);
+          }
+          
+          updateChatWindow();
+        }
+      }
+      
+      function updateChatWindow() {
+        console.log('Updating chat window');
+        
+        const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+        if (messagesWrapper) {
+          const logoContainer = messagesWrapper.querySelector('.chat-logo-container');
+          messagesWrapper.innerHTML = '';
+          if (logoContainer) {
+            messagesWrapper.appendChild(logoContainer);
+          }
+          
+          messages.forEach(message => {
+            const messageElement = createMessageElement(message);
+            messagesWrapper.appendChild(messageElement);
+          });
+          
+          if (showInitialOptions && !isConnectedToCustomerService && !isConversationEnded) {
+            const optionsElement = createInitialOptions();
+            messagesWrapper.appendChild(optionsElement);
+          }
+          if (showFollowUp && !isConnectedToCustomerService && !isConversationEnded) {
+            const followUpElement = createFollowUpButtons();
+            messagesWrapper.appendChild(followUpElement);
+          }
+          if (showRatingSystem && !isConversationEnded) {
+            console.log('Displaying rating system');
+            const ratingElement = createStarRating();
+            messagesWrapper.appendChild(ratingElement);
+          }
+          
+          scrollToBottom();
+        }
+        
+        const inputArea = document.querySelector('.chat-input-area');
+        if (inputArea) {
+          inputArea.style.pointerEvents = isConversationEnded ? 'none' : 'auto';
+          inputArea.style.opacity = isConversationEnded ? '0.5' : '1';
+        }
+        
+        saveConversation();
+      }
   
     function addLoadingMessage() {
       const loadingMessage = {
@@ -1157,9 +1218,9 @@
     }
   
     async function sendRating(rating) {
-      const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
-      const url = `${STORE_CONVERSATION_API_URL}${STORE_CONVERSATION_API_KEY}`;
+      const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}`;
       const payload = {
+        operation: 'store',
         conversationId: window.conversationId,
         Rating: rating,
         timestamp: getStockholmTimestamp()
@@ -1180,7 +1241,8 @@
           throw new Error(`HTTP error! status: ${response.status}`);
         }
     
-        console.log('Rating stored successfully');
+        const responseData = await response.json();
+        console.log('Rating stored successfully:', responseData);
         showRatingSystem = false;
         endConversation();
       } catch (error) {
@@ -1188,7 +1250,7 @@
         endConversation();
       }
     }
-  
+  fetchAndDisplayConversation
     function scrollToBottom() {
       const messagesContainer = document.querySelector('.chat-messages-container');
       if (messagesContainer) {
@@ -1341,47 +1403,7 @@
       });
     }
   
-    function updateChatWindow() {
-      console.log('Updating chat window');
-      
-      const messagesWrapper = document.querySelector('.chat-messages-wrapper');
-      if (messagesWrapper) {
-        const logoContainer = messagesWrapper.querySelector('.chat-logo-container');
-        messagesWrapper.innerHTML = '';
-        if (logoContainer) {
-          messagesWrapper.appendChild(logoContainer);
-        }
-        
-        messages.forEach(message => {
-          const messageElement = createMessageElement(message);
-          messagesWrapper.appendChild(messageElement);
-        });
-        
-        if (showInitialOptions && !isConnectedToCustomerService && !isConversationEnded) {
-          const optionsElement = createInitialOptions();
-          messagesWrapper.appendChild(optionsElement);
-        }
-        if (showFollowUp && !isConnectedToCustomerService && !isConversationEnded) {
-          const followUpElement = createFollowUpButtons();
-          messagesWrapper.appendChild(followUpElement);
-        }
-        if (showRatingSystem && !isConversationEnded) {
-          console.log('Displaying rating system');
-          const ratingElement = createStarRating();
-          messagesWrapper.appendChild(ratingElement);
-        }
-        
-        scrollToBottom();
-      }
-      
-      const inputArea = document.querySelector('.chat-input-area');
-      if (inputArea) {
-        inputArea.style.pointerEvents = isConversationEnded ? 'none' : 'auto';
-        inputArea.style.opacity = isConversationEnded ? '0.5' : '1';
-      }
-      
-      saveConversation();
-    }
+    
   
     function formatTimestamp(date) {
       const pad = (num) => (num < 10 ? '0' + num : num);
@@ -1417,10 +1439,10 @@
     console.log(getStockholmTimestamp());
     
     async function sendConversationToAzure(messages, needsCustomerService = false) {
-      const STORE_CONVERSATION_API_KEY = 'bu2CR0iJw49cZoLrY8rWhMoOnuI6o7A3BElg2Iot3wXVAzFuq8K2AQ==';
-      const url = STORE_CONVERSATION_API_URL;
+      const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}`;
     
       const payload = {
+        operation: 'store',
         conversationId: window.conversationId || (window.conversationId = generateUUID()),
         userId: getUserId(),
         messages: messages.map(msg => ({
@@ -1433,36 +1455,20 @@
         needsCustomerService: needsCustomerService || isConnectedToCustomerService,
       };
     
-      console.log('Sending payload:', JSON.stringify(payload));
-    
       try {
         const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-functions-key': STORE_CONVERSATION_API_KEY,
           },
           body: JSON.stringify(payload),
-          mode: 'cors',
         });
     
-        const responseText = await response.text();
-        console.log('Response status:', response.status);
-        console.log('Response headers:', JSON.stringify(Object.fromEntries(response.headers)));
-        console.log('Raw response:', responseText);
-    
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
     
-        let responseData;
-        try {
-          responseData = JSON.parse(responseText);
-        } catch (e) {
-          console.error('Error parsing JSON response:', e);
-          responseData = { message: responseText };
-        }
-    
+        const responseData = await response.json();
         console.log('Conversation stored successfully:', responseData);
         return responseData;
       } catch (error) {
@@ -1472,35 +1478,32 @@
     }
       
     async function fetchUserConversations() {
-        const GET_ALL_CONVOS_API_KEY = 'PHHQPngwJo_TFnB28E1D2GCIfuisZgMvkO_lsXduoTwyAzFuaFBLNg==';
-        const url = `https://rosterai-chat-function.azurewebsites.net/api/getallconvos?code=${GET_ALL_CONVOS_API_KEY}`;
-  
-        try {
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          
-          console.log('Received data:', data);
-      
-          if (!data || !Array.isArray(data.conversations)) {
-            console.error('Unexpected data structure:', data);
-            return [];
-          }
-      
-          const currentUserId = getUserId();
-          
-          const userConversations = data.conversations.filter(conv => conv.userId === currentUserId);
-          
-          userConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-          
-          return userConversations;
-        } catch (error) {
-          console.error('Error fetching user conversations:', error);
+      const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}&operation=getAll`;
+    
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        if (!data || !Array.isArray(data.conversations)) {
+          console.error('Unexpected data structure:', data);
           return [];
         }
+    
+        const currentUserId = getUserId();
+        
+        const userConversations = data.conversations.filter(conv => conv.userId === currentUserId);
+        
+        userConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        return userConversations;
+      } catch (error) {
+        console.error('Error fetching user conversations:', error);
+        return [];
       }
+    }
   
     function createConversationSnippet(conversation, isRecent) {
         const convSnippet = document.createElement('div');
@@ -1540,7 +1543,7 @@
     isWaitingForAgent = true;
     addLoadingMessage();
     disableInputArea();
-    customerServiceInterval = setInterval(fetchAndDisplayConversation, 500); // Changed from 500ms to 1000ms (1 second)
+    customerServiceInterval = setInterval(fetchAndDisplayConversation, 1000); // Changed from 500ms to 1000ms (1 second)
   }
 
   createChatbotUI();  
