@@ -126,8 +126,13 @@
         renderChatbot();
       });
     } else {
-      askButton.innerHTML = 'Starta konversation <span>&gt;</span>';
-      askButton.addEventListener('click', () => openChat());
+      askButton.innerHTML = 'Starta ny konversation <span>&gt;</span>';
+      askButton.addEventListener('click', () => {
+        restartConversation(true);
+        isChatOpen = true;
+        isInitialPageVisible = false;
+        renderChatbot();
+      });
     }
   
     const quickLinks = document.createElement('div');
@@ -245,7 +250,7 @@
 
       contentWrapper.appendChild(view);
 
-      if (isChatOpen) {
+      if (isChatOpen && !isQuicklinkPressed) {
         await updateChatWindow();
       }
     } else {
@@ -353,7 +358,7 @@
     isInitialPageVisible = false;
     isChatOpen = true;
     renderChatbot().then(() => {
-      if (messages.length === 0 || isQuicklinkPressed) {
+      if ((messages.length === 0 || isQuicklinkPressed) && !isQuicklinkPressed) {
         isQuicklinkPressed = false;
         initializeChat();
       } else {
@@ -366,10 +371,29 @@
   }
 
   function openChatAndSendMessage(message) {
+    // Abort any ongoing requests
+    if (currentRequest) {
+      currentRequest.abort();
+      currentRequest = null;
+    }
+  
+    // Clear customer service interval if active
+    if (customerServiceInterval) {
+      clearInterval(customerServiceInterval);
+      customerServiceInterval = null;
+    }
+  
     isQuicklinkPressed = true;
-    restartConversation(false);
-    openChat();
-    sendMessage(message);
+    isConnectedToCustomerService = false;
+    isWaitingForAgent = false;
+    
+    restartConversationForQuicklink();  // Use the new function here
+    isInitialPageVisible = false;
+    isChatOpen = true;
+    renderChatbot().then(() => {
+      enableInputArea(); // Make sure the input area is enabled
+      sendMessage(message);
+    }).catch(error => console.error('Error rendering chatbot:', error));
   }
 
   function initializeChat() {
@@ -635,19 +659,25 @@
   }
 
   function formatMessage(message) {
+    // Handle email links
     const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-    
     message = message.replace(emailRegex, (email) => {
       return `<a href="mailto:${email}" target="_blank" rel="noopener noreferrer">${email}</a>`;
     });
   
+    // Handle Markdown links
     const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
     message = message.replace(markdownLinkRegex, (match, text, url) => {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
     });
   
+    // Handle bold text (both ** and __ syntax)
+    const boldRegex = /(\*\*|__)(.*?)\1/g;
+    message = message.replace(boldRegex, '<strong>$2</strong>');
+  
     return message;
   }
+  restartConversation
 
   function createInitialOptions() {
     const optionsElement = document.createElement('div');
@@ -684,7 +714,7 @@
     content.className = 'chat-end-conversation-content';
     
     const message = document.createElement('p');
-    message.textContent = "Okej, tack för chatten! Om du har några frågor i framtiden, tveka inte att kontakta mig. Jag önskar dig en fantastisk dag! 👋";
+    message.textContent = "Okej, tack för chatten! Om du har några frågor i framtiden, tveka inte att kontakta oss. Vi på VANBRUUN önskar dig en fantastisk dag! 👋";
     
     const endedMessage = document.createElement('p');
     endedMessage.className = 'chat-chat-ended';
@@ -710,814 +740,920 @@
   function createMessageElement(message) {
     const messageWrapper = document.createElement('div');
     messageWrapper.className = `chat-message-wrapper ${message.isBot ? 'bot' : 'user'}`;
-  
-    if (message.isBot) {
-      const profileImage = document.createElement('img');
-      if (isConnectedToCustomerService && message.agentPhotoUrl) {
-        profileImage.src = message.agentPhotoUrl;
-      } else {
-        profileImage.src = config.logoUrl;
+ 
+      if (message.isBot) {
+          const profileImage = document.createElement('img');
+          if (isConnectedToCustomerService && message.agentPhotoUrl) {
+            profileImage.src = message.agentPhotoUrl;
+          } else {
+            profileImage.src = config.logoUrl;
+          }
+          profileImage.alt = isConnectedToCustomerService ? 'Agent Profile' : 'Bot Profile';
+          profileImage.className = 'chat-bot-profile-image';
+          messageWrapper.appendChild(profileImage);
+        }
+      
+        const messageElement = document.createElement('div');
+        messageElement.className = `chat-message ${message.isBot ? 'bot' : 'user'}`;
+        
+        if (message.className) {
+          messageElement.classList.add(message.className);
+        }
+      
+        if (message.isBot && message.agentName) {
+          const agentNameElement = document.createElement('div');
+          agentNameElement.className = 'chat-agent-name';
+          agentNameElement.textContent = message.agentName;
+          messageElement.appendChild(agentNameElement);
+        }
+      
+        const textElement = document.createElement('div');
+        textElement.className = 'chat-message-text';
+        
+        if (message.isLoading) {
+          textElement.innerHTML = '<div class="chat-loading-dots"><div></div><div></div><div></div></div>';
+        } else if (message.isBot) {
+          const formattedMessage = formatMessage(message.text);
+          textElement.innerHTML = formattedMessage;
+        } else {
+          textElement.textContent = message.text;
+        }
+      
+        messageElement.appendChild(textElement);
+        messageWrapper.appendChild(messageElement);
+      
+        return messageWrapper;
       }
-      profileImage.alt = isConnectedToCustomerService ? 'Agent Profile' : 'Bot Profile';
-      profileImage.className = 'chat-bot-profile-image';
-      messageWrapper.appendChild(profileImage);
-    }
-  
-    const messageElement = document.createElement('div');
-    messageElement.className = `chat-message ${message.isBot ? 'bot' : 'user'}`;
+      
+      function createNewChatButton() {
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'chat-new-chat-button-container';
+      
+        const newChatButton = document.createElement('button');
+        newChatButton.textContent = 'Starta ny konversation';
+        newChatButton.className = 'chat-new-conversation-button';
+        newChatButton.addEventListener('click', restartConversation);
+      
+        buttonContainer.appendChild(newChatButton);
+        return buttonContainer;
+      }
     
-    if (message.className) {
-      messageElement.classList.add(message.className);
-    }
-  
-    if (message.isBot && message.agentName) {
-      const agentNameElement = document.createElement('div');
-      agentNameElement.className = 'chat-agent-name';
-      agentNameElement.textContent = message.agentName;
-      messageElement.appendChild(agentNameElement);
-    }
-  
-    const textElement = document.createElement('div');
-    textElement.className = 'chat-message-text';
+      function createFollowUpButtons() {
+        const followUpElement = document.createElement('div');
+        followUpElement.className = 'chat-initial-options';
+        
+        const options = [
+          { text: 'Ja', response: 'ja' },
+          { text: 'Nej', response: 'nej' },
+          { text: 'Prata med kundtjänst', response: 'customer_service' }
+        ];
+        
+        options.forEach(option => {
+          const button = document.createElement('button');
+          button.textContent = option.text;
+          button.className = 'chat-option-button';
+          button.addEventListener('click', () => handleFollowUpResponse(option.response));
+          followUpElement.appendChild(button);
+        });
+      
+        return followUpElement;
+      }
     
-    if (message.isLoading) {
-      textElement.innerHTML = '<div class="chat-loading-dots"><div></div><div></div><div></div></div>';
-    } else if (message.isBot) {
-      const formattedMessage = formatMessage(message.text);
-      textElement.innerHTML = formattedMessage;
-    } else {
-      textElement.textContent = message.text;
-    }
-  
-    messageElement.appendChild(textElement);
-    messageWrapper.appendChild(messageElement);
-  
-    return messageWrapper;
-  }
-  
-  function createNewChatButton() {
-    const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'chat-new-chat-button-container';
-  
-    const newChatButton = document.createElement('button');
-    newChatButton.textContent = 'Starta ny konversation';
-    newChatButton.className = 'chat-new-conversation-button';
-    newChatButton.addEventListener('click', restartConversation);
-  
-    buttonContainer.appendChild(newChatButton);
-    return buttonContainer;
-  }
-
-  function createFollowUpButtons() {
-    const followUpElement = document.createElement('div');
-    followUpElement.className = 'chat-initial-options';
-    
-    const options = [
-      { text: 'Ja', response: 'ja' },
-      { text: 'Nej', response: 'nej' },
-      { text: 'Prata med kundtjänst', response: 'customer_service' }
-    ];
-    
-    options.forEach(option => {
-      const button = document.createElement('button');
-      button.textContent = option.text;
-      button.className = 'chat-option-button';
-      button.addEventListener('click', () => handleFollowUpResponse(option.response));
-      followUpElement.appendChild(button);
-    });
-  
-    return followUpElement;
-  }
-
-  function getStockholmTimestamp() {
-    const now = new Date();
-    const stockholmTime = new Date(now.toLocaleString('sv-SE', { timeZone: 'Europe/Stockholm' }));
-    
-    const pad = (num) => String(num).padStart(2, '0');
-    
-    const year = stockholmTime.getFullYear();
-    const month = pad(stockholmTime.getMonth() + 1);
-    const day = pad(stockholmTime.getDate());
-    const hours = pad(stockholmTime.getHours());
-    const minutes = pad(stockholmTime.getMinutes());
-    const seconds = pad(stockholmTime.getSeconds());
-    const milliseconds = String(stockholmTime.getMilliseconds()).padStart(3, '0');
-  
-    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-  }
-  
-  async function sendMessage(text) {
-    if (text.trim() === '' || isLoading || isWaitingForAgent) return;
-  
-    const currentTime = getStockholmTimestamp();
-  
-    addMessage(text, false, false, currentTime);
-    
-    if (!isConnectedToCustomerService) {
-      addMessage('', true, true);
-      isLoading = true;
-    }
-  
-    showInitialOptions = false;
-    showFollowUp = false;
-  
-    conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
-  
-    await sendConversationToAzure(messages);
-  
-    updateChatWindow();
-  
-    if (text.toLowerCase() === 'prata med kundtjänst' && !isConnectedToCustomerService) {
-      isConnectedToCustomerService = true;
-      const response = "Kopplar dig till kundtjänst...";
-      messages[messages.length - 1] = { text: response, isBot: true, isLoading: false, timestamp: getStockholmTimestamp() };
-      conversationHistory.push({"role": "assistant", "content": response, "timestamp": getStockholmTimestamp()});
-      await sendConversationToAzure(messages, true);
-      startCustomerServiceMode();
-      isLoading = false;
-      updateChatWindow();
-      return;
-    }
-  
-    if (isConnectedToCustomerService) {
-      await sendConversationToAzure(messages, true);
-      fetchAndDisplayConversation();
-    } else {
-      try {
+      function getStockholmTimestamp() {
+        const now = new Date();
+        const stockholmTime = new Date(now.toLocaleString('sv-SE', { timeZone: 'Europe/Stockholm' }));
+        
+        const pad = (num) => String(num).padStart(2, '0');
+        
+        const year = stockholmTime.getFullYear();
+        const month = pad(stockholmTime.getMonth() + 1);
+        const day = pad(stockholmTime.getDate());
+        const hours = pad(stockholmTime.getHours());
+        const minutes = pad(stockholmTime.getMinutes());
+        const seconds = pad(stockholmTime.getSeconds());
+        const milliseconds = String(stockholmTime.getMilliseconds()).padStart(3, '0');
+      
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+      }
+      
+      async function sendMessage(text) {
+        if (text.trim() === '' || isLoading || isWaitingForAgent) return;
+      
+        // Abort any ongoing requests
         if (currentRequest) {
           currentRequest.abort();
+          currentRequest = null;
         }
-  
-        const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
-        const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
-  
-        const encodedQuery = encodeURIComponent(fullQuery);
-        const url = `${RESPONSE_URL}?question=${encodedQuery}`;
-  
-        const controller = new AbortController();
-        currentRequest = controller;
-  
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'x-functions-key': RESPONSE_KEY
-          },
-          signal: controller.signal
-        });
-  
-        const data = await response.json();
-        const answer = data.answer;
-  
-        const responseTime = getStockholmTimestamp();
-        conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
-  
-        const loadingIndex = messages.findIndex(msg => msg.isLoading);
-        if (loadingIndex !== -1) {
-          messages[loadingIndex] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
-        } else {
-          messages.push({ text: answer, isBot: true, isLoading: false, timestamp: responseTime });
+    
+        // Clear customer service interval if active
+        if (customerServiceInterval) {
+          clearInterval(customerServiceInterval);
+          customerServiceInterval = null;
         }
+    
+        const currentTime = getStockholmTimestamp();
+      
+        addMessage(text, false, false, currentTime);
         
-        await sendConversationToAzure(messages);
-  
-        if (!answer.includes('?') && Math.random() < 0.5) {
-          setTimeout(() => {
-            const followUpTime = getStockholmTimestamp();
-            addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
-            conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
-            showFollowUp = true;
-            updateChatWindow();
-            sendConversationToAzure(messages);
-          }, 1000);
-        } else {
-          showFollowUp = false;
+        if (!isConnectedToCustomerService) {
+          addMessage('', true, true);
+          isLoading = true;
         }
-  
-      } catch (error) {
-        if (error.name === 'AbortError') {
-          console.log('Fetch aborted');
+      
+        showInitialOptions = false;
+        showFollowUp = false;
+      
+        conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
+      
+        await sendConversationToAzure(messages);
+      
+        updateChatWindow();
+      
+        if (text.toLowerCase() === 'prata med kundtjänst' && !isConnectedToCustomerService) {
+          isConnectedToCustomerService = true;
+          const response = "Kopplar dig till kundtjänst...";
+          messages[messages.length - 1] = { text: response, isBot: true, isLoading: false, timestamp: getStockholmTimestamp() };
+          conversationHistory.push({"role": "assistant", "content": response, "timestamp": getStockholmTimestamp()});
+          await sendConversationToAzure(messages, true);
+          startCustomerServiceMode();
+          isLoading = false;
+          updateChatWindow();
+          return;
+        }
+      
+        if (isConnectedToCustomerService) {
+          await sendConversationToAzure(messages, true);
+          fetchAndDisplayConversation();
         } else {
-          console.error('Error fetching bot response:', error);
-          const errorTime = getStockholmTimestamp();
-          const errorMessage = 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss på customer.service@happyflops.se';
+          try {
+            if (currentRequest) {
+              currentRequest.abort();
+            }
+      
+            const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+            const fullQuery = `conversation_history: ${formattedHistory} question: ${text}`;
+      
+            const encodedQuery = encodeURIComponent(fullQuery);
+            const url = `${RESPONSE_URL}?question=${encodedQuery}`;
+      
+            const controller = new AbortController();
+            currentRequest = controller;
+      
+            const response = await fetch(url, {
+              method: 'GET',
+              headers: {
+                'x-functions-key': RESPONSE_KEY
+              },
+              signal: controller.signal
+            });
+      
+            const data = await response.json();
+            const answer = data.answer;
+      
+            const responseTime = getStockholmTimestamp();
+            conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
+      
+            const loadingIndex = messages.findIndex(msg => msg.isLoading);
+            if (loadingIndex !== -1) {
+              messages[loadingIndex] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+            } else {
+              messages.push({ text: answer, isBot: true, isLoading: false, timestamp: responseTime });
+            }
+            
+            await sendConversationToAzure(messages);
+      
+            if (!answer.includes('?') && Math.random() < 0.5) {
+              setTimeout(() => {
+                const followUpTime = getStockholmTimestamp();
+                addMessage("Kan jag hjälpa dig med något mer?", true, false, followUpTime);
+                conversationHistory.push({"role": "assistant", "content": "Kan jag hjälpa dig med något mer?", "timestamp": followUpTime});
+                showFollowUp = true;
+                updateChatWindow();
+                sendConversationToAzure(messages);
+              }, 1000);
+            } else {
+              showFollowUp = false;
+            }
+      
+          } catch (error) {
+            if (error.name === 'AbortError') {
+              console.log('Fetch aborted');
+            } else {
+              console.error('Error fetching bot response:', error);
+              const errorTime = getStockholmTimestamp();
+              const errorMessage = 'Tyvärr kunde jag inte ansluta just nu. Vänligen försök igen senare eller kontakta oss på info@vanbruun.com';
+              
+              const loadingIndex = messages.findIndex(msg => msg.isLoading);
+              if (loadingIndex !== -1) {
+                messages[loadingIndex] = { text: errorMessage, isBot: true, isLoading: false, timestamp: errorTime };
+              } else {
+                messages.push({ text: errorMessage, isBot: true, isLoading: false, timestamp: errorTime });
+              }
+              
+              conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
+              await sendConversationToAzure(messages);
+            }
+          } finally {
+            isLoading = false;
+            currentRequest = null;
+            updateChatWindow();
+          }
+        }
+      }
+      
+      function handleFollowUpResponse(response) {
+        showFollowUp = false;
+        updateChatWindow();
+      
+        if (response === "customer_service") {
+          isConnectedToCustomerService = true;
+          const customerServiceMessage = "Prata med kundtjänst.";
+          const timestamp = getStockholmTimestamp();
           
-          const loadingIndex = messages.findIndex(msg => msg.isLoading);
-          if (loadingIndex !== -1) {
-            messages[loadingIndex] = { text: errorMessage, isBot: true, isLoading: false, timestamp: errorTime };
-          } else {
-            messages.push({ text: errorMessage, isBot: true, isLoading: false, timestamp: errorTime });
+          addMessage(customerServiceMessage, false, false, timestamp);
+          conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
+          
+          const botResponse = "Kopplar dig till kundtjänst...";
+          addMessage(botResponse, true, false, timestamp);
+          conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
+      
+          sendConversationToAzure(messages, true).then(() => {
+            startCustomerServiceMode();
+          });
+        } else {
+          const userResponse = response === "yes" ? "Ja" : "Nej";
+          addMessage(userResponse, false, false, getStockholmTimestamp());
+          
+          setTimeout(() => {
+            if (response === "yes") {
+              const botResponse = "Vad mer kan jag hjälpa dig med?";
+              addMessage(botResponse, true, false, getStockholmTimestamp());
+              updateChatWindow();
+              sendConversationToAzure(messages);
+            } else {
+              const botResponse = "Okej, tack för att du chattat med mig!";
+              addMessage(botResponse, true, false, getStockholmTimestamp());
+              updateChatWindow();
+              sendConversationToAzure(messages).then(() => {
+                sendConversationOverStatus();
+              });
+            }
+          }, 500);
+        }
+        saveConversation();
+      }
+    
+      async function sendConversationOverStatus() {
+        const payload = {
+          operation: 'store',
+          conversationId: window.conversationId,
+          conversation_over: true
+        };
+      
+        console.log('Sending conversation_over');
+        try {
+          const response = await fetch(CONVO_OPERATIONS_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-functions-key': CONVO_OPERATIONS_KEY
+            },
+            body: JSON.stringify(payload)
+          });
+      
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
           
-          conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
-          await sendConversationToAzure(messages);
+          const result = await response.json();
+          console.log('Conversation over status sent successfully:', result);
+          
+          showRatingSystem = true;
+          console.log('showRatingSystem set to:', showRatingSystem);
+          updateChatWindow();
+        } catch (error) {
+          console.error('Error sending conversation over status:', error);
         }
-      } finally {
-        isLoading = false;
-        currentRequest = null;
-        updateChatWindow();
       }
-    }
-  }
-  
-  function handleFollowUpResponse(response) {
-    showFollowUp = false;
-    updateChatWindow();
-  
-    if (response === "customer_service") {
-      isConnectedToCustomerService = true;
-      const customerServiceMessage = "Prata med kundtjänst.";
-      const timestamp = getStockholmTimestamp();
+    
+      async function fetchAndDisplayConversation() {
+        const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}&operation=get&conversationId=${encodeURIComponent(window.conversationId)}`;
       
-      addMessage(customerServiceMessage, false, false, timestamp);
-      conversationHistory.push({"role": "user", "content": customerServiceMessage, "timestamp": timestamp});
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          console.log('Received conversation data:', data);
       
-      const botResponse = "Kopplar dig till kundtjänst...";
-      addMessage(botResponse, true, false, timestamp);
-      conversationHistory.push({"role": "assistant", "content": botResponse, "timestamp": timestamp});
-  
-      sendConversationToAzure(messages, true).then(() => {
-        startCustomerServiceMode();
-      });
-    } else {
-      const userResponse = response === "yes" ? "Ja" : "Nej";
-      addMessage(userResponse, false, false, getStockholmTimestamp());
+          if (data.HandledChat && isWaitingForAgent) {
+            messages = messages.filter(msg => !msg.isLoading);
+            
+            const agentConnectedMessage = `Du pratar nu med ${data.HandledChat}`;
+            addMessage(agentConnectedMessage, true, false, new Date().toISOString());
+            isWaitingForAgent = false;
+            enableInputArea();
+          }
       
-      setTimeout(() => {
-        if (response === "yes") {
-          const botResponse = "Vad mer kan jag hjälpa dig med?";
-          addMessage(botResponse, true, false, getStockholmTimestamp());
+          if (Array.isArray(data.messages)) {
+            const lastMessageTimestamp = messages.length > 0 ? messages[messages.length - 1].timestamp : new Date(0).toISOString();
+            const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
+            
+            console.log(`Found ${newMessages.length} new messages`);
+            
+            newMessages.forEach(msg => {
+              addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhotoUrl);
+            });
+      
+            if (newMessages.length > 0) {
+              showFollowUp = false;
+              updateChatWindow();
+            }
+          } else {
+            console.warn('No messages array in the response:', data);
+          }
+      
+          if (data.conversation_over) {
+            console.log('Conversation is over, displaying star rating');
+            showRatingSystem = true;
+            updateChatWindow();
+            clearInterval(customerServiceInterval);
+          }
+      
+        } catch (error) {
+          console.error('Error fetching conversation:', error);
+          
+          if (messages.length === 0) {
+            addMessage("Ett fel uppstod när vi försökte hämta konversationen. Vänligen försök igen senare.", true);
+          }
+          
           updateChatWindow();
-          sendConversationToAzure(messages);
-        } else {
-          const botResponse = "Okej, tack för att du chattat med mig!";
-          addMessage(botResponse, true, false, getStockholmTimestamp());
-          updateChatWindow();
-          sendConversationToAzure(messages).then(() => {
-            sendConversationOverStatus();
+        }
+      }
+      
+      function updateChatWindow() {
+        console.log('Updating chat window');
+        
+        const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+        if (messagesWrapper) {
+          const logoContainer = messagesWrapper.querySelector('.chat-logo-container');
+          messagesWrapper.innerHTML = '';
+          if (logoContainer) {
+            messagesWrapper.appendChild(logoContainer);
+          }
+          
+          messages.forEach(message => {
+            const messageElement = createMessageElement(message);
+            messagesWrapper.appendChild(messageElement);
           });
+          
+          if (showInitialOptions && !isConnectedToCustomerService && !isConversationEnded) {
+            const optionsElement = createInitialOptions();
+            messagesWrapper.appendChild(optionsElement);
+          }
+          if (showFollowUp && !isConnectedToCustomerService && !isConversationEnded) {
+            const followUpElement = createFollowUpButtons();
+            messagesWrapper.appendChild(followUpElement);
+          }
+          if (showRatingSystem && !isConversationEnded) {
+            console.log('Displaying rating system');
+            const ratingElement = createStarRating();
+            messagesWrapper.appendChild(ratingElement);
+          }
+          
+          scrollToBottom();
         }
-      }, 500);
-    }
-    saveConversation();
-  }
-
-  async function sendConversationOverStatus() {
-    const payload = {
-      operation: 'store',
-      conversationId: window.conversationId,
-      conversation_over: true
-    };
-  
-    console.log('Sending conversation_over');
-    try {
-      const response = await fetch(CONVO_OPERATIONS_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-functions-key': CONVO_OPERATIONS_KEY
-        },
-        body: JSON.stringify(payload)
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      console.log('Conversation over status sent successfully:', result);
-      
-      showRatingSystem = true;
-      console.log('showRatingSystem set to:', showRatingSystem);
-      updateChatWindow();
-    } catch (error) {
-      console.error('Error sending conversation over status:', error);
-    }
-  }
-
-  async function fetchAndDisplayConversation() {
-    const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}&operation=get&conversationId=${encodeURIComponent(window.conversationId)}`;
-  
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('Received conversation data:', data);
-  
-      if (data.HandledChat && isWaitingForAgent) {
-        messages = messages.filter(msg => !msg.isLoading);
         
-        const agentConnectedMessage = `Du pratar nu med ${data.HandledChat}`;
-        addMessage(agentConnectedMessage, true, false, new Date().toISOString());
-        isWaitingForAgent = false;
-        enableInputArea();
-      }
-  
-      if (Array.isArray(data.messages)) {
-        const lastMessageTimestamp = messages.length > 0 ? messages[messages.length - 1].timestamp : new Date(0).toISOString();
-        const newMessages = data.messages.filter(msg => new Date(msg.timestamp) > new Date(lastMessageTimestamp));
-        
-        console.log(`Found ${newMessages.length} new messages`);
-        
-        newMessages.forEach(msg => {
-          addMessage(msg.text, msg.isBot, false, msg.timestamp, msg.agentName, msg.agentId, msg.agentPhotoUrl);
-        });
-  
-        if (newMessages.length > 0) {
-          showFollowUp = false;
-          updateChatWindow();
+        const inputArea = document.querySelector('.chat-input-area');
+        if (inputArea) {
+          inputArea.style.pointerEvents = isConversationEnded ? 'none' : 'auto';
+          inputArea.style.opacity = isConversationEnded ? '0.5' : '1';
         }
-      } else {
-        console.warn('No messages array in the response:', data);
+        
+        saveConversation();
       }
-  
-      if (data.conversation_over) {
-        console.log('Conversation is over, displaying star rating');
-        showRatingSystem = true;
+    
+      function addLoadingMessage() {
+        const loadingMessage = {
+          text: 'Vänligen vänta, vi meddelar teamet..',
+          isBot: true,
+          isLoading: true
+        };
+        messages.push(loadingMessage);
         updateChatWindow();
-        clearInterval(customerServiceInterval);
-      }
-  
-    } catch (error) {
-      console.error('Error fetching conversation:', error);
-      
-      if (messages.length === 0) {
-        addMessage("Ett fel uppstod när vi försökte hämta konversationen. Vänligen försök igen senare.", true);
       }
       
-      updateChatWindow();
-    }
-  }
-  
-  function updateChatWindow() {
-    console.log('Updating chat window');
-    
-    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
-    if (messagesWrapper) {
-      const logoContainer = messagesWrapper.querySelector('.chat-logo-container');
-      messagesWrapper.innerHTML = '';
-      if (logoContainer) {
-        messagesWrapper.appendChild(logoContainer);
+      function disableInputArea() {
+        const inputArea = document.querySelector('.chat-input-area');
+        const input = document.querySelector('.chat-input');
+        const sendButton = document.querySelector('.chat-send-button');
+        if (inputArea && input && sendButton) {
+          input.disabled = true;
+          sendButton.disabled = true;
+          inputArea.style.opacity = '0.5';
+        }
       }
       
-      messages.forEach(message => {
-        const messageElement = createMessageElement(message);
-        messagesWrapper.appendChild(messageElement);
-      });
+      function enableInputArea() {
+        const inputArea = document.querySelector('.chat-input-area');
+        const input = document.querySelector('.chat-input');
+        const sendButton = document.querySelector('.chat-send-button');
+        if (inputArea && input && sendButton) {
+          input.disabled = false;
+          sendButton.disabled = false;
+          inputArea.style.opacity = '1';
+        }
+      }
+    
+      function displayStarRating() {
+        const ratingContainer = createStarRating();
+        const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+        if (messagesWrapper) {
+          messagesWrapper.appendChild(ratingContainer);
+          scrollToBottom();
+        }
+      }
+    
+      function createStarRating() {
+        const ratingContainer = document.createElement('div');
+        ratingContainer.className = 'chat-rating-container';
+        ratingContainer.style.textAlign = 'center';
+        ratingContainer.style.padding = '10px';
+        ratingContainer.style.display = 'flex';
+        ratingContainer.style.flexDirection = 'column';
+        ratingContainer.style.alignItems = 'center';
+        ratingContainer.style.justifyContent = 'center';
       
-      if (showInitialOptions && !isConnectedToCustomerService && !isConversationEnded) {
-        const optionsElement = createInitialOptions();
-        messagesWrapper.appendChild(optionsElement);
-      }
-      if (showFollowUp && !isConnectedToCustomerService && !isConversationEnded) {
-        const followUpElement = createFollowUpButtons();
-        messagesWrapper.appendChild(followUpElement);
-      }
-      if (showRatingSystem && !isConversationEnded) {
-        console.log('Displaying rating system');
-        const ratingElement = createStarRating();
-        messagesWrapper.appendChild(ratingElement);
+        const ratingPrompt = document.createElement('p');
+        ratingPrompt.textContent = 'Betygsätt din upplevelse:';
+        ratingPrompt.style.margin = '0 0 0 0';
+        ratingPrompt.style.display = 'flex';
+        ratingPrompt.style.alignItems = 'center';
+        ratingPrompt.style.height = '40px';
+        ratingPrompt.style.color = '#ffffff';
+        ratingPrompt.style.fontWeight = 'bold';
+    
+        const starsContainer = document.createElement('div');
+        starsContainer.className = 'chat-stars-container';
+      
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement('span');
+          star.className = 'chat-star';
+          star.innerHTML = '☆';
+          star.setAttribute('data-rating', i);
+          star.style.fontSize = '40px';
+          star.style.cursor = 'pointer';
+          star.style.color = '#ffd700';
+          
+          star.addEventListener('click', () => handleStarClick(i));
+          
+          star.addEventListener('mouseover', () => {
+            updateStars(i);
+          });
+      
+          star.addEventListener('mouseout', () => {
+            const currentRating = document.querySelector('.chat-star.active')?.getAttribute('data-rating') || 0;
+            updateStars(currentRating);
+          });
+      
+          starsContainer.appendChild(star);
+        }
+      
+        ratingContainer.appendChild(ratingPrompt);
+        ratingContainer.appendChild(starsContainer);
+      
+        return ratingContainer;
       }
       
-      scrollToBottom();
-    }
-    
-    const inputArea = document.querySelector('.chat-input-area');
-    if (inputArea) {
-      inputArea.style.pointerEvents = isConversationEnded ? 'none' : 'auto';
-      inputArea.style.opacity = isConversationEnded ? '0.5' : '1';
-    }
-    
-    saveConversation();
-  }
-
-  function addLoadingMessage() {
-    const loadingMessage = {
-      text: 'Vänligen vänta, vi meddelar teamet..',
-      isBot: true,
-      isLoading: true
-    };
-    messages.push(loadingMessage);
-    updateChatWindow();
-  }
-  
-  function disableInputArea() {
-    const inputArea = document.querySelector('.chat-input-area');
-    const input = document.querySelector('.chat-input');
-    const sendButton = document.querySelector('.chat-send-button');
-    if (inputArea && input && sendButton) {
-      input.disabled = true;
-      sendButton.disabled = true;
-      inputArea.style.opacity = '0.5';
-    }
-  }
-  
-  function enableInputArea() {
-    const inputArea = document.querySelector('.chat-input-area');
-    const input = document.querySelector('.chat-input');
-    const sendButton = document.querySelector('.chat-send-button');
-    if (inputArea && input && sendButton) {
-      input.disabled = false;
-      sendButton.disabled = false;
-      inputArea.style.opacity = '1';
-    }
-  }
-
-  function displayStarRating() {
-    const ratingContainer = createStarRating();
-    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
-    if (messagesWrapper) {
-      messagesWrapper.appendChild(ratingContainer);
-      scrollToBottom();
-    }
-  }
-
-  function createStarRating() {
-    const ratingContainer = document.createElement('div');
-    ratingContainer.className = 'chat-rating-container';
-    ratingContainer.style.textAlign = 'center';
-    ratingContainer.style.padding = '10px';
-    ratingContainer.style.display = 'flex';
-    ratingContainer.style.flexDirection = 'column';
-    ratingContainer.style.alignItems = 'center';
-    ratingContainer.style.justifyContent = 'center';
-  
-    const ratingPrompt = document.createElement('p');
-    ratingPrompt.textContent = 'Betygsätt din upplevelse:';
-    ratingPrompt.style.margin = '0 0 0 0';
-    ratingPrompt.style.display = 'flex';
-    ratingPrompt.style.alignItems = 'center';
-    ratingPrompt.style.height = '40px';
-    ratingPrompt.style.color = '#ffffff';
-    ratingPrompt.style.fontWeight = 'bold';
-
-    const starsContainer = document.createElement('div');
-    starsContainer.className = 'chat-stars-container';
-  
-    for (let i = 1; i <= 5; i++) {
-      const star = document.createElement('span');
-      star.className = 'chat-star';
-      star.innerHTML = '☆';
-      star.setAttribute('data-rating', i);
-      star.style.fontSize = '40px';
-      star.style.cursor = 'pointer';
-      star.style.color = '#ffd700';
-      
-      star.addEventListener('click', () => handleStarClick(i));
-      
-      star.addEventListener('mouseover', () => {
-        updateStars(i);
-      });
-  
-      star.addEventListener('mouseout', () => {
-        const currentRating = document.querySelector('.chat-star.active')?.getAttribute('data-rating') || 0;
-        updateStars(currentRating);
-      });
-  
-      starsContainer.appendChild(star);
-    }
-  
-    ratingContainer.appendChild(ratingPrompt);
-    ratingContainer.appendChild(starsContainer);
-  
-    return ratingContainer;
-  }
-  
-  function setRating(rating) {
-    const stars = document.querySelectorAll('.chat-star');
-    stars.forEach((star) => star.classList.remove('active'));
-    if (rating > 0) {
-      stars[rating - 1].classList.add('active');
-    }
-    updateStars(rating);
-  }
-
-  function handleStarClick(rating) {
-    console.log('Star clicked:', rating);
-    updateStars(rating);
-    sendRating(rating);
-  }
-
-  function updateStars(rating) {
-    const stars = document.querySelectorAll('.chat-star');
-    stars.forEach((star, index) => {
-      if (index < rating) {
-        star.innerHTML = '★';
-      } else {
-        star.innerHTML = '☆';
+      function setRating(rating) {
+        const stars = document.querySelectorAll('.chat-star');
+        stars.forEach((star) => star.classList.remove('active'));
+        if (rating > 0) {
+          stars[rating - 1].classList.add('active');
+        }
+        updateStars(rating);
       }
-    });
-  }
-
-  async function sendRating(rating) {
-    const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}`;
-    const payload = {
-      operation: 'store',
-      conversationId: window.conversationId,
-      Rating: rating,
-      timestamp: getStockholmTimestamp()
-    };
-  
-    console.log('Sending rating:', payload);
-  
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
     
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      function handleStarClick(rating) {
+        console.log('Star clicked:', rating);
+        updateStars(rating);
+        sendRating(rating);
       }
-  
-      const responseData = await response.json();
-      console.log('Rating stored successfully:', responseData);
-      showRatingSystem = false;
-      endConversation();
-    } catch (error) {
-      console.error('Error storing rating:', error);
-      endConversation();
-    }
-  }
-
-  function scrollToBottom() {
-    const messagesContainer = document.querySelector('.chat-messages-container');
-    if (messagesContainer) {
-      setTimeout(() => {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }, 100);
-    }
-  }
-
-  function addMessageWithDelay(text, isBot, delay, callback) {
-    addMessage('', isBot, true);
-    updateChatWindow();
     
-    setTimeout(() => {
-      messages[messages.length - 1] = { text, isBot, isLoading: false };
-      updateChatWindow();
-      if (callback) callback();
-    }, delay);
-  }
-
-  function saveConversation() {
-    localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
-    localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
-    localStorage.setItem('vanbruunChatId', window.conversationId || '');
-    localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
-    localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
-    localStorage.setItem('vanbruunChatShowRatingSystem', JSON.stringify(showRatingSystem));
-    localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
-    localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
-    localStorage.setItem('vanbruunChatIsConnectedToCustomerService', JSON.stringify(isConnectedToCustomerService));
-    
-    if (isLoading) {
-      localStorage.setItem('vanbruunChatIsLoading', JSON.stringify(isLoading));
-    } else {
-      localStorage.removeItem('vanbruunChatIsLoading');
-    }
-  
-    localStorage.setItem('vanbruunChatLastSaved', new Date().toISOString());
-  }
-  
-  function loadConversation() {
-    const storedMessages = localStorage.getItem('vanbruunChatMessages');
-    const storedHistory = localStorage.getItem('vanbruunChatHistory');
-    const storedId = localStorage.getItem('vanbruunChatId');
-    const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
-    const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
-    const storedShowRatingSystem = localStorage.getItem('vanbruunChatShowRatingSystem');
-    const storedIsConnectedToCustomerService = localStorage.getItem('vanbruunChatIsConnectedToCustomerService');
-    const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
-
-    if (storedMessages) {
-      messages = JSON.parse(storedMessages);
-      messages = messages.filter(msg => !msg.isLoading);
-    }
-    if (storedHistory) {
-      conversationHistory = JSON.parse(storedHistory);
-    }
-    if (storedId) {
-      window.conversationId = storedId;
-    } else {
-      window.conversationId = generateUUID();
-    }
-    if (storedShowInitialOptions !== null) {
-      showInitialOptions = JSON.parse(storedShowInitialOptions);
-    }
-    if (storedShowFollowUp !== null) {
-      showFollowUp = JSON.parse(storedShowFollowUp);
-    }
-    if (storedShowRatingSystem !== null) {
-      showRatingSystem = JSON.parse(storedShowRatingSystem);
-    }
-    if (storedIsConnectedToCustomerService !== null) {
-      isConnectedToCustomerService = JSON.parse(storedIsConnectedToCustomerService);
-    }
-
-    isChatOpen = false;
-    isInitialPageVisible = false;
-
-    isLoading = false;
-    isInitialized = messages.length > 0;
-
-    if (storedLastMessage) {
-      const lastMessage = JSON.parse(storedLastMessage);
-      if (lastMessage && lastMessage.isBot && lastMessage.text === "Kan jag hjälpa dig med något mer?") {
-        showFollowUp = true;
+      function updateStars(rating) {
+        const stars = document.querySelectorAll('.chat-star');
+        stars.forEach((star, index) => {
+          if (index < rating) {
+            star.innerHTML = '★';
+          } else {
+            star.innerHTML = '☆';
+          }
+        });
       }
-    }
-
-    if (isConnectedToCustomerService) {
-      showFollowUp = false;
-    }
-  }
-  
-  function restartConversation() {
-    if (customerServiceInterval) {
-      clearInterval(customerServiceInterval);
-    }
-    isConnectedToCustomerService = false;
-    messages = [];
-    conversationHistory = [];
-    isInitialized = false;
-    showInitialOptions = false;
-    showFollowUp = false;
-    showRatingSystem = false;
-    isConversationEnded = false;
-    window.conversationId = generateUUID();
-  
-    localStorage.removeItem('vanbruunChatMessages');
-    localStorage.removeItem('vanbruunChatHistory');
-    localStorage.removeItem('vanbruunChatId');
-    localStorage.removeItem('vanbruunChatShowInitialOptions');
-    localStorage.removeItem('vanbruunChatShowFollowUp');
-    localStorage.removeItem('vanbruunChatLastMessage');
-    localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
-    localStorage.removeItem('vanbruunChatShowRatingSystem');
-  
-    openChat();
-  }
-
-  function restartChatFromWindow() {
-    messages = [];
-    conversationHistory = [];
     
-    isInitialized = false;
-    showInitialOptions = false;
-    showFollowUp = false;
-    showRatingSystem = false;
-    isConversationEnded = false;
-    isConnectedToCustomerService = false;
-    
-    window.conversationId = generateUUID();
-    
-    localStorage.removeItem('vanbruunChatMessages');
-    localStorage.removeItem('vanbruunChatHistory');
-    localStorage.removeItem('vanbruunChatId');
-    localStorage.removeItem('vanbruunChatShowInitialOptions');
-    localStorage.removeItem('vanbruunChatShowFollowUp');
-    localStorage.removeItem('vanbruunChatLastMessage');
-    localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
-    localStorage.removeItem('vanbruunChatShowRatingSystem');
-    
-    initializeChat();
-  }
-
-  function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-
-  function addMessage(text, isBot, isLoading = false, timestamp = null, agentName = null, agentId = null, agentPhotoUrl = null) {
-    const messageTimestamp = timestamp || getStockholmTimestamp();
-    messages.push({ text, isBot, isLoading, timestamp: messageTimestamp, agentName, agentId, agentPhotoUrl });
-    updateChatWindow();
-    saveConversation();
-  }
-
-  async function sendConversationToAzure(messages, needsCustomerService = false) {
-    const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}`;
-  
-    const payload = {
-      operation: 'store',
-      conversationId: window.conversationId || (window.conversationId = generateUUID()),
-      userId: getUserId(),
-      messages: messages.map(msg => ({
-        text: msg.text,
-        isBot: msg.isBot,
-        timestamp: msg.timestamp || getStockholmTimestamp(),
-        agentName: msg.agentName,
-        agentId: msg.agentId
-      })),
-      needsCustomerService: needsCustomerService || isConnectedToCustomerService,
-    };
-  
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      const responseData = await response.json();
-      console.log('Conversation stored successfully:', responseData);
-      return responseData;
-    } catch (error) {
-      console.error('Error storing conversation:', error);
-      throw error;
-    }
-  }
-    
-  async function fetchUserConversations() {
-    const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}&operation=getAll`;
-  
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
+      async function sendRating(rating) {
+        const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}`;
+        const payload = {
+          operation: 'store',
+          conversationId: window.conversationId,
+          Rating: rating,
+          timestamp: getStockholmTimestamp()
+        };
       
-      if (!data || !Array.isArray(data.conversations)) {
-        console.error('Unexpected data structure:', data);
-        return [];
+        console.log('Sending rating:', payload);
+      
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+        
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+      
+          const responseData = await response.json();
+          console.log('Rating stored successfully:', responseData);
+          showRatingSystem = false;
+          endConversation();
+        } catch (error) {
+          console.error('Error storing rating:', error);
+          endConversation();
+        }
       }
-  
-      const currentUserId = getUserId();
-      
-      const userConversations = data.conversations.filter(conv => conv.userId === currentUserId);
-      
-      userConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      
-      return userConversations;
-    } catch (error) {
-      console.error('Error fetching user conversations:', error);
-      return [];
-    }
-  }
-
-  function createConversationSnippet(conversation, isRecent) {
-    const convSnippet = document.createElement('div');
-    convSnippet.className = `chat-conversation-snippet ${isRecent ? 'recent' : ''}`;
     
-    const snippetContent = document.createElement('div');
-    snippetContent.className = 'chat-snippet-content';
-    const title = document.createElement('h4');
-    title.textContent = isRecent ? 'Senaste konversationen' : 'Konversation';
-    snippetContent.appendChild(title);
+      function scrollToBottom() {
+        const messagesContainer = document.querySelector('.chat-messages-container');
+        if (messagesContainer) {
+          setTimeout(() => {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          }, 100);
+        }
+      }
     
-    const message = document.createElement('p');
-    message.textContent = `Konversation ${conversation.id.substring(0, 8)}...`;
-    snippetContent.appendChild(message);
-  
-    const timestamp = document.createElement('span');
-    timestamp.textContent = formatTimestamp(conversation.timestamp);
-    snippetContent.appendChild(timestamp);
-  
-    convSnippet.appendChild(snippetContent);
-  
-    const arrowIcon = document.createElement('span');
-    arrowIcon.className = 'chat-snippet-arrow';
-    arrowIcon.innerHTML = '&gt;';
-    convSnippet.appendChild(arrowIcon);
-  
-    convSnippet.addEventListener('click', () => {
-      window.conversationId = conversation.id;
-      openChat();
-    });
-  
-    return convSnippet;
-  }
-  
-  function startCustomerServiceMode() {
-    console.log("Entering customer service mode");
-    isWaitingForAgent = true;
-    addLoadingMessage();
-    disableInputArea();
-    customerServiceInterval = setInterval(fetchAndDisplayConversation, 1000);
-  }
-
-  createChatbotUI();  
-
-  window.openVanbruunChat = function() {
-    isInitialPageVisible = true;
-    isChatOpen = true;
-    renderChatbot();
-  };
-
-  console.log('Chatbot script loaded and initialized');
-})();
+      function addMessageWithDelay(text, isBot, delay, callback) {
+        addMessage('', isBot, true);
+        updateChatWindow();
+        
+        setTimeout(() => {
+          messages[messages.length - 1] = { text, isBot, isLoading: false };
+          updateChatWindow();
+          if (callback) callback();
+        }, delay);
+      }
+    
+      function saveConversation() {
+        localStorage.setItem('vanbruunChatMessages', JSON.stringify(messages));
+        localStorage.setItem('vanbruunChatHistory', JSON.stringify(conversationHistory));
+        localStorage.setItem('vanbruunChatId', window.conversationId || '');
+        localStorage.setItem('vanbruunChatShowInitialOptions', JSON.stringify(showInitialOptions));
+        localStorage.setItem('vanbruunChatShowFollowUp', JSON.stringify(showFollowUp));
+        localStorage.setItem('vanbruunChatShowRatingSystem', JSON.stringify(showRatingSystem));
+        localStorage.setItem('vanbruunChatIsOpen', JSON.stringify(isChatOpen));
+        localStorage.setItem('vanbruunChatLastMessage', JSON.stringify(messages[messages.length - 1]));
+        localStorage.setItem('vanbruunChatIsConnectedToCustomerService', JSON.stringify(isConnectedToCustomerService));
+        
+        if (isLoading) {
+          localStorage.setItem('vanbruunChatIsLoading', JSON.stringify(isLoading));
+        } else {
+          localStorage.removeItem('vanbruunChatIsLoading');
+        }
+      
+        localStorage.setItem('vanbruunChatLastSaved', new Date().toISOString());
+      }
+      
+      function loadConversation() {
+        const storedMessages = localStorage.getItem('vanbruunChatMessages');
+        const storedHistory = localStorage.getItem('vanbruunChatHistory');
+        const storedId = localStorage.getItem('vanbruunChatId');
+        const storedShowInitialOptions = localStorage.getItem('vanbruunChatShowInitialOptions');
+        const storedShowFollowUp = localStorage.getItem('vanbruunChatShowFollowUp');
+        const storedShowRatingSystem = localStorage.getItem('vanbruunChatShowRatingSystem');
+        const storedIsConnectedToCustomerService = localStorage.getItem('vanbruunChatIsConnectedToCustomerService');
+        const storedLastMessage = localStorage.getItem('vanbruunChatLastMessage');
+    
+        if (storedMessages) {
+          try {
+            messages = JSON.parse(storedMessages);
+            messages = messages.filter(msg => !msg.isLoading);
+          } catch (error) {
+            console.error('Error parsing stored messages:', error);
+            messages = [];
+          }
+        }
+        if (storedHistory) {
+          try {
+            conversationHistory = JSON.parse(storedHistory);
+          } catch (error) {
+            console.error('Error parsing stored conversation history:', error);
+            conversationHistory = [];
+          }
+        }
+        if (storedId) {
+          window.conversationId = storedId;
+        } else {
+          window.conversationId = generateUUID();
+        }
+        if (storedShowInitialOptions !== null) {
+          try {
+            showInitialOptions = JSON.parse(storedShowInitialOptions);
+          } catch (error) {
+            console.error('Error parsing stored showInitialOptions:', error);
+            showInitialOptions = false;
+          }
+        }
+        if (storedShowFollowUp !== null) {
+          try {
+            showFollowUp = JSON.parse(storedShowFollowUp);
+          } catch (error) {
+            console.error('Error parsing stored showFollowUp:', error);
+            showFollowUp = false;
+          }
+        }
+        if (storedShowRatingSystem !== null) {
+          try {
+            showRatingSystem = JSON.parse(storedShowRatingSystem);
+          } catch (error) {
+            console.error('Error parsing stored showRatingSystem:', error);
+            showRatingSystem = false;
+          }
+        }
+        if (storedIsConnectedToCustomerService !== null) {
+          try {
+            isConnectedToCustomerService = JSON.parse(storedIsConnectedToCustomerService);
+          } catch (error) {
+            console.error('Error parsing stored isConnectedToCustomerService:', error);
+            isConnectedToCustomerService = false;
+          }
+        }
+    
+        isChatOpen = false;
+        isInitialPageVisible = false;
+    
+        isLoading = false;
+        isInitialized = messages.length > 0;
+    
+        if (storedLastMessage) {
+          try {
+            const lastMessage = JSON.parse(storedLastMessage);
+            if (lastMessage && lastMessage.isBot && lastMessage.text === "Kan jag hjälpa dig med något mer?") {
+              showFollowUp = true;
+            }
+          } catch (error) {
+            console.error('Error parsing stored last message:', error);
+          }
+        }
+    
+        if (isConnectedToCustomerService) {
+          showFollowUp = false;
+        }
+      }
+      
+      function restartConversation(shouldInitialize = true) {
+        if (customerServiceInterval) {
+          clearInterval(customerServiceInterval);
+          customerServiceInterval = null;
+        }
+        
+        if (currentRequest) {
+          currentRequest.abort();
+          currentRequest = null;
+        }
+      
+        isConnectedToCustomerService = false;
+        isWaitingForAgent = false;
+        isLoading = false;
+        messages = [];
+        conversationHistory = [];
+        isInitialized = false;
+        showInitialOptions = false;
+        showFollowUp = false;
+        showRatingSystem = false;
+        isConversationEnded = false;
+        window.conversationId = generateUUID();
+      
+        localStorage.removeItem('vanbruunChatMessages');
+        localStorage.removeItem('vanbruunChatHistory');
+        localStorage.removeItem('vanbruunChatId');
+        localStorage.removeItem('vanbruunChatShowInitialOptions');
+        localStorage.removeItem('vanbruunChatShowFollowUp');
+        localStorage.removeItem('vanbruunChatLastMessage');
+        localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
+        localStorage.removeItem('vanbruunChatShowRatingSystem');
+      
+        if (shouldInitialize) {
+          openChat();
+        }
+      }
+      
+      function restartConversationForQuicklink() {
+        if (customerServiceInterval) {
+          clearInterval(customerServiceInterval);
+          customerServiceInterval = null;
+        }
+        
+        if (currentRequest) {
+          currentRequest.abort();
+          currentRequest = null;
+        }
+      
+        isConnectedToCustomerService = false;
+        isWaitingForAgent = false;
+        isLoading = false;
+        messages = [];
+        conversationHistory = [];
+        isInitialized = false;
+        showInitialOptions = false;
+        showFollowUp = false;
+        showRatingSystem = false;
+        isConversationEnded = false;
+        window.conversationId = generateUUID();
+      
+        localStorage.removeItem('vanbruunChatMessages');
+        localStorage.removeItem('vanbruunChatHistory');
+        localStorage.removeItem('vanbruunChatId');
+        localStorage.removeItem('vanbruunChatShowInitialOptions');
+        localStorage.removeItem('vanbruunChatShowFollowUp');
+        localStorage.removeItem('vanbruunChatLastMessage');
+        localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
+        localStorage.removeItem('vanbruunChatShowRatingSystem');
+      
+        // Don't initialize the chat or send any initial messages
+      }
+    openChatAndSendMessage
+      function restartChatFromWindow() {
+        messages = [];
+        conversationHistory = [];
+        
+        isInitialized = false;
+        showInitialOptions = false;
+        showFollowUp = false;
+        showRatingSystem = false;
+        isConversationEnded = false;
+        isConnectedToCustomerService = false;
+        
+        window.conversationId = generateUUID();
+        
+        localStorage.removeItem('vanbruunChatMessages');
+        localStorage.removeItem('vanbruunChatHistory');
+        localStorage.removeItem('vanbruunChatId');
+        localStorage.removeItem('vanbruunChatShowInitialOptions');
+        localStorage.removeItem('vanbruunChatShowFollowUp');
+        localStorage.removeItem('vanbruunChatLastMessage');
+        localStorage.removeItem('vanbruunChatIsConnectedToCustomerService');
+        localStorage.removeItem('vanbruunChatShowRatingSystem');
+        
+        initializeChat();
+      }
+    
+      function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+    
+      function addMessage(text, isBot, isLoading = false, timestamp = null, agentName = null, agentId = null, agentPhotoUrl = null) {
+        const messageTimestamp = timestamp || getStockholmTimestamp();
+        messages.push({ text, isBot, isLoading, timestamp: messageTimestamp, agentName, agentId, agentPhotoUrl });
+        updateChatWindow();
+        saveConversation();
+      }
+    
+      async function sendConversationToAzure(messages, needsCustomerService = false) {
+        const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}`;
+      
+        const payload = {
+          operation: 'store',
+          conversationId: window.conversationId || (window.conversationId = generateUUID()),
+          userId: getUserId(),
+          messages: messages.map(msg => ({
+            text: msg.text,
+            isBot: msg.isBot,
+            timestamp: msg.timestamp || getStockholmTimestamp(),
+            agentName: msg.agentName,
+            agentId: msg.agentId
+          })),
+          needsCustomerService: needsCustomerService || isConnectedToCustomerService,
+        };
+      
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          });
+      
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+      
+          const responseData = await response.json();
+          console.log('Conversation stored successfully:', responseData);
+          return responseData;
+        } catch (error) {
+          console.error('Error storing conversation:', error);
+          throw error;
+        }
+      }
+        
+      async function fetchUserConversations() {
+        const url = `${CONVO_OPERATIONS_URL}?code=${CONVO_OPERATIONS_KEY}&operation=getAll`;
+      
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          
+          if (!data || !Array.isArray(data.conversations)) {
+            console.error('Unexpected data structure:', data);
+            return [];
+          }
+      
+          const currentUserId = getUserId();
+          
+          const userConversations = data.conversations.filter(conv => conv.userId === currentUserId);
+          
+          userConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          
+          return userConversations;
+        } catch (error) {
+          console.error('Error fetching user conversations:', error);
+          return [];
+        }
+      }
+    
+      function createConversationSnippet(conversation, isRecent) {
+        const convSnippet = document.createElement('div');
+        convSnippet.className = `chat-conversation-snippet ${isRecent ? 'recent' : ''}`;
+        
+        const snippetContent = document.createElement('div');
+        snippetContent.className = 'chat-snippet-content';
+        const title = document.createElement('h4');
+        title.textContent = isRecent ? 'Senaste konversationen' : 'Konversation';
+        snippetContent.appendChild(title);
+        
+        const message = document.createElement('p');
+        message.textContent = `Konversation ${conversation.id.substring(0, 8)}...`;
+        snippetContent.appendChild(message);
+      
+        const timestamp = document.createElement('span');
+        timestamp.textContent = formatTimestamp(conversation.timestamp);
+        snippetContent.appendChild(timestamp);
+      
+        convSnippet.appendChild(snippetContent);
+      
+        const arrowIcon = document.createElement('span');
+        arrowIcon.className = 'chat-snippet-arrow';
+        arrowIcon.innerHTML = '&gt;';
+        convSnippet.appendChild(arrowIcon);
+      
+        convSnippet.addEventListener('click', () => {
+          window.conversationId = conversation.id;
+          openChat();
+        });
+      
+        return convSnippet;
+      }
+      
+      function startCustomerServiceMode() {
+        console.log("Entering customer service mode");
+        isWaitingForAgent = true;
+        addLoadingMessage();
+        disableInputArea();
+        customerServiceInterval = setInterval(fetchAndDisplayConversation, 1000);
+      }
+    
+      function formatTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) {
+          return `Idag ${date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}`;
+        } else if (diffDays === 1) {
+          return `Igår ${date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}`;
+        } else {
+          return date.toLocaleDateString('sv-SE', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+      }
+    
+      createChatbotUI();  
+    
+      window.openVanbruunChat = function() {
+        isInitialPageVisible = true;
+        isChatOpen = true;
+        renderChatbot();
+      };
+    formatMessage
+      console.log('Chatbot script loaded and initialized');
+    })();
