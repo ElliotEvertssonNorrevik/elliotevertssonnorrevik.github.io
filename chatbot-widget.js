@@ -2,12 +2,12 @@
   
 
 
-  const RESPONSE_URL = secrets.RESPONSE_URL;
-  const CONVO_OPERATIONS_URL = secrets.CONVO_OPERATIONS_URL;
-  const CONVO_OPERATIONS_KEY = secrets.CONVO_OPERATIONS_KEY;
-  const RESPONSE_KEY = secrets.RESPONSE_KEY;
-  const GET_ALL_PROFILES_URL = secrets.GET_ALL_PROFILE_URL
-  const GET_ALL_PROFILES_KEY = secrets.GET_ALL_PROFILES_KEY;
+  const RESPONSE_URL = ${{ secrets.RESPONSE_URL }};
+  const CONVO_OPERATIONS_URL = ${{ secrets.CONVO_OPERATIONS_URL }};
+  const CONVO_OPERATIONS_KEY = ${{ secrets.CONVO_OPERATIONS_KEY }};
+  const RESPONSE_KEY = ${{ secrets.RESPONSE_KEY }};
+  const GET_ALL_PROFILES_URL = ${{ secrets.GET_ALL_PROFILE_URL }};
+  const GET_ALL_PROFILES_KEY = ${{ secrets.GET_ALL_PROFILES_KEY }};
 
   let userId;
   let currentRequest = null;
