@@ -2,12 +2,12 @@
   
 
 
-  const RESPONSE_URL = ${{ secrets.RESPONSE_URL }};
-  const CONVO_OPERATIONS_URL = ${{ secrets.CONVO_OPERATIONS_URL }};
-  const CONVO_OPERATIONS_KEY = ${{ secrets.CONVO_OPERATIONS_KEY }};
-  const RESPONSE_KEY = ${{ secrets.RESPONSE_KEY }};
-  const GET_ALL_PROFILES_URL = ${{ secrets.GET_ALL_PROFILE_URL }};
-  const GET_ALL_PROFILES_KEY = ${{ secrets.GET_ALL_PROFILES_KEY }};
+  const RESPONSE_URL = 'https://fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
+  const CONVO_OPERATIONS_URL = 'https://rosterai-chat-function.azurewebsites.net/api/ConversationOperations';
+  const CONVO_OPERATIONS_KEY = 'tnW-7-CC7Up5N9QI_RNW-iAiREZ7OsYOi6W1uPfjt1_FAzFuU3IMJA==';
+  const RESPONSE_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
+  const GET_ALL_PROFILES_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getallprofiles'
+  const GET_ALL_PROFILES_KEY = 'qoFEiCbbZLZkPtzSG_H5YxdKw4SdWFiq5glgoIttX6GrAzFuo67mqg==';
 
   let userId;
   let currentRequest = null;
