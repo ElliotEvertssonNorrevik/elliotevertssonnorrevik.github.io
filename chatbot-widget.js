@@ -1,10 +1,7 @@
 (function() {
-  
-
-
   const RESPONSE_URL = 'https://fd-gee0ghfphbcsfvex.z01.azurefd.net/api/HttpTrigger';
   const CONVO_OPERATIONS_URL = 'https://rosterai-chat-function.azurewebsites.net/api/ConversationOperations';
-  const CONVO_OPERATIONS_KEY = 'tnW-7-CC7Up5N9QI_RNW-iAiREZ7OsYOi6W1uPfjt1_FAzFuU3IMJA==';
+  const CONVO_OPERATIONS_KEY = 'eep5cS8eJ8oyL0GV7oWKHvtaG-HxsWPa3Mth_dmKoGoGAzFugZBgxg==';
   const RESPONSE_KEY = 'xZkIhzOOgQsoQftYWvhyfg1shu83UoJ7yRCMnXs-MVAeAzFuuDZdtQ==';
   const GET_ALL_PROFILES_URL = 'https://rosterai-chat-function.azurewebsites.net/api/getallprofiles'
   const GET_ALL_PROFILES_KEY = 'qoFEiCbbZLZkPtzSG_H5YxdKw4SdWFiq5glgoIttX6GrAzFuo67mqg==';
@@ -1488,7 +1485,7 @@
       
         // Don't initialize the chat or send any initial messages
       }
-    openChatAndSendMessage
+    
       function restartChatFromWindow() {
         messages = [];
         conversationHistory = [];
@@ -1657,6 +1654,6 @@
         isChatOpen = true;
         renderChatbot();
       };
-    formatMessage
+      createMessageElement 
       console.log('Chatbot script loaded and initialized');
     })();
