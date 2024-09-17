@@ -1,5 +1,9 @@
-#chatbot {
+#chat-chatbot {
+  position: fixed;
   font-family: Nunito, sans-serif;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
 }
 
 .chat-launch-button {
