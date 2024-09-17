@@ -3,7 +3,7 @@
   font-family: Nunito, sans-serif;
   bottom: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: 9999999; /* Increased z-index to ensure it's at the forefront */
 }
 
 .chat-launch-button {
