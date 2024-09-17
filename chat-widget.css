@@ -205,7 +205,7 @@
 }
 
 .chat-message.user {
-  background-color: #60463C;
+  background-color: #F80B00;
   color: #fff;
   border-radius: 18px 18px 0 18px;
 }
@@ -334,7 +334,7 @@
 }
 
 .chat-option-button:hover {
-  background-color: #60463C;
+  background-color: #F80B00;
   color: #fff;
 }
 
@@ -417,7 +417,7 @@
 }
 
 .chat-rating-container {
-  background: linear-gradient(90deg, #3f2b20 0%, #5a3d2c 100%);
+  background: linear-gradient(90deg, #F80B00 0%, #cd0202 100%);
   border-radius: 8px;
   padding: 10px;
   height: 70px;
@@ -473,7 +473,7 @@
 
 .chat-new-conversation-button {
   padding: 10px 20px;
-  background-color: #000000;
+  background-color: #F80B00;
   color: white;
   border: none;
   border-radius: 5px;
