@@ -494,10 +494,12 @@
     top: 0;
     left: 0;
     border-radius: 0;
+    z-index: 9999999; /* Added z-index for mobile view */
   }
 
   .chat-launch-button {
     width: 60px;
     height: 60px;
+    z-index: 9999999; /* Added z-index for mobile view */
   }
 }
