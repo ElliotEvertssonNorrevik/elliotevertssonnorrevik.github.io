@@ -119,33 +119,62 @@
   padding: 10px;
 }
 
-.chat-product-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-  margin: 10px 0;
-  background-color: #f9f9f9;
-  text-align: center;
+/* Updated Product Card Styles */
+.product-card {
+  width: 320px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background-color: white;
+  margin: 10px 0 10px 38px;
 }
+.product-image {
+  width: 100%;
+  max-height: 230px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  overflow: hidden;
 
-.chat-product-card .product-image {
+}
+.product-image img {
   max-width: 100%;
-  height: auto;
-  border-radius: 4px;
+  max-height: 100%;
+  overflow: hidden;
 }
-
-.chat-product-card h3 {
-  margin: 10px 0;
+.product-info {
+  padding: 15px;
 }
-
-.chat-product-card .product-link {
+.product-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+}
+.product-description {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 15px 0;
+}
+.read-more-btn {
   display: inline-block;
-  margin-top: 10px;
-  padding: 5px 10px;
-  background-color: #F80B00;
-  color: white;
+  background-color: #ffeeee;
+  color: black;
+  border: 2px solid #ff3b30;
+  padding: 10px 20px;
+  border-radius: 10px;
   text-decoration: none;
-  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+.read-more-btn:hover {
+  background-color: #ff3b30;
+  color: black;
 }
 
 .chat-input-area {
@@ -180,19 +209,37 @@
 
 .chat-message-wrapper.bot {
   justify-content: flex-start;
+  display: flex;
+  align-items: flex-end; /* Ensure alignment to the bottom */
 }
 
 .chat-message-wrapper.user {
   justify-content: flex-end;
 }
 
+
+.chat-bot-profile-image-card{
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 8px;
+  align-self: flex-end; /* Ensure the avatar aligns with the bottom of the card */
+  margin-bottom: 1rem; /* Adjust the margin-bottom to fine-tune the alignment */
+}
+
+
+
+
 .chat-bot-profile-image {
   width: 30px;
   height: 30px;
   border-radius: 50%;
   margin-right: 8px;
-  align-self: flex-end;
+  align-self: flex-end; /* Ensure the avatar aligns with the bottom of the card */
 }
+
+
+
 
 .chat-message {
   position: relative;
@@ -215,6 +262,19 @@
   color: #fff;
   border-radius: 18px 18px 0 18px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .chat-emoji-button {
   background: none;
@@ -488,62 +548,90 @@
   margin-top: 10px;
 }
 
+.chat-message-wrapper.bot {
+  justify-content: flex-start;
+  display: flex;
+  align-items: flex-start; /* Aligns bot avatar with the product card */
+}
+
+.product-card {
+  width: 320px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  margin: 10px 0;
+  display: inline-block;
+}
+
+.product-image {
+  width: 100%;
+  max-height: 190px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  overflow: hidden;
+}
+
+.product-image img {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.product-info {
+  padding: 15px;
+}
+
+.product-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+}
+
+.product-description {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 15px 0;
+}
+
+.read-more-btn {
+  display: inline-block;
+  background-color: #ffeeee;
+  color: black;
+  border: 2px solid #ff3b30;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.read-more-btn:hover {
+  background-color: #ff3b30;
+  color: black;
+}
+
+
 @media (max-width: 480px) {
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden; /* Prevent body scrolling */
-    }
-  
-    #chat-chatbot {
-      width: 100vw;
-      height: 100vh;
-      max-width: none;
-      max-height: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-  
-    .chat-chat-window,
-    .chat-initial-page {
-      width: 100%;
-      height: 100%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 0;
-      display: flex;
-      flex-direction: column;
-    }
-  
-    .chat-chat-header {
-      border-radius: 0;
-      flex-shrink: 0;
-    }
-  
-    .chat-messages-container {
-      flex-grow: 1;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    }
-  
-    .chat-input-area {
-      position: sticky;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
-      box-sizing: border-box;
-      flex-shrink: 0;
-    }
-  
-    .chat-launch-button {
-      width: 60px;
-      height: 60px;
-    }
+  .chat-window {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 0;
+    z-index: 2147483647; /* Maximum z-index value */
   }
+
+  .chat-launch-button {
+    width: 60px;
+    height: 60px;
+    z-index: 2147483647; /* Maximum z-index value */
+  }
+}
