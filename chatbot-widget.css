@@ -576,8 +576,9 @@
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
-    border-radius: 50px;
-    margin-left: 10px;
+    border-radius: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 #chat-chatbot .chat-initial-page .chat-online-indicator {
