@@ -179,6 +179,7 @@
 }
 
 .chat-input-area {
+  position: relative !important;
   padding: 10px !important;
   background-color: #fff !important;
 }
@@ -277,7 +278,6 @@
 
 
 
-
 .chat-emoji-button {
   background: none !important;
   border: none !important;
@@ -350,14 +350,16 @@
   justify-content: center !important;
 }
 
+
 .chat-send-button:hover {
   opacity: 0.9 !important;
 }
 
 .chat-emoji-picker {
   position: absolute !important;
-  bottom: 100% !important;
+  bottom: calc(100% + 5px) !important; /* Adjust the 5px as needed */
   right: 10px !important;
+  top: auto !important;
   background-color: white !important;
   border: 1px solid #ccc !important;
   border-radius: 4px !important;
