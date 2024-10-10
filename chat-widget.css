@@ -342,9 +342,12 @@
   font-size: 14px !important;
   font-weight: bold !important;
   cursor: pointer !important;
-  padding: 10px 15px !important;
+  padding: 0 15px !important;
   transition: background-color 0.2s !important;
-  height: 100% !important; /* Make the button fill the container height */
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .chat-send-button:hover {
