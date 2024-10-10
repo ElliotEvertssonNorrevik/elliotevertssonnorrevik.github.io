@@ -1,6 +1,4 @@
 
-
-
 #chat-chatbot {
   position: fixed !important;
   font-family: Nunito, sans-serif !important;
@@ -192,6 +190,7 @@
   border: 1px solid #ccc !important;
   border-radius: 20px !important;
   overflow: hidden !important;
+  height: 37px !important; /* Adjust this value to change the height */
 }
 
 .chat-logo-container {
@@ -332,6 +331,8 @@
   padding: 10px 15px !important;
   font-size: 14px !important;
   outline: none !important;
+  height: 100% !important; /* Make the input fill the container height */
+  background: #fff !important;
 }
 
 .chat-send-button {
@@ -343,6 +344,7 @@
   cursor: pointer !important;
   padding: 10px 15px !important;
   transition: background-color 0.2s !important;
+  height: 100% !important; /* Make the button fill the container height */
 }
 
 .chat-send-button:hover {
