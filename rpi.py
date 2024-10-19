@@ -11,7 +11,7 @@ from elevenlabs.client import ElevenLabs
 import numpy as np
 import io
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 # Initialize ElevenLabs client
 ELEVENLABS_API_KEY = "sk_ce786f8a8a834147b67667cd62cb2bc3677b38b8a1da2477"
