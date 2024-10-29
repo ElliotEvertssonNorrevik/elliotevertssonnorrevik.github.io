@@ -2,7 +2,7 @@
   position: fixed !important;
   font-family: Nunito, sans-serif !important;
   bottom: 20px !important;
-  right: 20px !important;
+  left: 20px !important;
   z-index: 2147483647 !important; /* Maximum z-index value */
 }
 
@@ -46,12 +46,13 @@
 
 .chat-header {
   padding: 15px !important;
-  border-radius: 15px 15px 15px 15px !important;
+  border-radius: 15px !important;
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  background: linear-gradient(to right, #e10d03, #ff3e35, #ff4941) !important;
+  background: linear-gradient(180deg,  #d30000 5%, #ff1f1f 35%, 60%, #d30000 95%) !important;
 }
+
 
 .chat-header-content {
   display: flex !important;
@@ -646,5 +647,7 @@
     z-index: 2147483647 !important; /* Maximum z-index value */
   }
 }
+
+
 
 
