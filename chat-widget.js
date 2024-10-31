@@ -73,14 +73,11 @@ sendConversationToAzure
         childList: true,
         subtree: true,
         attributes: true,
-        attributeFilter: ['style', 'class'],
         characterData: false
     });
 
-    // Also check position on dynamic content load
+    // Check position on various events
     window.addEventListener('load', () => adjustChatButtonPosition(chatbotContainer));
-    
-    // Check position when any images or resources finish loading
     window.addEventListener('DOMContentLoaded', () => adjustChatButtonPosition(chatbotContainer));
 
     document.body.appendChild(chatbotContainer);
@@ -88,8 +85,15 @@ sendConversationToAzure
     renderChatbot();
   }
 
+  function isVisible(element) {
+    return element && (
+        element.offsetWidth > 0 || 
+        element.offsetHeight > 0 || 
+        element.getClientRects().length > 0
+    );
+  }
+
   function adjustChatButtonPosition(chatbotContainer) {
-    // Look for specific Shopify pop-ups and drawers
     const popups = document.querySelectorAll(
         '.cart-notification, ' +
         '.shopify-payment-button__button, ' +
@@ -97,29 +101,29 @@ sendConversationToAzure
         '[class*="cart-popup"], ' +
         '.add-to-cart-drawer'
     );
-    
+
     let shouldAdjust = false;
-    
+    let maxOverlap = 0;
+
     popups.forEach(popup => {
-        if (popup.offsetParent !== null) { // Check if popup is visible
+        if (isVisible(popup)) {
             const popupRect = popup.getBoundingClientRect();
             const chatRect = chatbotContainer.getBoundingClientRect();
-            
-            // Check if popup is below or overlapping with chat button
-            if (popupRect.top <= chatRect.bottom &&
-                popupRect.bottom >= chatRect.top &&
-                Math.abs(popupRect.left - chatRect.right) < chatRect.width) {
+
+            // Check if the popup overlaps with the chat bubble
+            const overlap = chatRect.bottom - popupRect.top;
+
+            if (overlap > 0) {
                 shouldAdjust = true;
+                if (overlap > maxOverlap) {
+                    maxOverlap = overlap;
+                }
             }
         }
     });
 
-    // Use classList to toggle the elevated class
-    if (shouldAdjust) {
-        chatbotContainer.classList.add('elevated');
-    } else {
-        chatbotContainer.classList.remove('elevated');
-    }
+    // Smoothly adjust the position
+    chatbotContainer.style.bottom = shouldAdjust ? `${20 + maxOverlap}px` : '20px';
   }
 
   function renderChatbot() {
