@@ -638,7 +638,9 @@
     top: 0 !important;
     left: 0 !important;
     border-radius: 0 !important;
-    z-index: 2147483647 !important; /* Maximum z-index value */
+    z-index: 2147483647 !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   .chat-launch-button {
@@ -648,9 +650,25 @@
   }
 
   .chat-header {
-    position: sticky !important;
+    position: fixed !important;
     top: 0 !important;
-    z-index: 2147483646 !important; /* Just below the chat-window z-index */
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 2147483646 !important;
+  }
+
+  .chat-messages-container {
+    margin-top: 70px !important;
+    height: calc(100% - 140px) !important;
+    overflow-y: auto !important;
+  }
+
+  .chat-input-area {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: white !important;
   }
 }
 
