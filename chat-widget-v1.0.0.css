@@ -646,4 +646,14 @@
     height: 60px !important;
     z-index: 2147483647 !important; /* Maximum z-index value */
   }
+
+  .chat-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 2147483646 !important; /* Just below the chat-window z-index */
+  }
 }
+
+
+
+
