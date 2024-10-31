@@ -3,7 +3,12 @@
   font-family: Nunito, sans-serif !important;
   bottom: 20px !important;
   left: 20px !important;
-  z-index: 2147483647 !important; /* Maximum z-index value */
+  z-index: 2147483647 !important;
+  transition: bottom 0.3s ease !important;
+}
+
+#chat-chatbot.elevated {
+  bottom: 90px !important;
 }
 
 .chat-launch-button {
