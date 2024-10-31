@@ -89,8 +89,15 @@ sendConversationToAzure
   }
 
   function adjustChatButtonPosition(chatbotContainer) {
-    // Look for pop-ups that might be below the chat button
-    const popups = document.querySelectorAll('.add-to-cart-drawer, .cart-notification, .shopify-payment-button, .shopify-payment-button__button, [class*="cart-drawer"], [class*="cart-popup"]');
+    // Look for specific Shopify pop-ups and drawers
+    const popups = document.querySelectorAll(
+        '.cart-notification, ' +
+        '.shopify-payment-button__button, ' +
+        '[class*="cart-drawer"], ' +
+        '[class*="cart-popup"], ' +
+        '.add-to-cart-drawer'
+    );
+    
     let shouldAdjust = false;
     
     popups.forEach(popup => {
@@ -107,9 +114,12 @@ sendConversationToAzure
         }
     });
 
-    // Smoothly adjust position
-    chatbotContainer.style.transition = 'bottom 0.3s ease';
-    chatbotContainer.style.bottom = shouldAdjust ? '90px' : '20px';
+    // Use classList to toggle the elevated class
+    if (shouldAdjust) {
+        chatbotContainer.classList.add('elevated');
+    } else {
+        chatbotContainer.classList.remove('elevated');
+    }
   }
 
   function renderChatbot() {
