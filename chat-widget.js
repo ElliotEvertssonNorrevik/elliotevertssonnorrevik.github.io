@@ -60,27 +60,37 @@ sendConversationToAzure
     chatbotContainer.style.bottom = '20px';
     chatbotContainer.style.left = '20px';
     chatbotContainer.style.fontFamily = 'Nunito, sans-serif';
+    chatbotContainer.style.transition = 'bottom 0.3s ease';
 
-    // Create and start the observer
+    // Create and start the observer with more specific config
     const observer = new MutationObserver(() => {
-        adjustChatButtonPosition(chatbotContainer);
+        requestAnimationFrame(() => {
+            adjustChatButtonPosition(chatbotContainer);
+        });
     });
 
     observer.observe(document.body, {
         childList: true,
         subtree: true,
-        attributes: true
+        attributes: true,
+        attributeFilter: ['style', 'class'],
+        characterData: false
     });
 
-    document.body.appendChild(chatbotContainer);
+    // Also check position on dynamic content load
+    window.addEventListener('load', () => adjustChatButtonPosition(chatbotContainer));
+    
+    // Check position when any images or resources finish loading
+    window.addEventListener('DOMContentLoaded', () => adjustChatButtonPosition(chatbotContainer));
 
+    document.body.appendChild(chatbotContainer);
     loadConversation();
     renderChatbot();
   }
 
   function adjustChatButtonPosition(chatbotContainer) {
     // Look for pop-ups that might be below the chat button
-    const popups = document.querySelectorAll('.add-to-cart-drawer, .cart-notification, .shopify-payment-button, .shopify-payment-button__button'); // Add any other popup class names
+    const popups = document.querySelectorAll('.add-to-cart-drawer, .cart-notification, .shopify-payment-button, .shopify-payment-button__button, [class*="cart-drawer"], [class*="cart-popup"]');
     let shouldAdjust = false;
     
     popups.forEach(popup => {
@@ -88,17 +98,17 @@ sendConversationToAzure
             const popupRect = popup.getBoundingClientRect();
             const chatRect = chatbotContainer.getBoundingClientRect();
             
-            // Check if popup overlaps with chat button
-            if (popupRect.top < chatRect.bottom &&
-                popupRect.bottom > chatRect.top &&
-                popupRect.left < chatRect.right &&
-                popupRect.right > chatRect.left) {
+            // Check if popup is below or overlapping with chat button
+            if (popupRect.top <= chatRect.bottom &&
+                popupRect.bottom >= chatRect.top &&
+                Math.abs(popupRect.left - chatRect.right) < chatRect.width) {
                 shouldAdjust = true;
             }
         }
     });
 
-    // Adjust position if needed
+    // Smoothly adjust position
+    chatbotContainer.style.transition = 'bottom 0.3s ease';
     chatbotContainer.style.bottom = shouldAdjust ? '90px' : '20px';
   }
 
