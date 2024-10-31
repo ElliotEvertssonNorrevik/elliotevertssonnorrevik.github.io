@@ -1,1 +1,1510 @@
-(function(_0x511e33,_0x8f9dc4){const _0x4ec669=_0x4310,_0x2823c6=_0x511e33();while(!![]){try{const _0x329b1d=parseInt(_0x4ec669(0x21a))/0x1+-parseInt(_0x4ec669(0x185))/0x2+-parseInt(_0x4ec669(0x1ed))/0x3+-parseInt(_0x4ec669(0x1f8))/0x4+-parseInt(_0x4ec669(0x154))/0x5+parseInt(_0x4ec669(0x18e))/0x6*(-parseInt(_0x4ec669(0x1ae))/0x7)+parseInt(_0x4ec669(0x179))/0x8;if(_0x329b1d===_0x8f9dc4)break;else _0x2823c6['push'](_0x2823c6['shift']());}catch(_0x5257fe){_0x2823c6['push'](_0x2823c6['shift']());}}}(_0x4269,0x396c0),(function(){const _0x58670c=_0x4310,_0x1ecd6a=_0x58670c(0x1a1),_0x4b98bd=_0x58670c(0x1a0),_0x3525d4='_aDkcQEpUskHKAzFuyqYYOQ==',_0x75871e=''+_0x4b98bd+_0x3525d4,_0x4301c2=_0x58670c(0x10d),_0xcbf117=_0x58670c(0x174),_0x10acf6='-MlbzCjB9leiAzFu3mESLg==',_0x2e9648=''+_0xcbf117+_0x10acf6,_0x518ad0=_0x58670c(0x22a),_0x29da87=_0x58670c(0x1d0),_0x26c2a9=_0x58670c(0x192),_0x2fe3fe=''+_0x29da87+_0x26c2a9,_0x2d7665=_0x58670c(0x219),_0xc4f2e6=_0x58670c(0x149),_0x25b6ff=_0x58670c(0x103),_0x144ed4=''+_0xc4f2e6+_0x25b6ff;let _0x2039a1=![],_0x5c7f25=[],_0x283d56=[],_0x47331d=![],_0x3e2628=![],_0x3d619e=![],_0x488f25=![],_0xd8a347=![],_0x3af383='',_0x78f540=![],_0x53e580=![],_0x5b5a49=![],_0x387888='',_0x5a6c8e='',_0x185151=![],_0x3650cb=![],_0x589d48=![],_0x3fdfe8=![],_0x1daed4=![],_0x322981='',_0x1294d3=![];const _0x14ac2c={'headerText':_0x58670c(0x21b),'subHeaderText':_0x58670c(0x17e),'mainColor':_0x58670c(0x227),'logoUrl':_0x58670c(0x1eb),'launchAvatarUrl':_0x58670c(0x217)};function _0x284431(_0x35cb92,_0xfaca92=_0x58670c(0x20c)){const _0x4416bb=_0x58670c,_0x4b6263=new Date()[_0x4416bb(0x1b8)]();console[_0x4416bb(0x11c)]('['+_0x4b6263+_0x4416bb(0x210)+_0xfaca92[_0x4416bb(0x22e)]()+']\x20'+_0x35cb92);}_0x507cb6;function _0x362435(){const _0x1f8189=_0x58670c;_0x284431('Creating\x20chatbot\x20UI');const _0x4c34f9=document['createElement'](_0x1f8189(0x161));_0x4c34f9['id']='chat-chatbot',_0x4c34f9['style'][_0x1f8189(0x228)]=_0x1f8189(0x17b),_0x4c34f9[_0x1f8189(0x123)][_0x1f8189(0x231)]=_0x1f8189(0x16e),_0x4c34f9[_0x1f8189(0x123)][_0x1f8189(0x1d2)]=_0x1f8189(0x16e),_0x4c34f9[_0x1f8189(0x123)][_0x1f8189(0x186)]=_0x1f8189(0x15b),document[_0x1f8189(0x202)][_0x1f8189(0x144)](_0x4c34f9),_0x3f4c5e(),_0x59a7b3();}function _0x59a7b3(){const _0x20fd42=_0x58670c;_0x284431('Rendering\x20chatbot');const _0x2c8745=document[_0x20fd42(0x1d5)](_0x20fd42(0x1cb));_0x2c8745[_0x20fd42(0x169)]='';if(_0x3d619e){const _0x4febdf=_0x5b57fc();_0x2c8745[_0x20fd42(0x144)](_0x4febdf),_0x4a456a();}else{const _0x2c778c=_0x394c37();_0x2c8745[_0x20fd42(0x144)](_0x2c778c);}}function _0x394c37(){const _0x35bb63=_0x58670c;_0x284431('Creating\x20launch\x20button');const _0x1f313b=document[_0x35bb63(0x1ce)]('button');_0x1f313b['className']=_0x35bb63(0x133),_0x1f313b['style'][_0x35bb63(0x1bb)]=_0x35bb63(0x1bc),_0x1f313b['style'][_0x35bb63(0x188)]=_0x35bb63(0x1c8),_0x1f313b[_0x35bb63(0x123)][_0x35bb63(0x1d4)]=_0x35bb63(0x1c8),_0x1f313b[_0x35bb63(0x123)][_0x35bb63(0x178)]='0',_0x1f313b[_0x35bb63(0x123)][_0x35bb63(0x10c)]=_0x35bb63(0x1d7),_0x1f313b[_0x35bb63(0x123)][_0x35bb63(0x128)]=_0x35bb63(0x1ac),_0x1f313b[_0x35bb63(0x123)]['display']='flex',_0x1f313b[_0x35bb63(0x123)]['alignItems']=_0x35bb63(0x1a9),_0x1f313b[_0x35bb63(0x123)][_0x35bb63(0x15e)]='center',_0x1f313b[_0x35bb63(0x123)]['margin']='0',_0x1f313b[_0x35bb63(0x123)][_0x35bb63(0x11e)]='0',_0x1f313b[_0x35bb63(0x123)][_0x35bb63(0x180)]='0',_0x1f313b[_0x35bb63(0x123)][_0x35bb63(0x135)]=_0x35bb63(0x1d7);const _0x27ceaf=_0x35bb63(0x17a);return _0x1f313b[_0x35bb63(0x169)]=_0x27ceaf,_0x1f313b[_0x35bb63(0x20f)]('click',()=>{const _0x153fc5=_0x35bb63;_0x284431(_0x153fc5(0x1f6)),_0x3d619e=!![],_0x29b5ab(),_0x59a7b3(),_0x40bfa3();}),_0x1f313b;}function _0x5b57fc(){const _0x413c76=_0x58670c;_0x284431('Creating\x20chat\x20window');const _0x41b571=document[_0x413c76(0x1ce)](_0x413c76(0x161));_0x41b571[_0x413c76(0x19d)]=_0x413c76(0x132);const _0x5dd8b1=_0x95fe9(),_0x3e2838=_0x486a70(),_0x1cbad7=_0x1cf916();return _0x41b571[_0x413c76(0x144)](_0x5dd8b1),_0x41b571[_0x413c76(0x144)](_0x3e2838),_0x41b571[_0x413c76(0x144)](_0x1cbad7),_0x41b571;}function _0x95fe9(){const _0x163cb7=_0x58670c;_0x284431(_0x163cb7(0x107));const _0x3470c=document['createElement'](_0x163cb7(0x161));_0x3470c[_0x163cb7(0x19d)]='chat-header',_0x3470c[_0x163cb7(0x123)][_0x163cb7(0x1bb)]=_0x14ac2c[_0x163cb7(0x11f)];const _0x386528=document['createElement']('div');_0x386528['className']='chat-header-content';const _0x4c38ae=document[_0x163cb7(0x1ce)]('img');_0x4c38ae['src']=_0x14ac2c[_0x163cb7(0x1c4)],_0x4c38ae['alt']=_0x163cb7(0x16c),_0x4c38ae[_0x163cb7(0x19d)]=_0x163cb7(0x171);const _0x3855d1=document[_0x163cb7(0x1ce)]('div');_0x3855d1[_0x163cb7(0x19d)]=_0x163cb7(0x15c);const _0x236b85=document['createElement']('h1');_0x236b85['textContent']=_0x14ac2c[_0x163cb7(0x17f)];const _0x57f95e=document[_0x163cb7(0x1ce)]('p');_0x57f95e[_0x163cb7(0x16f)]=_0x14ac2c[_0x163cb7(0x105)],_0x3855d1[_0x163cb7(0x144)](_0x236b85),_0x3855d1[_0x163cb7(0x144)](_0x57f95e),_0x386528[_0x163cb7(0x144)](_0x4c38ae),_0x386528['appendChild'](_0x3855d1);const _0x2c8dfa=document[_0x163cb7(0x1ce)](_0x163cb7(0x161));_0x2c8dfa[_0x163cb7(0x19d)]='chat-header-buttons';const _0x59721c=document[_0x163cb7(0x1ce)](_0x163cb7(0x1f9));_0x59721c[_0x163cb7(0x169)]=_0x163cb7(0x1f3),_0x59721c[_0x163cb7(0x19d)]=_0x163cb7(0x109),_0x59721c['title']='Restart\x20conversation',_0x59721c[_0x163cb7(0x20f)](_0x163cb7(0x1c1),()=>{const _0x402ff4=_0x163cb7;_0x284431(_0x402ff4(0x1ee)),_0x1c18a0();});const _0x5edd98=document['createElement'](_0x163cb7(0x1f9));return _0x5edd98['textContent']='×',_0x5edd98['className']=_0x163cb7(0x181),_0x5edd98['addEventListener'](_0x163cb7(0x1c1),()=>{const _0x581aa9=_0x163cb7;_0x284431(_0x581aa9(0x124)),_0x3d619e=![],_0x29b5ab(),_0x59a7b3();}),_0x2c8dfa[_0x163cb7(0x144)](_0x59721c),_0x2c8dfa[_0x163cb7(0x144)](_0x5edd98),_0x3470c[_0x163cb7(0x144)](_0x386528),_0x3470c['appendChild'](_0x2c8dfa),_0x3470c;}function _0x486a70(){const _0x4628c0=_0x58670c;_0x284431(_0x4628c0(0x1c7));const _0xc4cc8c=document[_0x4628c0(0x1ce)](_0x4628c0(0x161));_0xc4cc8c['className']='chat-messages-container';const _0x17b7f7=document[_0x4628c0(0x1ce)](_0x4628c0(0x161));_0x17b7f7[_0x4628c0(0x19d)]='chat-messages-wrapper';const _0xfcfe0=_0x2448fe();return _0x17b7f7[_0x4628c0(0x144)](_0xfcfe0),_0xc4cc8c[_0x4628c0(0x144)](_0x17b7f7),_0xc4cc8c;}function _0x2448fe(){const _0x12447a=_0x58670c;_0x284431(_0x12447a(0x14f));const _0x3a0cb0=document[_0x12447a(0x1ce)]('div');_0x3a0cb0[_0x12447a(0x19d)]=_0x12447a(0x102);const _0x30814c=document['createElement'](_0x12447a(0x155));_0x30814c['src']=_0x14ac2c[_0x12447a(0x1c4)],_0x30814c[_0x12447a(0x170)]=_0x12447a(0x1be),_0x30814c['className']='chat-logo';const _0x1c2544=document[_0x12447a(0x1ce)]('div');return _0x1c2544[_0x12447a(0x19d)]=_0x12447a(0x1aa),_0x1c2544[_0x12447a(0x169)]=_0x12447a(0x203)+_0x14ac2c['headerText']+_0x12447a(0x17c)+_0x14ac2c[_0x12447a(0x105)]+'</p>',_0x3a0cb0['appendChild'](_0x30814c),_0x3a0cb0[_0x12447a(0x144)](_0x1c2544),_0x3a0cb0;}function _0x1cf916(){const _0x518985=_0x58670c;_0x284431(_0x518985(0x18f));const _0x530353=document[_0x518985(0x1ce)](_0x518985(0x161));_0x530353[_0x518985(0x19d)]=_0x518985(0x1d3);if(!_0x185151&&!_0x3650cb){const _0x39ff66=document[_0x518985(0x1ce)](_0x518985(0x161));_0x39ff66[_0x518985(0x19d)]='chat-input-container';const _0x3d49d6=document['createElement'](_0x518985(0x22b));_0x3d49d6[_0x518985(0x1fc)]=_0x518985(0x1c2),_0x3d49d6[_0x518985(0x198)]=_0x518985(0x162),_0x3d49d6[_0x518985(0x19d)]=_0x518985(0x1cd),_0x3d49d6[_0x518985(0x22c)]=_0x3af383,_0x3d49d6[_0x518985(0x195)]=![];const _0x36b17d='<svg\x20xmlns=\x22http://www.w3.org/2000/svg\x22\x20viewBox=\x220\x200\x20100\x20100\x22\x20fill=\x22none\x22\x20stroke=\x22currentColor\x22\x20stroke-width=\x228\x22\x20stroke-linecap=\x22round\x22>\x0a\x20\x20\x20\x20\x20\x20<circle\x20cx=\x2250\x22\x20cy=\x2250\x22\x20r=\x2242\x22\x20/>\x0a\x20\x20\x20\x20\x20\x20<path\x20d=\x22M30\x2060\x20Q50\x2075\x2070\x2060\x22\x20/>\x0a\x20\x20\x20\x20\x20\x20<circle\x20cx=\x2235\x22\x20cy=\x2240\x22\x20r=\x226\x22\x20fill=\x22currentColor\x22\x20stroke=\x22none\x22\x20/>\x0a\x20\x20\x20\x20\x20\x20<circle\x20cx=\x2265\x22\x20cy=\x2240\x22\x20r=\x226\x22\x20fill=\x22currentColor\x22\x20stroke=\x22none\x22\x20/>\x0a\x20\x20\x20\x20\x20\x20</svg>',_0x181de6=document[_0x518985(0x1ce)](_0x518985(0x1f9));_0x181de6[_0x518985(0x169)]=_0x36b17d,_0x181de6[_0x518985(0x19d)]=_0x518985(0x191),_0x181de6[_0x518985(0x20f)](_0x518985(0x1c1),_0x6ca0a5),_0x181de6['disabled']=_0x488f25;const _0x16f453=_0x518985(0x13c),_0x40a884=document[_0x518985(0x1ce)](_0x518985(0x1f9));_0x40a884[_0x518985(0x169)]=_0x16f453,_0x40a884[_0x518985(0x19d)]='chat-send-button',_0x40a884[_0x518985(0x123)][_0x518985(0x1bb)]='transparent',_0x40a884[_0x518985(0x123)][_0x518985(0x10c)]=_0x518985(0x1d7),_0x40a884[_0x518985(0x123)][_0x518985(0x128)]=_0x518985(0x1ac),_0x40a884[_0x518985(0x195)]=_0x488f25;const _0x43efb3=()=>{const _0x406577=_0x518985;if(_0x488f25)return;const _0x7184cd=_0x3d49d6[_0x406577(0x22c)][_0x406577(0x1a7)]();_0x7184cd!==''&&(_0x284431(_0x406577(0x106)+_0x7184cd),_0x3d49d6[_0x406577(0x22c)]='',_0x3af383='',_0x130d15(_0x7184cd),_0x40a884[_0x406577(0x195)]=!![]);};_0x40a884[_0x518985(0x20f)](_0x518985(0x1c1),_0x43efb3),_0x3d49d6['addEventListener']('keypress',_0x474fac=>{const _0x573722=_0x518985;_0x474fac[_0x573722(0x1f7)]===_0x573722(0x1ab)&&!_0x488f25&&_0x43efb3();}),_0x3d49d6['addEventListener'](_0x518985(0x22b),_0x127fd9=>{const _0xc1b252=_0x518985;_0x3af383=_0x127fd9[_0xc1b252(0x1de)][_0xc1b252(0x22c)],_0x40a884['disabled']=_0x127fd9[_0xc1b252(0x1de)][_0xc1b252(0x22c)][_0xc1b252(0x1a7)]()===''||_0x488f25;}),_0x39ff66[_0x518985(0x144)](_0x3d49d6),_0x39ff66[_0x518985(0x144)](_0x181de6),_0x39ff66[_0x518985(0x144)](_0x40a884),_0x530353[_0x518985(0x144)](_0x39ff66);}return _0x530353;}function _0x6ca0a5(_0xfe524b){const _0x268a0a=_0x58670c;_0x284431(_0x268a0a(0x1e4)),_0xfe524b[_0x268a0a(0x1ad)]();const _0x5808da=document['querySelector']('.chat-emoji-picker');if(_0x5808da){_0x5808da[_0x268a0a(0x1ec)]();return;}const _0x5748e0=document[_0x268a0a(0x1ce)]('div');_0x5748e0[_0x268a0a(0x19d)]=_0x268a0a(0x1e5);const _0x20d847=['😊','😂','🤔','👍','❤️','😍','🙏','👀','🎉','🔥','👋','🤷‍♂️',_0x268a0a(0x1b4),'🙌','👏','🎈','🌟','💡','✅','❓'];_0x20d847[_0x268a0a(0x1f2)](_0x1ee7f0=>{const _0x47df75=_0x268a0a,_0x3e981e=document['createElement']('button');_0x3e981e[_0x47df75(0x16f)]=_0x1ee7f0,_0x3e981e[_0x47df75(0x20f)](_0x47df75(0x1c1),_0x1d5c68=>{const _0x48c485=_0x47df75;_0x1d5c68['stopPropagation']();const _0x587e32=document[_0x48c485(0x211)]('.chat-input'),_0x6d76c3=_0x587e32['selectionStart'],_0x36248a=_0x587e32[_0x48c485(0x1ba)];_0x587e32[_0x48c485(0x22c)]=_0x587e32[_0x48c485(0x22c)][_0x48c485(0x1bd)](0x0,_0x6d76c3)+_0x1ee7f0+_0x587e32[_0x48c485(0x22c)][_0x48c485(0x1bd)](_0x36248a),_0x587e32[_0x48c485(0x117)](),_0x587e32[_0x48c485(0x19a)]=_0x587e32['selectionEnd']=_0x6d76c3+_0x1ee7f0['length'],_0x5748e0[_0x48c485(0x1ec)]();}),_0x5748e0[_0x47df75(0x144)](_0x3e981e);});const _0x346d62=_0xfe524b['target'][_0x268a0a(0x165)](_0x268a0a(0x194));_0x346d62[_0x268a0a(0x144)](_0x5748e0);const _0x35c349=_0xfe524b[_0x268a0a(0x1de)][_0x268a0a(0x196)](),_0x23e8c7=_0x346d62['getBoundingClientRect']();_0x5748e0['style'][_0x268a0a(0x231)]=_0x23e8c7[_0x268a0a(0x1d4)]+'px',_0x5748e0[_0x268a0a(0x123)]['right']=_0x23e8c7[_0x268a0a(0x188)]-(_0x35c349['right']-_0x23e8c7['left'])+'px';function _0x11abea(_0x262cee){const _0x5e3788=_0x268a0a;!_0x5748e0[_0x5e3788(0x11b)](_0x262cee[_0x5e3788(0x1de)])&&_0x262cee[_0x5e3788(0x1de)]!==_0xfe524b[_0x5e3788(0x1de)]&&(_0x5748e0[_0x5e3788(0x1ec)](),document[_0x5e3788(0x207)](_0x5e3788(0x1c1),_0x11abea));}setTimeout(()=>{const _0x42bfbc=_0x268a0a;document['addEventListener'](_0x42bfbc(0x1c1),_0x11abea);},0x0);const _0x1c50a4=document[_0x268a0a(0x211)]('.chat-window');_0x1c50a4&&_0x1c50a4[_0x268a0a(0x20f)]('scroll',()=>{const _0x19d4cd=_0x268a0a;_0x5748e0[_0x19d4cd(0x1ec)](),document['removeEventListener'](_0x19d4cd(0x1c1),_0x11abea);},{'once':!![]});}function _0x389c5b(_0x715123){_0x284431('Processing\x20message:\x20'+_0x715123);let _0x3273d6=_0x1c40be(_0x715123),_0x5903c8=document['createElement']('div');return _0x5903c8['innerHTML']=_0x3273d6,_0x3273d6;}function _0x1c40be(_0x127137){const _0x3056d9=_0x58670c;_0x284431(_0x3056d9(0x223));const _0x56604e=/\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;_0x127137=_0x127137['replace'](_0x56604e,(_0x55711a,_0x171a68,_0x59c669)=>{const _0x5aa47f=_0x3056d9;return _0x5aa47f(0x1e0)+_0x59c669+'\x22\x20target=\x22_blank\x22\x20rel=\x22noopener\x20noreferrer\x22>'+_0x171a68+_0x5aa47f(0x177);});const _0xfaf993=/(https?:\/\/\S+)/g;_0x127137=_0x127137[_0x3056d9(0x20a)](_0xfaf993)['map']((_0x47fa2f,_0x3a7870)=>{const _0x252e7c=_0x3056d9;if(_0x3a7870%0x2===0x1){if(!_0x47fa2f[_0x252e7c(0x1fe)](_0x252e7c(0x11a)))return _0x252e7c(0x1e0)+_0x47fa2f+_0x252e7c(0x11d)+_0x47fa2f+'</a>';}return _0x47fa2f;})[_0x3056d9(0x13d)]('');const _0x5d0790=/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;return _0x127137=_0x127137['replace'](_0x5d0790,_0x71b24d=>{const _0x5f5a53=_0x3056d9;return _0x5f5a53(0x151)+_0x71b24d+'\x22>'+_0x71b24d+_0x5f5a53(0x177);}),_0x127137;}function _0x1506a8(_0x2f9212){const _0x28ba1e=_0x58670c;_0x284431('Creating\x20message\x20element');const _0x4cb199=document[_0x28ba1e(0x1ce)](_0x28ba1e(0x161));_0x4cb199[_0x28ba1e(0x19d)]=_0x28ba1e(0x235)+(_0x2f9212[_0x28ba1e(0x230)]?_0x28ba1e(0x116):_0x28ba1e(0x167));if(_0x2f9212[_0x28ba1e(0x230)]&&_0x2f9212[_0x28ba1e(0x1fc)]==='productCard'){const _0x278cad=_0x4050d0();return _0x4cb199[_0x28ba1e(0x144)](_0x278cad),_0x4cb199;}if(_0x2f9212['isBot']){const _0x2bb81b=document[_0x28ba1e(0x1ce)]('img');_0x2bb81b['src']=_0x14ac2c[_0x28ba1e(0x1c4)],_0x2bb81b[_0x28ba1e(0x170)]=_0x28ba1e(0x1c3),_0x2bb81b[_0x28ba1e(0x19d)]=_0x28ba1e(0x14e),_0x4cb199[_0x28ba1e(0x144)](_0x2bb81b);}const _0x5f4c1f=document[_0x28ba1e(0x1ce)](_0x28ba1e(0x161));_0x5f4c1f['className']='chat-message\x20'+(_0x2f9212[_0x28ba1e(0x230)]?'bot':_0x28ba1e(0x167));_0x2f9212[_0x28ba1e(0x19d)]&&_0x5f4c1f['classList'][_0x28ba1e(0x13b)](_0x2f9212['className']);const _0x2a9fbf=document['createElement'](_0x28ba1e(0x161));_0x2a9fbf[_0x28ba1e(0x19d)]='chat-message-text';if(_0x2f9212['isLoading'])_0x2a9fbf[_0x28ba1e(0x169)]=_0x28ba1e(0x158);else{if(_0x2f9212[_0x28ba1e(0x230)]){const _0x6cfa5=_0x1c40be(_0x2f9212[_0x28ba1e(0x1c2)]);_0x2a9fbf[_0x28ba1e(0x169)]=_0x6cfa5;}else _0x2a9fbf['innerHTML']=_0x2f9212['text'];}return _0x5f4c1f[_0x28ba1e(0x144)](_0x2a9fbf),_0x4cb199[_0x28ba1e(0x144)](_0x5f4c1f),_0x4cb199;}function _0x2183a4(_0x39a47f){const _0x10f514=_0x58670c;_0x284431(_0x10f514(0x183));const _0x3ed5b0=/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,_0x10913a=_0x39a47f[_0x10f514(0x150)](_0x3ed5b0);if(_0x10913a)return _0x10913a[0x0];return null;}function _0x18dfbb(){const _0x2f65a6=_0x58670c;_0x284431(_0x2f65a6(0x19c));const _0x173608=document[_0x2f65a6(0x1ce)](_0x2f65a6(0x161));_0x173608[_0x2f65a6(0x19d)]=_0x2f65a6(0x10f);const _0x4d5a3c=[_0x2f65a6(0x238)];return _0x4d5a3c[_0x2f65a6(0x1f2)](_0x498162=>{const _0x20e281=_0x2f65a6,_0x4219b3=document['createElement']('button');_0x4219b3['textContent']=_0x498162,_0x4219b3[_0x20e281(0x19d)]=_0x20e281(0x218),_0x4219b3[_0x20e281(0x20f)](_0x20e281(0x1c1),()=>{const _0x50be2a=_0x20e281;_0x284431(_0x50be2a(0x15f)+_0x498162),_0x130d15(_0x498162),_0x78f540=![],_0x4a456a();}),_0x173608[_0x20e281(0x144)](_0x4219b3);}),_0x173608;}function _0x5ed0c3(){const _0x3b0d6d=_0x58670c;_0x284431('Creating\x20follow-up\x20buttons');const _0xd508da=document[_0x3b0d6d(0x1ce)]('div');_0xd508da['className']=_0x3b0d6d(0x164);const _0x20cca9=[{'text':'Yes','response':_0x3b0d6d(0x119)},{'text':'No','response':'no'}];return _0x20cca9[_0x3b0d6d(0x1f2)](_0x1e1e30=>{const _0x4b6bc2=_0x3b0d6d,_0x5b6ce8=document[_0x4b6bc2(0x1ce)](_0x4b6bc2(0x1f9));_0x5b6ce8[_0x4b6bc2(0x16f)]=_0x1e1e30[_0x4b6bc2(0x1c2)],_0x5b6ce8['className']=_0x4b6bc2(0x218),_0x5b6ce8[_0x4b6bc2(0x20f)]('click',()=>_0x293ffe(_0x1e1e30[_0x4b6bc2(0x190)])),_0xd508da[_0x4b6bc2(0x144)](_0x5b6ce8);}),_0xd508da;}async function _0x293ffe(_0x3d46af){const _0x24b430=_0x58670c;_0x284431(_0x24b430(0x1f5)+_0x3d46af),_0x53e580=![],_0x4a456a();const _0xbe55fb=_0x3d46af===_0x24b430(0x119)?'Yes':'No';_0x2e7dc1(_0xbe55fb,![],![],_0x4be0cd()),_0x3d46af===_0x24b430(0x119)?(await _0x9e4b4a(_0x24b430(0x1e9)),_0x4a456a(),_0x507cb6(_0x5c7f25)):(await _0x9e4b4a(_0x24b430(0x130)),_0x4a456a(),await _0x507cb6(_0x5c7f25),_0x3650cb=!![],_0x4a456a());}function _0x126e2d(){const _0x4370d0=_0x58670c;_0x284431(_0x4370d0(0x127)),_0x185151=!![],_0x4a456a();}function _0xd96738(_0x58cb72){const _0x305d5c=_0x58670c;_0x284431(_0x305d5c(0x143)+_0x58cb72),_0x138094(_0x58cb72);const _0x39fe92=document[_0x305d5c(0x211)](_0x305d5c(0x1e3));_0x39fe92&&_0x39fe92[_0x305d5c(0x1ec)](),_0x185151=!![],_0x3ad485(),_0x1b9350(_0x58cb72);}async function _0x1b9350(_0x3e2786){const _0x549de0=_0x58670c;_0x284431(_0x549de0(0x224)+_0x3e2786);const _0x24bb57=_0x1ecd6a,_0x129407={'operation':'store','conversationId':window['conversationId'],'Rating':_0x3e2786,'timestamp':_0x4be0cd(),'conversation_over':!![]};try{const _0x260a50=await fetch(_0x24bb57,{'method':_0x549de0(0x1d6),'headers':{'Content-Type':'application/json','x-functions-key':_0x75871e},'body':JSON[_0x549de0(0x111)](_0x129407)});if(!_0x260a50['ok'])throw new Error(_0x549de0(0x19f)+_0x260a50[_0x549de0(0x114)]);const _0x15a337=await _0x260a50[_0x549de0(0x138)]();_0x284431(_0x549de0(0x113)),await _0x507cb6(_0x5c7f25);}catch(_0x3e74d3){_0x284431(_0x549de0(0x21f)+_0x3e74d3[_0x549de0(0x1bf)],_0x549de0(0x206));}}function _0x3ad485(){const _0x1c5e32=_0x58670c;_0x284431(_0x1c5e32(0x1b5));if(_0x589d48)return;_0x589d48=!![];const _0x561456=document['querySelector'](_0x1c5e32(0x148)),_0x2a6314=document[_0x1c5e32(0x1ce)](_0x1c5e32(0x161));_0x2a6314[_0x1c5e32(0x19d)]=_0x1c5e32(0x10e);const _0x35fed8=document[_0x1c5e32(0x1ce)]('div');_0x35fed8['className']=_0x1c5e32(0x1b1);const _0x27916e=document[_0x1c5e32(0x1ce)]('p');_0x27916e[_0x1c5e32(0x16f)]=_0x1c5e32(0x1e1);const _0x28c121=document[_0x1c5e32(0x1ce)]('p');_0x28c121[_0x1c5e32(0x19d)]=_0x1c5e32(0x12b),_0x28c121['textContent']=_0x1c5e32(0x126);const _0x1d4140=document[_0x1c5e32(0x1ce)]('button');_0x1d4140[_0x1c5e32(0x16f)]=_0x1c5e32(0x187),_0x1d4140['className']='chat-new-conversation-button',_0x1d4140[_0x1c5e32(0x20f)](_0x1c5e32(0x1c1),()=>{const _0x1eb973=_0x1c5e32;_0x284431(_0x1eb973(0x1ff)),_0x1c18a0(),_0x2a6314[_0x1eb973(0x1ec)](),_0x40bfa3();}),_0x35fed8['appendChild'](_0x27916e),_0x35fed8[_0x1c5e32(0x144)](_0x28c121),_0x35fed8['appendChild'](_0x1d4140),_0x2a6314[_0x1c5e32(0x144)](_0x35fed8),_0x561456[_0x1c5e32(0x144)](_0x2a6314),setTimeout(()=>{const _0x7e7c3=_0x1c5e32;_0x2a6314[_0x7e7c3(0x12c)][_0x7e7c3(0x13b)](_0x7e7c3(0x229));},0x32);}function _0x5137c0(){const _0x10d412=_0x58670c;_0x284431(_0x10d412(0x140));const _0x20df87=document[_0x10d412(0x1ce)](_0x10d412(0x161));_0x20df87[_0x10d412(0x19d)]=_0x10d412(0x16a),_0x20df87[_0x10d412(0x123)][_0x10d412(0x137)]=_0x10d412(0x1a9),_0x20df87[_0x10d412(0x123)][_0x10d412(0x178)]=_0x10d412(0x213),_0x20df87['style'][_0x10d412(0x19e)]=_0x10d412(0x112),_0x20df87['style'][_0x10d412(0x10b)]=_0x10d412(0x1a4),_0x20df87[_0x10d412(0x123)][_0x10d412(0x1db)]=_0x10d412(0x1a9),_0x20df87['style'][_0x10d412(0x15e)]='center';const _0x396a0e=document[_0x10d412(0x1ce)]('p');_0x396a0e[_0x10d412(0x16f)]=_0x10d412(0x1d9),_0x396a0e[_0x10d412(0x123)][_0x10d412(0x16d)]=_0x10d412(0x20d),_0x396a0e[_0x10d412(0x123)][_0x10d412(0x19e)]=_0x10d412(0x112),_0x396a0e[_0x10d412(0x123)]['alignItems']='center',_0x396a0e[_0x10d412(0x123)]['height']=_0x10d412(0x1b2),_0x396a0e[_0x10d412(0x123)]['color']='#ffffff',_0x396a0e[_0x10d412(0x123)][_0x10d412(0x1e8)]='bold';const _0x985474=document[_0x10d412(0x1ce)]('div');_0x985474[_0x10d412(0x19d)]=_0x10d412(0x13e);for(let _0x13e5d7=0x1;_0x13e5d7<=0x5;_0x13e5d7++){const _0x347e4f=document[_0x10d412(0x1ce)](_0x10d412(0x19b));_0x347e4f[_0x10d412(0x19d)]=_0x10d412(0x220),_0x347e4f['innerHTML']='☆',_0x347e4f[_0x10d412(0x131)](_0x10d412(0x108),_0x13e5d7),_0x347e4f[_0x10d412(0x123)]['fontSize']=_0x10d412(0x1b2),_0x347e4f[_0x10d412(0x123)]['cursor']=_0x10d412(0x1ac),_0x347e4f[_0x10d412(0x123)][_0x10d412(0x14c)]=_0x10d412(0x1b6),_0x347e4f[_0x10d412(0x20f)]('click',()=>_0xd96738(_0x13e5d7)),_0x347e4f[_0x10d412(0x20f)]('mouseover',()=>{_0x138094(_0x13e5d7);}),_0x347e4f[_0x10d412(0x20f)]('mouseout',()=>{const _0x4d4fe7=_0x10d412,_0x217f83=document[_0x4d4fe7(0x211)](_0x4d4fe7(0x1f1))?.[_0x4d4fe7(0x125)](_0x4d4fe7(0x108))||0x0;_0x138094(_0x217f83);}),_0x985474['appendChild'](_0x347e4f);}return _0x20df87[_0x10d412(0x144)](_0x396a0e),_0x20df87['appendChild'](_0x985474),_0x20df87;}function _0x138094(_0x12ff24){const _0x539ac3=_0x58670c;_0x284431('Updating\x20stars:\x20'+_0x12ff24);const _0xd03132=document[_0x539ac3(0x189)]('.chat-star');_0xd03132[_0x539ac3(0x1f2)]((_0x89b50d,_0x291734)=>{const _0x3bc3c9=_0x539ac3;_0x291734<_0x12ff24?(_0x89b50d[_0x3bc3c9(0x169)]='★',_0x89b50d[_0x3bc3c9(0x12c)][_0x3bc3c9(0x13b)](_0x3bc3c9(0x152))):(_0x89b50d[_0x3bc3c9(0x169)]='☆',_0x89b50d['classList'][_0x3bc3c9(0x1ec)](_0x3bc3c9(0x152)));});}function _0x425c69(_0x599ed4){const _0x572970=_0x58670c,_0x159f95=new URL(_0x2d7665);return _0x159f95[_0x572970(0x1ea)]['append'](_0x572970(0x15d),_0x144ed4),_0x159f95['searchParams'][_0x572970(0x182)](_0x572970(0x208),_0x599ed4),_0x159f95[_0x572970(0x145)]();}async function _0x33093d(){const _0x3a7d07=_0x58670c;_0x284431('Getting\x20main\x20answer\x20prompt');try{const _0x384fc=await fetch(_0x425c69(_0x3a7d07(0x160))),_0x18fb93=await _0x384fc[_0x3a7d07(0x138)](),_0x3ec99d=_0x18fb93['prompt'],_0x2cfcb4=_0x18fb93[_0x3a7d07(0x1c0)];return{'prompt':_0x3ec99d,'timestamp':_0x2cfcb4};}catch(_0x24143f){_0x284431('Error\x20getting\x20main\x20answer\x20prompt:\x20'+_0x24143f[_0x3a7d07(0x1bf)],_0x3a7d07(0x206));}}function _0x4be0cd(){const _0x599f27=_0x58670c;return new Date()[_0x599f27(0x1a6)](_0x599f27(0x122),{'timeZone':'Europe/Stockholm'});}async function _0x130d15(_0x3b6ce8){const _0x1b29ac=_0x58670c;_0x284431('Sending\x20message:\x20'+_0x3b6ce8);_0x3fdfe8&&(_0x3fdfe8=![],_0x4a456a(),_0x29b5ab());if(_0x3b6ce8[_0x1b29ac(0x1a7)]()===''||_0x3650cb||_0x185151||_0x488f25)return;const _0x352ef0=_0x4be0cd();_0x2e7dc1(_0x3b6ce8,![],![],_0x352ef0),_0x78f540=![],_0x53e580=![],_0x283d56[_0x1b29ac(0x221)]({'role':_0x1b29ac(0x167),'content':_0x3b6ce8,'timestamp':_0x352ef0});if(_0x3b6ce8['toLowerCase']()==='track\x20my\x20order'){await _0xbb4289();return;}if(_0x5b5a49){await _0x598f31(_0x3b6ce8);return;}_0xd8a347=!![],_0x488f25=!![],_0x2e7dc1('',!![],!![]),_0x4a456a();try{const _0x5ba0d2=_0x283d56[_0x1b29ac(0x146)](_0x255411=>_0x255411['role']+':\x20'+_0x255411[_0x1b29ac(0x1d8)])[_0x1b29ac(0x13d)]('\x20'),{prompt:_0x3dc870}=await _0x33093d(),_0x12aa41=await _0x3ab2fc(_0x3dc870,_0x3b6ce8,_0x5ba0d2),_0x186b3c=await _0x12aa41[_0x1b29ac(0x138)]();let _0x2db227=_0x186b3c[_0x1b29ac(0x184)],_0x1f3607=_0x186b3c[_0x1b29ac(0x20b)];const _0x3eb82f=_0x4be0cd();_0x2db227[_0x1b29ac(0x1a8)](_0x1b29ac(0x21c))?(_0x5c7f25['pop'](),_0x5b5a49=!![],_0x387888='',_0x5a6c8e='',_0x1daed4=![],_0x322981='',_0x1294d3=![],await _0x9e4b4a(_0x1b29ac(0x153)),_0x3e2628=!![],_0x4a456a()):(_0x283d56['push']({'role':_0x1b29ac(0x1c6),'content':_0x2db227,'timestamp':_0x3eb82f}),_0x5c7f25[_0x5c7f25[_0x1b29ac(0x18c)]-0x1]={'text':_0x2db227,'isBot':!![],'isLoading':![],'timestamp':_0x3eb82f},_0x1f3607['toLowerCase']()[_0x1b29ac(0x1a8)](_0x1b29ac(0x119))&&!_0x2039a1&&(_0x76f3ae(),_0x2039a1=!![]),await _0x507cb6(_0x5c7f25[_0x1b29ac(0x18b)](_0x4aee42=>!_0x4aee42['isLoading'])),!_0x2db227[_0x1b29ac(0x1a8)]('?')&&Math[_0x1b29ac(0x15a)]()<0.5&&!_0x2039a1?setTimeout(()=>{const _0x54c9a4=_0x1b29ac,_0x3a4e84=_0x4be0cd();_0x2e7dc1(_0x54c9a4(0x1cf),!![],![],_0x3a4e84),_0x283d56[_0x54c9a4(0x221)]({'role':_0x54c9a4(0x1c6),'content':_0x54c9a4(0x1cf),'timestamp':_0x3a4e84}),_0x53e580=!![],_0x4a456a(),_0x507cb6(_0x5c7f25);},0x3e8):_0x53e580=![]);}catch(_0x265377){_0x284431(_0x1b29ac(0x1c9)+_0x265377['message'],_0x1b29ac(0x206));const _0x3aab41=_0x4be0cd(),_0x586b11=_0x1b29ac(0x173);_0x5c7f25[_0x5c7f25[_0x1b29ac(0x18c)]-0x1]={'text':_0x586b11,'isBot':!![],'isLoading':![],'timestamp':_0x3aab41},_0x283d56[_0x1b29ac(0x221)]({'role':'assistant','content':_0x586b11,'timestamp':_0x3aab41}),await _0x507cb6(_0x5c7f25[_0x1b29ac(0x18b)](_0x10c6cb=>!_0x10c6cb[_0x1b29ac(0x10a)]));}finally{_0xd8a347=![],_0x488f25=![],_0x4a456a();}}async function _0x3ab2fc(_0x5458a6,_0x552263,_0x590e2f){const _0x263d64=_0x58670c,_0x4d790c=_0x518ad0,_0x59e7cd={'prompt':_0x5458a6,'question':_0x552263,'conversation_history':_0x590e2f};return fetch(_0x4d790c,{'method':'POST','headers':{'Content-Type':_0x263d64(0x1d1),'x-functions-key':_0x2fe3fe},'body':JSON['stringify'](_0x59e7cd)});}async function _0xbb4289(){const _0x4b6cf3=_0x58670c;_0x284431(_0x4b6cf3(0x12f)),_0x5b5a49=!![],_0x387888='',_0x5a6c8e='',_0x322981='',_0x1daed4=![],_0x1294d3=![],await _0x9e4b4a(_0x4b6cf3(0x120)),_0x3e2628=!![],_0x4a456a();}function _0x2e7dc1(_0x287d50,_0x3d9bb6,_0x206a05=![],_0x58ceac=_0x4be0cd()){const _0x8ebe13=_0x58670c;_0x284431('Adding\x20message:\x20'+_0x287d50+_0x8ebe13(0x226)+_0x3d9bb6+',\x20isLoading:\x20'+_0x206a05);let _0x5cd720=_0x389c5b(_0x287d50);_0x5c7f25[_0x8ebe13(0x221)]({'text':_0x5cd720,'isBot':_0x3d9bb6,'isLoading':_0x206a05,'timestamp':_0x58ceac}),_0x4a456a(),_0x29b5ab();}function _0x4a456a(){const _0x381636=_0x58670c;_0x284431('Updating\x20chat\x20window');const _0x229d69=document[_0x381636(0x211)](_0x381636(0x1df));let _0xbe1745='',_0x1b30ab=0x0;_0x229d69&&(_0xbe1745=_0x229d69['value'],_0x1b30ab=_0x229d69[_0x381636(0x19a)]);const _0x31f1f8=document[_0x381636(0x211)](_0x381636(0x1a3));if(_0x31f1f8){const _0x328365=_0x31f1f8[_0x381636(0x211)](_0x381636(0x142));_0x31f1f8[_0x381636(0x169)]='';_0x328365&&_0x31f1f8['appendChild'](_0x328365);_0x5c7f25[_0x381636(0x1f2)](_0x4ab67a=>{const _0x58c54a=_0x381636,_0x9aaea=_0x1506a8(_0x4ab67a);_0x31f1f8[_0x58c54a(0x144)](_0x9aaea);});if(_0x78f540){const _0x179fbe=_0x18dfbb();_0x31f1f8[_0x381636(0x144)](_0x179fbe);}if(_0x53e580){const _0x3e285a=_0x5ed0c3();_0x31f1f8[_0x381636(0x144)](_0x3e285a);}if(_0x3650cb){const _0x47ffa1=_0x5137c0();_0x31f1f8['appendChild'](_0x47ffa1);}if(_0x3fdfe8){const _0x4bcaab=_0x67eeaa();_0x31f1f8[_0x381636(0x144)](_0x4bcaab);}_0x3e2628&&_0x3252d5(),_0x312701();}const _0x28e258=document[_0x381636(0x211)](_0x381636(0x194));if(_0x28e258){_0x28e258[_0x381636(0x169)]='';if(!_0x3650cb&&!_0x185151){const _0x2bc564=_0x1cf916();_0x28e258[_0x381636(0x144)](_0x2bc564);}}const _0x40afe0=document[_0x381636(0x211)](_0x381636(0x1df));_0x40afe0&&(_0x40afe0['value']=_0xbe1745,_0x40afe0[_0x381636(0x201)](_0x1b30ab,_0x1b30ab),_0x40afe0['focus']()),_0x29b5ab();}async function _0x40bfa3(){const _0x279c8b=_0x58670c;_0x284431(_0x279c8b(0x236));if(!_0x47331d){const _0x129dad='Hey!\x20\x0a\x20My\x20name\x20is\x20Elliot\x20and\x20I\x27m\x20your\x20virtual\x20assistant\x20here\x20at\x20Boxbollen';await _0x9e4b4a(_0x129dad);const _0x4e9e70='How\x20can\x20I\x20help\x20you\x20today?😊';await _0x9e4b4a(_0x4e9e70),_0x78f540=!![],_0x47331d=!![],_0x4a456a();}}async function _0x9e4b4a(_0x55b5c2){const _0xcd0003=_0x58670c;_0x284431(_0xcd0003(0x163)+_0x55b5c2),_0x2e7dc1('',!![],!![],_0x4be0cd()),_0x4a456a(),await new Promise(_0x175eb0=>setTimeout(_0x175eb0,0x3e8)),_0x5c7f25[_0x5c7f25[_0xcd0003(0x18c)]-0x1]={'text':_0x55b5c2,'isBot':!![],'isLoading':![],'timestamp':_0x4be0cd()},_0x283d56[_0xcd0003(0x221)]({'role':_0xcd0003(0x1c6),'content':_0x55b5c2,'timestamp':_0x4be0cd()}),_0x4a456a();}function _0x29b5ab(){const _0x176a71=_0x58670c;_0x284431('Saving\x20conversation'),localStorage['setItem'](_0x176a71(0x157),JSON['stringify'](_0x5c7f25)),localStorage['setItem'](_0x176a71(0x159),JSON[_0x176a71(0x111)](_0x283d56)),localStorage[_0x176a71(0x1dc)](_0x176a71(0x101),window[_0x176a71(0x12e)]||''),localStorage['setItem']('boxbollenChatShowInitialOptions',JSON[_0x176a71(0x111)](_0x78f540)),localStorage['setItem'](_0x176a71(0x12d),JSON[_0x176a71(0x111)](_0x53e580)),localStorage[_0x176a71(0x1dc)]('boxbollenChatShowRatingSystem',JSON[_0x176a71(0x111)](_0x3650cb)),localStorage[_0x176a71(0x1dc)](_0x176a71(0x237),JSON[_0x176a71(0x111)](_0x185151)),localStorage[_0x176a71(0x1dc)](_0x176a71(0x1da),JSON[_0x176a71(0x111)](_0x3fdfe8)),localStorage[_0x176a71(0x1dc)](_0x176a71(0x168),JSON[_0x176a71(0x111)](_0x5b5a49)),localStorage[_0x176a71(0x1dc)](_0x176a71(0x1a5),_0x387888),localStorage[_0x176a71(0x1dc)]('boxbollenChatOrderEmail',_0x5a6c8e),localStorage[_0x176a71(0x1dc)](_0x176a71(0x13f),JSON[_0x176a71(0x111)](_0x3e2628)),localStorage['setItem'](_0x176a71(0x121),JSON[_0x176a71(0x111)](_0x1daed4)),localStorage[_0x176a71(0x1dc)](_0x176a71(0x205),_0x322981),localStorage[_0x176a71(0x1dc)]('boxbollenChatIsWaitingForEmail',JSON[_0x176a71(0x111)](_0x1294d3)),localStorage[_0x176a71(0x1dc)](_0x176a71(0x215),JSON['stringify'](_0x2039a1)),_0xd8a347?localStorage['setItem'](_0x176a71(0x209),JSON[_0x176a71(0x111)](_0xd8a347)):localStorage['removeItem'](_0x176a71(0x209)),localStorage[_0x176a71(0x1dc)](_0x176a71(0x115),new Date()[_0x176a71(0x1b8)]());}function _0x3f4c5e(){const _0x106389=_0x58670c;_0x284431(_0x106389(0x1fb));const _0x3b548c=localStorage[_0x106389(0x1f4)](_0x106389(0x157)),_0x16b77b=localStorage['getItem'](_0x106389(0x159)),_0x4951c2=localStorage['getItem'](_0x106389(0x101)),_0x1f1099=localStorage[_0x106389(0x1f4)](_0x106389(0x129)),_0x5043a0=localStorage[_0x106389(0x1f4)]('boxbollenChatShowFollowUp'),_0x4d5acc=localStorage[_0x106389(0x1f4)](_0x106389(0x232)),_0x53aa1b=localStorage[_0x106389(0x1f4)](_0x106389(0x209)),_0x46613b=localStorage[_0x106389(0x1f4)](_0x106389(0x222)),_0x337dc1=localStorage['getItem']('boxbollenChatIsConversationEnded'),_0x2f8729=localStorage[_0x106389(0x1f4)](_0x106389(0x1da)),_0x167d7a=localStorage[_0x106389(0x1f4)](_0x106389(0x168)),_0x40b66d=localStorage[_0x106389(0x1f4)](_0x106389(0x1a5)),_0x4cceb3=localStorage[_0x106389(0x1f4)](_0x106389(0x13a)),_0x17ad0f=localStorage['getItem'](_0x106389(0x13f)),_0x3e3e8c=localStorage[_0x106389(0x1f4)](_0x106389(0x121)),_0x2ffa53=localStorage[_0x106389(0x1f4)](_0x106389(0x205)),_0x425f9c=localStorage[_0x106389(0x1f4)]('boxbollenChatIsWaitingForEmail'),_0x17fa72=localStorage[_0x106389(0x1f4)](_0x106389(0x215));function _0x129cd7(_0x10eda6,_0x583d91){const _0x1a04e5=_0x106389;if(_0x10eda6===null||_0x10eda6===undefined)return _0x583d91;try{return JSON[_0x1a04e5(0x175)](_0x10eda6);}catch(_0x3d8d9b){return _0x284431(_0x1a04e5(0x204)+_0x3d8d9b[_0x1a04e5(0x1bf)],_0x1a04e5(0x206)),_0x583d91;}}_0x5c7f25=_0x129cd7(_0x3b548c,[]),_0x283d56=_0x129cd7(_0x16b77b,[]),window[_0x106389(0x12e)]=_0x4951c2||_0x4141a4(),_0x78f540=_0x129cd7(_0x1f1099,![]),_0x53e580=_0x129cd7(_0x5043a0,![]),_0x3650cb=_0x129cd7(_0x46613b,![]),_0x185151=_0x129cd7(_0x337dc1,![]),_0x3fdfe8=_0x129cd7(_0x2f8729,![]),_0x5b5a49=_0x129cd7(_0x167d7a,![]),_0x387888=_0x40b66d||'',_0x5a6c8e=_0x4cceb3||'',_0x3e2628=_0x129cd7(_0x17ad0f,![]),_0x1daed4=_0x129cd7(_0x3e3e8c,![]),_0x322981=_0x2ffa53||'',_0x1294d3=_0x129cd7(_0x425f9c,![]),_0x2039a1=_0x129cd7(_0x17fa72,![]),_0x3d619e=![],_0xd8a347=_0x129cd7(_0x53aa1b,![]);if(_0x4d5acc){const _0x3c557c=_0x129cd7(_0x4d5acc,null);_0x3c557c&&_0x3c557c['isBot']&&_0x3c557c[_0x106389(0x1c2)]===_0x106389(0x1cf)&&(_0x53e580=!![]);}_0x47331d=_0x5c7f25[_0x106389(0x18c)]>0x0;if(_0xd8a347){const _0x365665=_0x106389(0x1fd);_0x2e7dc1(_0x365665,!![],![],_0x4be0cd());}_0x4a456a();}function _0x1c18a0(){const _0x9890a0=_0x58670c;_0x284431(_0x9890a0(0x1f0)),_0x5c7f25=[],_0x283d56=[],_0x47331d=![],_0x78f540=![],_0x53e580=![],_0x5b5a49=![],_0x387888='',_0x5a6c8e='',window[_0x9890a0(0x12e)]=_0x4141a4(),_0x3650cb=![],_0x185151=![],_0x3fdfe8=![],_0x589d48=![],_0x3e2628=![],_0x1daed4=![],_0x322981='',_0x1294d3=![],_0x2039a1=![],localStorage[_0x9890a0(0x1e7)]('boxbollenChatMessages'),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x159)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x101)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x129)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x12d)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x232)),localStorage[_0x9890a0(0x1e7)]('boxbollenChatShowRatingSystem'),localStorage[_0x9890a0(0x1e7)]('boxbollenChatIsConversationEnded'),localStorage['removeItem'](_0x9890a0(0x1da)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x168)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x1a5)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x13a)),localStorage[_0x9890a0(0x1e7)]('boxbollenChatShowNoOrderIdButton'),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x121)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x205)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x156)),localStorage[_0x9890a0(0x1e7)](_0x9890a0(0x215));const _0x54592e=document[_0x9890a0(0x211)]('.chat-end-conversation-overlay');_0x54592e&&_0x54592e[_0x9890a0(0x1ec)](),_0x4a456a(),_0x40bfa3();}function _0x4141a4(){const _0x420825=_0x58670c;return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'[_0x420825(0x118)](/[xy]/g,function(_0x4678d8){const _0x69f493=_0x420825;var _0x38f8d3=Math[_0x69f493(0x15a)]()*0x10|0x0,_0xe6bc7a=_0x4678d8==='x'?_0x38f8d3:_0x38f8d3&0x3|0x8;return _0xe6bc7a[_0x69f493(0x145)](0x10);});}function _0x272b54(_0x42e3c5){const _0x4e39db=_0x58670c;if(!_0x42e3c5)return _0x4be0cd();try{if(typeof _0x42e3c5===_0x4e39db(0x200)&&_0x42e3c5[_0x4e39db(0x150)](/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/))return _0x42e3c5;if(typeof _0x42e3c5===_0x4e39db(0x225))return new Date(_0x42e3c5)[_0x4e39db(0x1b8)]();const _0x517f27=new Date(_0x42e3c5);if(!isNaN(_0x517f27['getTime']()))return _0x517f27['toISOString']();return _0x4be0cd();}catch(_0x16929e){return _0x284431(_0x4e39db(0x17d)+_0x16929e[_0x4e39db(0x1bf)],_0x4e39db(0x206)),_0x4be0cd();}}async function _0x507cb6(_0x553d1c){const _0x8fac2c=_0x58670c;_0x284431(_0x8fac2c(0x18d));const _0x2ac213=_0x1ecd6a,_0x11e61c={'operation':_0x8fac2c(0x1af),'conversationId':window[_0x8fac2c(0x12e)]||(window[_0x8fac2c(0x12e)]=_0x4141a4()),'messages':_0x553d1c['map'](_0x1a4072=>({'text':_0x1a4072[_0x8fac2c(0x1c2)],'isBot':_0x1a4072[_0x8fac2c(0x230)],'timestamp':_0x272b54(_0x1a4072[_0x8fac2c(0x1c0)])})),'timestamp':_0x4be0cd(),'needsCustomerService':![],'HandledChat':![],'Tags':[],'Rating':null,'conversation_over':_0x185151,'userId':null,'name':'','HandledTime':null};try{const _0x1cf419=await fetch(_0x2ac213,{'method':_0x8fac2c(0x1d6),'headers':{'Content-Type':_0x8fac2c(0x1d1),'x-functions-key':_0x75871e},'body':JSON[_0x8fac2c(0x111)](_0x11e61c)});if(!_0x1cf419['ok']){const _0x26c73e=await _0x1cf419[_0x8fac2c(0x1c2)]();throw new Error(_0x8fac2c(0x19f)+_0x1cf419[_0x8fac2c(0x114)]+_0x8fac2c(0x234)+_0x26c73e);}const _0x149cbd=await _0x1cf419[_0x8fac2c(0x138)]();return _0x284431(_0x8fac2c(0x176)),_0x149cbd;}catch(_0x4ff4c0){_0x284431(_0x8fac2c(0x134)+_0x4ff4c0[_0x8fac2c(0x1bf)],'error');throw _0x4ff4c0;}}function _0x42636c(_0x51a39c){const _0x6ec0eb=_0x51a39c['match'](/\b\d{4}\b/);return _0x6ec0eb?_0x6ec0eb[0x0]:null;}_0x1b9350;async function _0x598f31(_0x557696){const _0x2d2abb=_0x58670c;_0x284431(_0x2d2abb(0x172)+_0x557696);if(!_0x387888&&!_0x1daed4&&!_0x322981&&!_0x1294d3){_0x3e2628=![];if(_0x557696['toLowerCase']()==='i\x20don\x27t\x20have\x20my\x20order\x20id')_0x1daed4=!![],await _0x9e4b4a(_0x2d2abb(0x1b3));else{const _0x511b57=_0x4e6eed(_0x557696);_0x511b57?(_0x387888=_0x511b57,_0x1294d3=!![],await _0x9e4b4a(_0x2d2abb(0x1b0))):(_0x3e2628=!![],await _0x9e4b4a('I\x20couldn\x27t\x20find\x20a\x20valid\x20order\x20number\x20in\x20your\x20message.\x20Please\x20provide\x20your\x20order\x20number.'));}}else{if(_0x1daed4){const _0x59a2f0=_0x42636c(_0x557696);_0x59a2f0&&_0xb324f9(_0x59a2f0)?(_0x322981=_0x59a2f0,_0x1daed4=![],_0x1294d3=!![],await _0x9e4b4a('Thank\x20you.\x20Now,\x20please\x20provide\x20your\x20email\x20address\x20associated\x20with\x20this\x20order.')):await _0x9e4b4a(_0x2d2abb(0x1b3));}else{if(_0x1294d3){if(_0x5c5b3(_0x557696)){_0x5a6c8e=_0x557696,_0x1294d3=![],_0x2e7dc1('Searching\x20for\x20your\x20order...',!![],!![],_0x4be0cd()),_0x4a456a(),_0x507cb6(_0x5c7f25);try{const _0x2ed462=_0x387888?_0x4301c2+_0x2d2abb(0x21e)+_0x5a6c8e+_0x2d2abb(0x1e6)+_0x387888:_0x4301c2+_0x2d2abb(0x21e)+_0x5a6c8e+_0x2d2abb(0x16b)+_0x322981,_0x32721c=await fetch(_0x2ed462,{'method':_0x2d2abb(0x1d6),'headers':{'Content-Type':_0x2d2abb(0x1d1),'x-functions-key':_0x2e9648}});if(!_0x32721c['ok'])throw new Error('API\x20request\x20failed');const _0x4fde69=await _0x32721c[_0x2d2abb(0x138)](),_0x40701c=JSON[_0x2d2abb(0x175)](_0x4fde69[_0x2d2abb(0x190)]),_0x162aa0=_0x40701c[_0x2d2abb(0x1cc)][_0x2d2abb(0x21d)];_0x5c7f25[_0x2d2abb(0x14a)](),await _0x9e4b4a(_0x2d2abb(0x1ca)+_0x162aa0);}catch(_0x607b33){_0x284431(_0x2d2abb(0x104)+_0x607b33[_0x2d2abb(0x1bf)],_0x2d2abb(0x206)),_0x5c7f25[_0x2d2abb(0x14a)](),await _0x9e4b4a('I\x27m\x20sorry,\x20but\x20I\x20couldn\x27t\x20find\x20an\x20order\x20matching\x20the\x20information\x20you\x20provided.'),_0x151070();}finally{_0x580f40();}}else await _0x9e4b4a('The\x20email\x20address\x20you\x20provided\x20doesn\x27t\x20seem\x20to\x20be\x20valid.\x20Please\x20enter\x20a\x20valid\x20email\x20address.');}}}_0x4a456a(),_0x507cb6(_0x5c7f25);}function _0x580ea2(_0x3e5d42){const _0x4a2403=_0x58670c,_0x5e8a8a=/^[A-Za-z0-9]{4,10}$/;return _0x5e8a8a[_0x4a2403(0x22f)](_0x3e5d42);}function _0x580f40(){const _0x423463=_0x58670c;_0x284431(_0x423463(0x212)),_0x387888='',_0x322981='',_0x5b5a49=![],_0x1daed4=![],_0x1294d3=![],_0x3fdfe8=![],_0x3e2628=![],_0x29b5ab();}function _0x67eeaa(){const _0x45b4af=_0x58670c;_0x284431(_0x45b4af(0x1b9));const _0x22c816=document[_0x45b4af(0x1ce)](_0x45b4af(0x161));_0x22c816[_0x45b4af(0x19d)]='chat-initial-options';const _0x471855=[{'text':'Yes','response':!![]},{'text':'No','response':![]}];return _0x471855['forEach'](_0x360645=>{const _0x15995c=_0x45b4af,_0x46912c=document[_0x15995c(0x1ce)](_0x15995c(0x1f9));_0x46912c[_0x15995c(0x16f)]=_0x360645[_0x15995c(0x1c2)],_0x46912c[_0x15995c(0x19d)]=_0x15995c(0x218),_0x46912c[_0x15995c(0x20f)](_0x15995c(0x1c1),()=>_0x503685(_0x360645[_0x15995c(0x190)],_0x360645['text'])),_0x22c816[_0x15995c(0x144)](_0x46912c);}),_0x22c816;}function _0x503685(_0x984fa8,_0x2273c0){const _0x568fb0=_0x58670c;_0x284431(_0x568fb0(0x20e)+_0x2273c0),_0x3fdfe8=![],_0x2e7dc1(_0x2273c0,![],![],_0x4be0cd()),_0x283d56[_0x568fb0(0x221)]({'role':_0x568fb0(0x167),'content':_0x2273c0,'timestamp':_0x4be0cd()}),_0x984fa8?(_0x580f40(),_0xbb4289()):(_0x5b5a49=![],_0x9e4b4a('Is\x20there\x20anything\x20else\x20I\x20can\x20help\x20you\x20with?')),_0x4a456a(),_0x507cb6(_0x5c7f25);}async function _0x151070(){const _0x300897=_0x58670c;_0x284431(_0x300897(0x147));const _0xaa524f='Try\x20again?';await _0x9e4b4a(_0xaa524f),_0x3fdfe8=!![],_0x4a456a(),_0x507cb6(_0x5c7f25);}function _0x4e6eed(_0xa73ffe){const _0x2e8263=_0x58670c,_0x4aef55=_0xa73ffe[_0x2e8263(0x150)](/\d+/);return _0x4aef55?_0x4aef55[0x0]:null;}function _0x5c5b3(_0x1e6c32){const _0x461596=_0x58670c,_0x1dd21e=/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;return _0x1dd21e[_0x461596(0x22f)](String(_0x1e6c32)[_0x461596(0x1ef)]());}function _0xb324f9(_0x48e7da){return/^\d{4}$/['test'](_0x48e7da);}function _0x3252d5(){const _0x53ba52=_0x58670c;_0x284431(_0x53ba52(0x233));const _0x3fbabb=document[_0x53ba52(0x211)](_0x53ba52(0x100));if(_0x3fbabb)return;const _0x5c4621=document[_0x53ba52(0x1ce)](_0x53ba52(0x1f9));_0x5c4621['textContent']=_0x53ba52(0x166),_0x5c4621[_0x53ba52(0x19d)]=_0x53ba52(0x218),_0x5c4621['setAttribute'](_0x53ba52(0x136),_0x53ba52(0x110)),_0x5c4621[_0x53ba52(0x20f)]('click',_0x3ef888);const _0x424393=document[_0x53ba52(0x1ce)](_0x53ba52(0x161));_0x424393[_0x53ba52(0x19d)]='chat-initial-options',_0x424393[_0x53ba52(0x144)](_0x5c4621);const _0x49ceb8=document['querySelector'](_0x53ba52(0x1a3));_0x49ceb8&&(_0x49ceb8[_0x53ba52(0x144)](_0x424393),_0x312701());}function _0x3ef888(){const _0x333475=_0x58670c;_0x284431(_0x333475(0x239)),_0x1daed4=!![],_0x3e2628=![],_0x130d15(_0x333475(0x166));}function _0x4ff996(){const _0x21aa0c=_0x58670c;_0x284431(_0x21aa0c(0x1b7));const _0x1e8645=_0x4050d0(),_0x47cba2=document['querySelector'](_0x21aa0c(0x1a3));_0x47cba2&&(_0x47cba2[_0x21aa0c(0x144)](_0x1e8645),_0x312701());}function _0x4050d0(){const _0x19c4c2=_0x58670c;_0x284431(_0x19c4c2(0x216));const _0x204a9e=document[_0x19c4c2(0x1ce)](_0x19c4c2(0x161));_0x204a9e[_0x19c4c2(0x19d)]=_0x19c4c2(0x1c5);const _0x5d152a=document[_0x19c4c2(0x1ce)](_0x19c4c2(0x155));_0x5d152a['src']=_0x14ac2c[_0x19c4c2(0x1c4)],_0x5d152a[_0x19c4c2(0x170)]=_0x19c4c2(0x1c3),_0x5d152a['className']=_0x19c4c2(0x1dd);const _0x1e95f3=document['createElement']('div');_0x1e95f3[_0x19c4c2(0x19d)]=_0x19c4c2(0x214);const _0x1e2a68=document['createElement']('div');_0x1e2a68[_0x19c4c2(0x19d)]=_0x19c4c2(0x139);const _0x45dfa2=document[_0x19c4c2(0x1ce)]('img');_0x45dfa2[_0x19c4c2(0x14d)]=_0x19c4c2(0x193),_0x45dfa2['alt']=_0x19c4c2(0x12a),_0x1e2a68['appendChild'](_0x45dfa2);const _0x154fb7=document[_0x19c4c2(0x1ce)]('div');_0x154fb7[_0x19c4c2(0x19d)]=_0x19c4c2(0x1a2);const _0xcad90b=document[_0x19c4c2(0x1ce)]('h2');_0xcad90b[_0x19c4c2(0x19d)]=_0x19c4c2(0x14b),_0xcad90b[_0x19c4c2(0x16f)]=_0x19c4c2(0x16c);const _0xf8d2c=document['createElement']('p');_0xf8d2c[_0x19c4c2(0x19d)]='product-description',_0xf8d2c[_0x19c4c2(0x16f)]='Complete\x20Set\x20With\x20App\x20License';const _0x1fe9ae=document['createElement']('a');return _0x1fe9ae[_0x19c4c2(0x199)]='https://boxbollen.com/products/boxbollen',_0x1fe9ae[_0x19c4c2(0x1de)]='_blank',_0x1fe9ae[_0x19c4c2(0x19d)]=_0x19c4c2(0x197),_0x1fe9ae[_0x19c4c2(0x16f)]='Read\x20More',_0x154fb7['appendChild'](_0xcad90b),_0x154fb7['appendChild'](_0xf8d2c),_0x154fb7['appendChild'](_0x1fe9ae),_0x1e95f3[_0x19c4c2(0x144)](_0x1e2a68),_0x1e95f3[_0x19c4c2(0x144)](_0x154fb7),_0x204a9e[_0x19c4c2(0x144)](_0x5d152a),_0x204a9e[_0x19c4c2(0x144)](_0x1e95f3),_0x204a9e;}function _0x76f3ae(){_0x284431('Adding\x20product\x20card\x20as\x20message');const _0x15c967={'text':'','isBot':!![],'isLoading':!![],'timestamp':_0x4be0cd()};_0x5c7f25['push'](_0x15c967),_0x4a456a(),setTimeout(()=>{const _0x3c4cc7=_0x4310;_0x5c7f25['pop'](),_0x5c7f25[_0x3c4cc7(0x221)]({'type':_0x3c4cc7(0x141),'isBot':!![],'timestamp':_0x4be0cd()}),_0x4a456a(),_0x312701();},0x5dc);}function _0x312701(){const _0x5192b0=_0x58670c,_0x2dacdf=document[_0x5192b0(0x211)](_0x5192b0(0x18a));_0x2dacdf&&setTimeout(()=>{const _0x5be08c=_0x5192b0;_0x2dacdf['scrollTop']=_0x2dacdf[_0x5be08c(0x1e2)];},0x64);}_0x1cf916,_0x362435(),window[_0x58670c(0x22d)]=function(){const _0x12471c=_0x58670c;_0x284431(_0x12471c(0x1fa)),_0x3d619e=!![],_0x29b5ab(),_0x59a7b3(),_0x40bfa3();};}()));function _0x4310(_0xfe585f,_0x231564){const _0x4269c4=_0x4269();return _0x4310=function(_0x43108c,_0x1f96c6){_0x43108c=_0x43108c-0x100;let _0x35d92f=_0x4269c4[_0x43108c];return _0x35d92f;},_0x4310(_0xfe585f,_0x231564);}function _0x4269(){const _0x2872d3=['outline','data-no-order-id','textAlign','json','product-image','boxbollenChatOrderEmail','add','<svg\x20xmlns=\x22http://www.w3.org/2000/svg\x22\x20viewBox=\x220\x200\x2024\x2024\x22\x20fill=\x22currentColor\x22\x20width=\x2224\x22\x20height=\x2224\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<path\x20d=\x22M2.01\x2021L23\x2012\x202.01\x203\x202\x2010l15\x202-15\x202z\x22/>\x0a\x20\x20\x20\x20\x20\x20</svg>','join','chat-stars-container','boxbollenChatShowNoOrderIdButton','Creating\x20star\x20rating','productCard','.chat-logo-container','Star\x20rating\x20clicked:\x20','appendChild','toString','map','Asking\x20to\x20try\x20again','.chat-window','EzFi0G7VjmsfU3JuSzORxqX','pop','product-title','color','src','chat-bot-profile-image','Creating\x20chat\x20logo','match','<a\x20href=\x22mailto:','active','To\x20track\x20your\x20order,\x20please\x20provide\x20your\x20order\x20number.','2311680xlDsgr','img','boxbollenChatIsWaitingForEmail','boxbollenChatMessages','<div\x20class=\x22chat-loading-dots\x22><div></div><div></div><div></div></div>','boxbollenChatHistory','random','Nunito,\x20sans-serif','chat-header-text','code','justifyContent','Initial\x20option\x20selected:\x20','get','div','Write\x20a\x20message...','Showing\x20loading\x20then\x20message:\x20','chat-follow-up-options','closest','I\x20don\x27t\x20have\x20my\x20order\x20id','user','boxbollenChatIsWaitingForOrderInfo','innerHTML','chat-rating-container','&lastFourDigits=','Boxbollen','margin','20px','textContent','alt','chat-header-image','Handling\x20order\x20info:\x20','Unfortunately\x20I\x20couldn\x27t\x20connect\x20right\x20now,\x20please\x20try\x20again\x20later\x20or\x20contact\x20us\x20at\x20https://boxbollen.com/pages/contact-us','VlDzZhnAPk4x0Y9x0q8FDuZ16aNGVko-','parse','Conversation\x20sent\x20to\x20Azure\x20successfully','</a>','padding','8771264PklOKI','<svg\x20width=\x22100%\x22\x20height=\x22100%\x22\x20viewBox=\x220\x200\x2054\x2053\x22\x20fill=\x22none\x22\x20xmlns=\x22http://www.w3.org/2000/svg\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<ellipse\x20cx=\x2227\x22\x20cy=\x2226.5\x22\x20rx=\x2227\x22\x20ry=\x2226.5\x22\x20fill=\x22#06AFFF\x22/>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<ellipse\x20cx=\x2227.1373\x22\x20cy=\x2224.853\x22\x20rx=\x2210.9477\x22\x20ry=\x229.85296\x22\x20fill=\x22white\x22/>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<path\x20d=\x22M14.7197\x2033.6722L18\x2030L19.6909\x2027.5482L22.5176\x2032.4848L14.7197\x2033.6722Z\x22\x20fill=\x22white\x22/>\x0a\x20\x20\x20\x20</svg>','fixed','</h2><p>','Error\x20formatting\x20timestamp:\x20','Chat\x20with\x20our\x20digital\x20assistant','headerText','fontSize','chat-button\x20chat-close-button','append','Extracting\x20email\x20from\x20text','answer','858098ZaEiZa','fontFamily','Starta\x20ny\x20konversation','width','querySelectorAll','.chat-messages-container','filter','length','Sending\x20conversation\x20to\x20Azure','906qxHZNi','Creating\x20input\x20area','response','chat-emoji-button','KriBP3LABZKcoGEbMAAzFuAVD41w==','https://boxbollen.com/cdn/shop/products/boxbollen_packshot_2023_red_1100x.jpg?v=1669502961','.chat-input-area','disabled','getBoundingClientRect','read-more-btn','placeholder','href','selectionStart','span','Creating\x20initial\x20options','className','display','HTTP\x20error!\x20status:\x20','_sSpPVu8npJbLaeS1FJFbatmtVVShl0','https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/conversationoperations','product-info','.chat-messages-wrapper','column','boxbollenChatOrderNumber','toLocaleString','trim','includes','center','chat-logo-text','Enter','pointer','stopPropagation','2807Wtsfwf','store','Great,\x20I\x27ve\x20got\x20your\x20order\x20number.\x20Now,\x20please\x20provide\x20your\x20email\x20address\x20associated\x20with\x20this\x20order.','chat-end-conversation-content','40px','No\x20problem.\x20Please\x20enter\x20the\x20last\x20four\x20digits\x20of\x20your\x20credit\x20card.','🤷‍♀️','Creating\x20end\x20conversation\x20overlay','#ffd700','Showing\x20product\x20card','toISOString','Creating\x20try\x20again\x20buttons','selectionEnd','backgroundColor','transparent','substring','Boxbollen\x20Logo','message','timestamp','click','text','Bot\x20Profile','logoUrl','chat-message-wrapper\x20bot','assistant','Creating\x20messages\x20container','70px','Error\x20sending\x20message:\x20','Here\x20is\x20your\x20tracking\x20link:\x20','chat-chatbot','order','chat-input','createElement','Can\x20I\x20help\x20you\x20with\x20anything\x20else?','9rhFu3kfzEln8s_x9cHRbMvUYB','application/json','right','chat-input-area','height','getElementById','POST','none','content','Betygsätt\x20din\x20upplevelse:','boxbollenChatShowTryAgainButtons','alignItems','setItem','chat-bot-profile-image-card','target','.chat-input','<a\x20href=\x22','Okej,\x20tack\x20för\x20chatten!\x20Om\x20du\x20har\x20några\x20frågor\x20i\x20framtiden,\x20tveka\x20inte\x20att\x20kontakta\x20oss.\x20Vi\x20på\x20Boxbollen\x20önskar\x20dig\x20en\x20fantastisk\x20dag!\x20👋','scrollHeight','.chat-rating-container','Toggling\x20emoji\x20picker','chat-emoji-picker','&order_id=','removeItem','fontWeight','Great!\x20What\x20else\x20can\x20I\x20help\x20you\x20with?','searchParams','https://i.ibb.co/61kG13C/boxbollen.jpg','remove','345852FrQqqN','Reload\x20button\x20clicked','toLowerCase','Restarting\x20conversation','.chat-star.active','forEach','&#x21bb;','getItem','Handling\x20follow-up\x20response:\x20','Launch\x20button\x20clicked','key','955512dFMkrB','button','Opening\x20Boxbollen\x20chat','Loading\x20conversation','type','An\x20error\x20occurred\x20while\x20generating\x20the\x20response,\x20please\x20try\x20again\x20later.','startsWith','New\x20conversation\x20button\x20clicked','string','setSelectionRange','body','<h2>','Error\x20parsing\x20JSON:\x20','boxbollenChatCardLastFourDigits','error','removeEventListener','operation','boxbollenChatIsLoading','split','product_card','info','0\x200\x200\x200','Handling\x20try\x20again\x20response:\x20','addEventListener',']\x20[','querySelector','Resetting\x20order\x20tracking','10px','product-card','boxbollenChatShownProductCard','Creating\x20product\x20card','https://i.ibb.co/zQkKbfv/Chatbubble-removebg-preview-removebg-preview.png','chat-option-button','https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/configuration','444890fGrWEg','Boxbollen\x20AI','####WANTS_ORDER_INFO####','trackingUrl','?email=','Error\x20sending\x20rating:\x20','chat-star','push','boxbollenChatShowRatingSystem','Formatting\x20message','Sending\x20rating:\x20','number',',\x20isBot:\x20','#F80B00','position','show','https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/AIResponse','input','value','openBoxbollenChat','toUpperCase','test','isBot','bottom','boxbollenChatLastMessage','Adding\x20no\x20order\x20ID\x20button',',\x20message:\x20','chat-message-wrapper\x20','Initializing\x20chat','boxbollenChatIsConversationEnded','Track\x20my\x20order','Handling\x20no\x20order\x20ID','.chat-option-button[data-no-order-id]','boxbollenChatId','chat-logo-container','k21zmNLwORyD3EmX7fW9vAzFudY2gAA==','Error\x20fetching\x20order\x20info:\x20','subHeaderText','User\x20sending\x20message:\x20','Creating\x20chat\x20header','data-rating','chat-button\x20chat-reload-button','isLoading','flexDirection','border','https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/orderapicall','chat-end-conversation-overlay','chat-initial-options','true','stringify','flex','Rating\x20sent\x20successfully','status','boxbollenChatLastSaved','bot','focus','replace','yes','<a\x20href=','contains','log','\x22\x20target=\x22_blank\x22\x20rel=\x22noopener\x20noreferrer\x22>','lineHeight','mainColor','Sure,\x20I\x20can\x20help\x20you\x20track\x20your\x20order.\x20Please\x20provide\x20your\x20order\x20number.','boxbollenChatIsWaitingForCardDigits','sv-SE','style','Close\x20button\x20clicked','getAttribute','Chatten\x20har\x20avslutats.','Ending\x20conversation','cursor','boxbollenChatShowInitialOptions','Boxbollen\x20product','chat-chat-ended','classList','boxbollenChatShowFollowUp','conversationId','Handling\x20order\x20tracking','Alright,\x20thank\x20you\x20for\x20chatting\x20with\x20me!\x20If\x20you\x20need\x20any\x20more\x20help,\x20feel\x20free\x20to\x20ask.','setAttribute','chat-window','chat-launch-button','Error\x20sending\x20conversation\x20to\x20Azure:\x20'];_0x4269=function(){return _0x2872d3;};return _0x4269();}
+(function() {
+  const CONVO_API_BASE = 'https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/conversationoperations';   
+  const convo1 = '_sSpPVu8npJbLaeS1FJFbatmtVVShl0';
+  const convo2 = '_aDkcQEpUskHKAzFuyqYYOQ==';
+  const CONVO_API_KEY = `${convo1}${convo2}`; 
+  const ORDER_API_BASE = 'https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/orderapicall';
+  const order1 = 'VlDzZhnAPk4x0Y9x0q8FDuZ16aNGVko-'
+  const order2 = '-MlbzCjB9leiAzFu3mESLg==';
+  const ORDER_API_KEY = `${order1}${order2}`;  
+  const API_BASE_URL = 'https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/AIResponse';
+  const apibase1 = '9rhFu3kfzEln8s_x9cHRbMvUYB'
+  const apibase2 = 'KriBP3LABZKcoGEbMAAzFuAVD41w=='
+  const API_KEY = `${apibase1}${apibase2}`;
+  const CONFIG_API_BASE = 'https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/configuration';
+  const configpart1 = 'EzFi0G7VjmsfU3JuSzORxqX'
+  const configpart2 = 'k21zmNLwORyD3EmX7fW9vAzFudY2gAA=='
+  const CONFIG_API_CODE = `${configpart1}${configpart2}`;
+
+
+  let shownProductCard = false;
+  let messages = [];
+  let conversationHistory = [];
+  let isInitialized = false;
+  let showNoOrderIdButton = false;
+  let isChatOpen = false;
+  let isWaitingForResponse = false;
+  let isLoading = false;
+  let pendingUserInput = '';
+  let showInitialOptions = false;
+  let showFollowUp = false;
+  let isWaitingForOrderInfo = false;
+  let orderNumber = '';
+  let orderEmail = '';
+  let isConversationEnded = false;
+  let showRatingSystem = false;
+  let isEndConversationOverlayShown = false;
+  let showTryAgainButtons = false;
+  let isWaitingForCardDigits = false;
+  let cardLastFourDigits = '';
+  let isWaitingForEmail = false;
+
+  const config = {
+    headerText: 'Boxbollen AI',
+    subHeaderText: 'Chat with our digital assistant',
+    mainColor: '#F80B00',
+    logoUrl: 'https://i.ibb.co/61kG13C/boxbollen.jpg',
+    launchAvatarUrl: 'https://i.ibb.co/zQkKbfv/Chatbubble-removebg-preview-removebg-preview.png'
+  };
+
+  function log(message, type = 'info') {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [${type.toUpperCase()}] ${message}`);
+  }
+sendConversationToAzure
+  function createChatbotUI() {
+    log('Creating chatbot UI');
+    const chatbotContainer = document.createElement('div');
+    chatbotContainer.id = 'chat-chatbot';
+    chatbotContainer.style.position = 'fixed';
+    chatbotContainer.style.bottom = '20px';
+    chatbotContainer.style.left = '20px';
+    chatbotContainer.style.fontFamily = 'Nunito, sans-serif';
+
+    // Create and start the observer
+    const observer = new MutationObserver(() => {
+        adjustChatButtonPosition(chatbotContainer);
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true
+    });
+
+    document.body.appendChild(chatbotContainer);
+
+    loadConversation();
+    renderChatbot();
+  }
+
+  function adjustChatButtonPosition(chatbotContainer) {
+    // Look for pop-ups that might be below the chat button
+    const popups = document.querySelectorAll('.add-to-cart-drawer, .cart-notification, .shopify-payment-button, .shopify-payment-button__button'); // Add any other popup class names
+    let shouldAdjust = false;
+    
+    popups.forEach(popup => {
+        if (popup.offsetParent !== null) { // Check if popup is visible
+            const popupRect = popup.getBoundingClientRect();
+            const chatRect = chatbotContainer.getBoundingClientRect();
+            
+            // Check if popup overlaps with chat button
+            if (popupRect.top < chatRect.bottom &&
+                popupRect.bottom > chatRect.top &&
+                popupRect.left < chatRect.right &&
+                popupRect.right > chatRect.left) {
+                shouldAdjust = true;
+            }
+        }
+    });
+
+    // Adjust position if needed
+    chatbotContainer.style.bottom = shouldAdjust ? '90px' : '20px';
+  }
+
+  function renderChatbot() {
+    log('Rendering chatbot');
+    const chatbotContainer = document.getElementById('chat-chatbot');
+    chatbotContainer.innerHTML = '';
+
+    if (isChatOpen) {
+      const chatWindow = createChatWindow();
+      chatbotContainer.appendChild(chatWindow);
+      updateChatWindow();
+    } else {
+      const launchButton = createLaunchButton();
+      chatbotContainer.appendChild(launchButton);
+    }
+  }
+
+  function createLaunchButton() {
+    log('Creating launch button');
+    const button = document.createElement('button');
+    button.className = 'chat-launch-button';
+    button.style.backgroundColor = 'transparent';
+    button.style.width = '70px';
+    button.style.height = '70px';
+    button.style.padding = '0';
+    button.style.border = 'none';
+    button.style.cursor = 'pointer';
+    button.style.display = 'flex';
+    button.style.alignItems = 'center';
+    button.style.justifyContent = 'center';
+    button.style.margin = '0';
+    button.style.lineHeight = '0';
+    button.style.fontSize = '0';
+    button.style.outline = 'none';
+    
+    const svg = `<svg width="100%" height="100%" viewBox="0 0 54 53" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="27" cy="26.5" rx="27" ry="26.5" fill="#06AFFF"/>
+        <ellipse cx="27.1373" cy="24.853" rx="10.9477" ry="9.85296" fill="white"/>
+        <path d="M14.7197 33.6722L18 30L19.6909 27.5482L22.5176 32.4848L14.7197 33.6722Z" fill="white"/>
+    </svg>`;
+    
+    button.innerHTML = svg;
+    button.addEventListener('click', () => {
+        log('Launch button clicked');
+        isChatOpen = true;
+        saveConversation();
+        renderChatbot();
+        initializeChat();
+    });
+
+    return button;
+  }
+
+  function createChatWindow() {
+    log('Creating chat window');
+    const chatWindow = document.createElement('div');
+    chatWindow.className = 'chat-window';
+  
+    const header = createChatHeader();
+    const messagesContainer = createMessagesContainer();
+    const inputArea = createInputArea();
+  
+    chatWindow.appendChild(header);
+    chatWindow.appendChild(messagesContainer);
+    chatWindow.appendChild(inputArea);
+  
+    return chatWindow;
+  }
+
+  function createChatHeader() {
+    log('Creating chat header');
+    const header = document.createElement('div');
+    header.className = 'chat-header';
+    header.style.backgroundColor = config.mainColor;
+  
+    const headerContent = document.createElement('div');
+    headerContent.className = 'chat-header-content';
+  
+    const headerImage = document.createElement('img');
+    headerImage.src = config.logoUrl;
+    headerImage.alt = 'Boxbollen';
+    headerImage.className = 'chat-header-image';
+  
+    const headerText = document.createElement('div');
+    headerText.className = 'chat-header-text';
+  
+    const title = document.createElement('h1');
+    title.textContent = config.headerText;
+  
+    const subtitle = document.createElement('p');
+    subtitle.textContent = config.subHeaderText;
+  
+    headerText.appendChild(title);
+    headerText.appendChild(subtitle);
+  
+    headerContent.appendChild(headerImage);
+    headerContent.appendChild(headerText);
+  
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'chat-header-buttons';
+
+    const reloadButton = document.createElement('button');
+    reloadButton.innerHTML = '&#x21bb;';
+    reloadButton.className = 'chat-button chat-reload-button';
+    reloadButton.title = 'Restart conversation';
+    reloadButton.addEventListener('click', () => {
+      log('Reload button clicked');
+      restartConversation();
+    });
+  
+    const closeButton = document.createElement('button');
+    closeButton.textContent = '×';
+    closeButton.className = 'chat-button chat-close-button';
+    closeButton.addEventListener('click', () => {
+      log('Close button clicked');
+      isChatOpen = false;
+      saveConversation();
+      renderChatbot();
+    });
+  
+    buttonsContainer.appendChild(reloadButton);
+    buttonsContainer.appendChild(closeButton);
+
+    header.appendChild(headerContent);
+    header.appendChild(buttonsContainer);
+  
+    return header;
+  }
+
+  function createMessagesContainer() {
+    log('Creating messages container');
+    const container = document.createElement('div');
+    container.className = 'chat-messages-container';
+  
+    const messagesWrapper = document.createElement('div');
+    messagesWrapper.className = 'chat-messages-wrapper';
+  
+    const logoContainer = createChatLogo();
+    messagesWrapper.appendChild(logoContainer);
+  
+    container.appendChild(messagesWrapper);
+  
+    return container;
+  }
+
+  function createChatLogo() {
+    log('Creating chat logo');
+    const logoContainer = document.createElement('div');
+    logoContainer.className = 'chat-logo-container';
+  
+    const logo = document.createElement('img');
+    logo.src = config.logoUrl;
+    logo.alt = 'Boxbollen Logo';
+    logo.className = 'chat-logo';
+  
+    const logoText = document.createElement('div');
+    logoText.className = 'chat-logo-text';
+    logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
+  
+    logoContainer.appendChild(logo);
+    logoContainer.appendChild(logoText);
+  
+    return logoContainer;
+  }
+
+  function createInputArea() {
+    log('Creating input area');
+    const inputArea = document.createElement('div');
+    inputArea.className = 'chat-input-area';
+  
+    if (!isConversationEnded && !showRatingSystem) {
+      const inputContainer = document.createElement('div');
+      inputContainer.className = 'chat-input-container';
+      
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Write a message...';
+      input.className = 'chat-input';
+      input.value = pendingUserInput;
+      input.disabled = false;
+      
+      const smileySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round">
+      <circle cx="50" cy="50" r="42" />
+      <path d="M30 60 Q50 75 70 60" />
+      <circle cx="35" cy="40" r="6" fill="currentColor" stroke="none" />
+      <circle cx="65" cy="40" r="6" fill="currentColor" stroke="none" />
+      </svg>`;
+    
+      const emojiButton = document.createElement('button');
+      emojiButton.innerHTML = smileySvg; 
+      emojiButton.className = 'chat-emoji-button';
+      emojiButton.addEventListener('click', toggleEmojiPicker);
+      emojiButton.disabled = isWaitingForResponse;
+      
+      const sendSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+      </svg>`;
+  
+      const sendButton = document.createElement('button');
+      sendButton.innerHTML = sendSvg;
+      sendButton.className = 'chat-send-button';
+      sendButton.style.backgroundColor = 'transparent';
+      sendButton.style.border = 'none';
+      sendButton.style.cursor = 'pointer';
+      sendButton.disabled = isWaitingForResponse;
+  
+      const handleSendMessage = () => {
+        if (isWaitingForResponse) return;
+        const message = input.value.trim();
+        if (message !== '') {
+          log(`User sending message: ${message}`);
+          input.value = '';
+          pendingUserInput = '';
+          sendMessage(message);
+          sendButton.disabled = true;
+        }
+      };
+  
+      sendButton.addEventListener('click', handleSendMessage);
+      
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !isWaitingForResponse) {
+          handleSendMessage();
+        }
+      });
+  
+      input.addEventListener('input', (e) => {
+        pendingUserInput = e.target.value;
+        sendButton.disabled = e.target.value.trim() === '' || isWaitingForResponse;
+      });
+  
+      inputContainer.appendChild(input);
+      inputContainer.appendChild(emojiButton);
+      inputContainer.appendChild(sendButton);
+      inputArea.appendChild(inputContainer);
+    }
+  
+    return inputArea;
+  }
+
+function toggleEmojiPicker(event) {
+  log('Toggling emoji picker');
+  event.stopPropagation();
+
+  const existingPicker = document.querySelector('.chat-emoji-picker');
+  
+  if (existingPicker) {
+    existingPicker.remove();
+    return;
+  }
+
+  const emojiPicker = document.createElement('div');
+  emojiPicker.className = 'chat-emoji-picker';
+
+  const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
+  
+  emojis.forEach(emoji => {
+    const emojiButton = document.createElement('button');
+    emojiButton.textContent = emoji;
+    emojiButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const input = document.querySelector('.chat-input');
+      const startPos = input.selectionStart;
+      const endPos = input.selectionEnd;
+      input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos);
+      input.focus();
+      input.selectionStart = input.selectionEnd = startPos + emoji.length;
+      emojiPicker.remove();
+    });
+    emojiPicker.appendChild(emojiButton);
+  });
+
+  const inputArea = event.target.closest('.chat-input-area');
+  inputArea.appendChild(emojiPicker);
+
+  const rect = event.target.getBoundingClientRect();
+  const inputAreaRect = inputArea.getBoundingClientRect();
+  emojiPicker.style.bottom = `${inputAreaRect.height}px`;
+  emojiPicker.style.right = `${inputAreaRect.width - (rect.right - inputAreaRect.left)}px`;
+
+  function closeEmojiPicker(e) {
+    if (!emojiPicker.contains(e.target) && e.target !== event.target) {
+      emojiPicker.remove();
+      document.removeEventListener('click', closeEmojiPicker);
+    }
+  }
+
+  setTimeout(() => {
+    document.addEventListener('click', closeEmojiPicker);
+  }, 0);
+
+  const chatWindow = document.querySelector('.chat-window');
+  if (chatWindow) {
+    chatWindow.addEventListener('scroll', () => {
+      emojiPicker.remove();
+      document.removeEventListener('click', closeEmojiPicker);
+    }, { once: true });
+  }
+}
+
+
+  function debugMessageProcessing(message) {
+    log(`Processing message: ${message}`);
+    let formattedMessage = formatMessage(message);
+    
+    let tempDiv = document.createElement('div');
+    tempDiv.innerHTML = formattedMessage;
+    
+    return formattedMessage;
+  }
+  
+  function formatMessage(message) {
+    log('Formatting message');
+    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
+    message = message.replace(markdownLinkRegex, (match, text, url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    });
+  
+    const urlRegex = /(https?:\/\/\S+)/g;
+    message = message.split(urlRegex).map((part, index) => {
+        if (index % 2 === 1) {
+            if (!part.startsWith('<a href=')) {
+                return `<a href="${part}" target="_blank" rel="noopener noreferrer">${part}</a>`;
+            }
+        }
+        return part;
+    }).join('');
+  
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+    message = message.replace(emailRegex, (email) => {
+        return `<a href="mailto:${email}">${email}</a>`;
+    });
+  
+    return message;
+  }
+
+  function createMessageElement(message) {
+    log('Creating message element');
+    const messageWrapper = document.createElement('div');
+    messageWrapper.className = `chat-message-wrapper ${message.isBot ? 'bot' : 'user'}`;
+    
+    if (message.isBot && message.type === 'productCard') {
+        const card = createProductCard();
+        messageWrapper.appendChild(card);
+        return messageWrapper;
+    }
+
+    if (message.isBot) {
+        const profileImage = document.createElement('img');
+        profileImage.src = config.logoUrl;
+        profileImage.alt = 'Bot Profile';
+        profileImage.className = 'chat-bot-profile-image';
+        messageWrapper.appendChild(profileImage);
+    }
+
+    const messageElement = document.createElement('div');
+    messageElement.className = `chat-message ${message.isBot ? 'bot' : 'user'}`;
+    
+    if (message.className) {
+        messageElement.classList.add(message.className);
+    }
+
+    const textElement = document.createElement('div');
+    textElement.className = 'chat-message-text';
+    
+    if (message.isLoading) {
+        textElement.innerHTML = '<div class="chat-loading-dots"><div></div><div></div><div></div></div>';
+    } else if (message.isBot) {
+        const formattedMessage = formatMessage(message.text);
+        textElement.innerHTML = formattedMessage;
+    } else {
+        textElement.innerHTML = message.text;
+    }
+
+    messageElement.appendChild(textElement);
+    messageWrapper.appendChild(messageElement);
+
+    return messageWrapper;
+  }
+
+  function extractEmail(text) {
+    log('Extracting email from text');
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
+    const match = text.match(emailRegex);
+    if (match) {
+        return match[0];
+    }
+    return null;
+  }
+
+  function createInitialOptions() {
+    log('Creating initial options');
+    const optionsElement = document.createElement('div');
+    optionsElement.className = 'chat-initial-options';
+
+    const options = ['Track my order'];
+    options.forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      button.className = 'chat-option-button';
+      button.addEventListener('click', () => {
+        log(`Initial option selected: ${option}`);
+        sendMessage(option);
+        showInitialOptions = false;
+        updateChatWindow();
+      });
+      optionsElement.appendChild(button);
+    });
+
+    return optionsElement;
+  }
+
+  function createFollowUpButtons() {
+    log('Creating follow-up buttons');
+    const followUpElement = document.createElement('div');
+    followUpElement.className = 'chat-follow-up-options';
+    
+    const options = [
+      { text: 'Yes', response: 'yes' },
+      { text: 'No', response: 'no' }
+    ];
+    
+    options.forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option.text;
+      button.className = 'chat-option-button';
+      button.addEventListener('click', () => handleFollowUpResponse(option.response));
+      followUpElement.appendChild(button);
+    });
+  
+    return followUpElement;
+  }
+
+  async function handleFollowUpResponse(response) {
+    log(`Handling follow-up response: ${response}`);
+    showFollowUp = false;
+    updateChatWindow();
+  
+    const userResponse = response === "yes" ? "Yes" : "No";
+    addMessage(userResponse, false, false, getStockholmTimestamp());
+    
+    if (response === "yes") {
+      await showLoadingThenMessage("Great! What else can I help you with?");
+      updateChatWindow();
+      sendConversationToAzure(messages);
+    } else {
+      await showLoadingThenMessage("Alright, thank you for chatting with me! If you need any more help, feel free to ask.");
+      updateChatWindow();
+      await sendConversationToAzure(messages);
+      showRatingSystem = true;
+      updateChatWindow();
+    }
+  }
+
+  function endConversation() {
+    log('Ending conversation');
+    isConversationEnded = true;
+    updateChatWindow();
+  }
+  
+  function handleStarClick(rating) {
+    log(`Star rating clicked: ${rating}`);
+    updateStars(rating);
+    
+    const ratingContainer = document.querySelector('.chat-rating-container');
+    if (ratingContainer) {
+      ratingContainer.remove();
+    }
+  
+    isConversationEnded = true;
+  
+    createEndConversationOverlay();
+  
+    sendRating(rating);
+  }
+  
+  async function sendRating(rating) {
+    log(`Sending rating: ${rating}`);
+    const url = CONVO_API_BASE;
+    const payload = {
+      operation: 'store',
+      conversationId: window.conversationId,
+      Rating: rating,
+      timestamp: getStockholmTimestamp(),
+      conversation_over: true
+    };
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-functions-key': CONVO_API_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+    
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const responseData = await response.json();
+      log('Rating sent successfully');
+      
+      await sendConversationToAzure(messages);
+      
+    } catch (error) {
+      log(`Error sending rating: ${error.message}`, 'error');
+    }
+  }
+  
+  
+  function createEndConversationOverlay() {
+    log('Creating end conversation overlay');
+    if (isEndConversationOverlayShown) return;
+  
+    isEndConversationOverlayShown = true;
+    const chatWindow = document.querySelector('.chat-window');
+    const overlay = document.createElement('div');
+    overlay.className = 'chat-end-conversation-overlay';
+    
+    const content = document.createElement('div');
+    content.className = 'chat-end-conversation-content';
+    
+    const message = document.createElement('p');
+    message.textContent = "Okej, tack för chatten! Om du har några frågor i framtiden, tveka inte att kontakta oss. Vi på Boxbollen önskar dig en fantastisk dag! 👋";
+    
+    const endedMessage = document.createElement('p');
+    endedMessage.className = 'chat-chat-ended';
+    endedMessage.textContent = 'Chatten har avslutats.';
+    
+    const newChatButton = document.createElement('button');
+    newChatButton.textContent = 'Starta ny konversation';
+    newChatButton.className = 'chat-new-conversation-button';
+    newChatButton.addEventListener('click', () => {
+      log('New conversation button clicked');
+      restartConversation();
+      overlay.remove();
+      initializeChat();
+    });
+    
+    content.appendChild(message);
+    content.appendChild(endedMessage);
+    content.appendChild(newChatButton);
+    overlay.appendChild(content);
+    
+    chatWindow.appendChild(overlay);
+  
+    setTimeout(() => {
+      overlay.classList.add('show');
+    }, 50);
+  }
+
+  function createStarRating() {
+    log('Creating star rating');
+    const ratingContainer = document.createElement('div');
+    ratingContainer.className = 'chat-rating-container';
+    ratingContainer.style.textAlign = 'center';
+    ratingContainer.style.padding = '10px';
+    ratingContainer.style.display = 'flex';
+    ratingContainer.style.flexDirection = 'column';
+    ratingContainer.style.alignItems = 'center';
+    ratingContainer.style.justifyContent = 'center';
+  
+    const ratingPrompt = document.createElement('p');
+    ratingPrompt.textContent = 'Betygsätt din upplevelse:';
+    ratingPrompt.style.margin = '0 0 0 0';
+    ratingPrompt.style.display = 'flex';
+    ratingPrompt.style.alignItems = 'center';
+    ratingPrompt.style.height = '40px';
+    ratingPrompt.style.color = '#ffffff';
+    ratingPrompt.style.fontWeight = 'bold';
+
+    const starsContainer = document.createElement('div');
+    starsContainer.className = 'chat-stars-container';
+  
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement('span');
+      star.className = 'chat-star';
+      star.innerHTML = '☆';
+      star.setAttribute('data-rating', i);
+      star.style.fontSize = '40px';
+      star.style.cursor = 'pointer';
+      star.style.color = '#ffd700';
+      
+      star.addEventListener('click', () => handleStarClick(i));
+      
+      star.addEventListener('mouseover', () => {
+        updateStars(i);
+      });
+  
+      star.addEventListener('mouseout', () => {
+        const currentRating = document.querySelector('.chat-star.active')?.getAttribute('data-rating') || 0;
+        updateStars(currentRating);
+      });
+  
+      starsContainer.appendChild(star);
+    }
+  
+    ratingContainer.appendChild(ratingPrompt);
+    ratingContainer.appendChild(starsContainer);
+  
+    return ratingContainer;
+  }
+
+  function updateStars(rating) {
+    log(`Updating stars: ${rating}`);
+    const stars = document.querySelectorAll('.chat-star');
+    stars.forEach((star, index) => {
+      if (index < rating) {
+        star.innerHTML = '★';
+        star.classList.add('active');
+      } else {
+        star.innerHTML = '☆';
+        star.classList.remove('active');
+      }
+    });
+  }
+
+  function getConfigApiUrl(operation) {
+    const url = new URL(CONFIG_API_BASE);
+    url.searchParams.append('code', CONFIG_API_CODE);
+    url.searchParams.append('operation', operation);
+    return url.toString();
+  }
+  
+  async function getMainAnswerPrompt() {
+    log('Getting main answer prompt');
+    try {
+      const response = await fetch(getConfigApiUrl('get'));
+      const data = await response.json();
+      
+      const prompt = data.prompt;
+      const timestamp = data.timestamp;
+  
+      return { prompt, timestamp };
+    } catch (error) {
+      log(`Error getting main answer prompt: ${error.message}`, 'error');
+    }
+  }
+
+  function getStockholmTimestamp() {
+    return new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Stockholm' });
+  }
+
+  async function sendMessage(text) {
+    log(`Sending message: ${text}`);
+    if (showTryAgainButtons) {
+        showTryAgainButtons = false;
+        updateChatWindow();
+        saveConversation();
+    }
+
+    if (text.trim() === '' || showRatingSystem || isConversationEnded || isWaitingForResponse) return;
+
+    const currentTime = getStockholmTimestamp();
+
+    addMessage(text, false, false, currentTime);
+    showInitialOptions = false;
+    showFollowUp = false;
+
+    conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
+
+    if (text.toLowerCase() === 'track my order') {
+        await handleOrderTracking();
+        return;
+    }
+
+    if (isWaitingForOrderInfo) {
+        await handleOrderInfo(text);
+        return;
+    }
+
+    isLoading = true;
+    isWaitingForResponse = true;
+    
+    addMessage('', true, true);
+    updateChatWindow();
+
+    try {
+      const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+
+      const { prompt } = await getMainAnswerPrompt();
+
+      const response = await callAIResponseAPI(prompt, text, formattedHistory);
+
+      const data = await response.json();
+      let answer = data.answer;
+      let product_card = data.product_card;
+
+
+        const responseTime = getStockholmTimestamp();
+
+        if (answer.includes('####WANTS_ORDER_INFO####')) {
+            messages.pop();
+            
+            isWaitingForOrderInfo = true;
+            orderNumber = '';
+            orderEmail = '';
+            isWaitingForCardDigits = false;
+            cardLastFourDigits = '';
+            isWaitingForEmail = false;
+            
+            await showLoadingThenMessage("To track your order, please provide your order number.");
+            
+            showNoOrderIdButton = true;
+            
+            updateChatWindow();
+        } else {
+            conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
+            
+            messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+
+            if (product_card.toLowerCase().includes('yes') && !shownProductCard) {
+                addProductCardAsMessage();
+                shownProductCard = true;
+            }
+
+            await sendConversationToAzure(messages.filter(msg => !msg.isLoading));
+
+            if (!answer.includes('?') && Math.random() < 0.5 && !shownProductCard) {
+                setTimeout(() => {
+                    const followUpTime = getStockholmTimestamp();
+                    addMessage("Can I help you with anything else?", true, false, followUpTime);
+                    conversationHistory.push({"role": "assistant", "content": "Can I help you with anything else?", "timestamp": followUpTime});
+                    showFollowUp = true;
+                    updateChatWindow();
+                    sendConversationToAzure(messages);
+                }, 1000);
+            } else {
+                showFollowUp = false;
+            }
+        }
+    } catch (error) {
+        log(`Error sending message: ${error.message}`, 'error');
+        const errorTime = getStockholmTimestamp();
+        const errorMessage = "Unfortunately I couldn't connect right now, please try again later or contact us at https://boxbollen.com/pages/contact-us";
+        
+        messages[messages.length - 1] = { 
+            text: errorMessage, 
+            isBot: true, 
+            isLoading: false,
+            timestamp: errorTime
+        };
+        
+        conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
+        
+        await sendConversationToAzure(messages.filter(msg => !msg.isLoading));
+    } finally {
+        isLoading = false;
+        isWaitingForResponse = false;
+        
+        updateChatWindow();
+    }
+  }
+
+  async function callAIResponseAPI(prompt, question, conversation_history) {
+    const url = API_BASE_URL;
+    
+    const requestBody = {
+        prompt,
+        question,
+        conversation_history
+    };
+
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-functions-key': API_KEY
+        },
+        body: JSON.stringify(requestBody)
+    });
+}
+
+  async function handleOrderTracking() {
+    log('Handling order tracking');
+    isWaitingForOrderInfo = true;
+    orderNumber = '';
+    orderEmail = '';
+    cardLastFourDigits = '';
+    isWaitingForCardDigits = false;
+    isWaitingForEmail = false;
+    
+    await showLoadingThenMessage("Sure, I can help you track your order. Please provide your order number.");
+    showNoOrderIdButton = true;
+    updateChatWindow();
+  }
+
+  function addMessage(text, isBot, isLoading = false, timestamp = getStockholmTimestamp()) {
+    log(`Adding message: ${text}, isBot: ${isBot}, isLoading: ${isLoading}`);
+    let processedText = debugMessageProcessing(text);
+    messages.push({ text: processedText, isBot, isLoading, timestamp });
+    updateChatWindow();
+    saveConversation();
+  }
+
+  function updateChatWindow() {
+    log('Updating chat window');
+    const inputField = document.querySelector('.chat-input');
+    let inputText = '';
+    let cursorPosition = 0;
+  
+    if (inputField) {
+      inputText = inputField.value;
+      cursorPosition = inputField.selectionStart;
+    }
+  
+    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+    if (messagesWrapper) {
+      const logoContainer = messagesWrapper.querySelector('.chat-logo-container');
+      messagesWrapper.innerHTML = '';
+      if (logoContainer) {
+        messagesWrapper.appendChild(logoContainer);
+      }
+  
+      messages.forEach(message => {
+        const messageElement = createMessageElement(message);
+        messagesWrapper.appendChild(messageElement);
+      });
+  
+      if (showInitialOptions) {
+        const optionsElement = createInitialOptions();
+        messagesWrapper.appendChild(optionsElement);
+      }
+  
+      if (showFollowUp) {
+        const followUpElement = createFollowUpButtons();
+        messagesWrapper.appendChild(followUpElement);
+      }
+  
+      if (showRatingSystem) {
+        const ratingElement = createStarRating();
+        messagesWrapper.appendChild(ratingElement);
+      }
+  
+      if (showTryAgainButtons) {
+        const tryAgainElement = createTryAgainButtons();
+        messagesWrapper.appendChild(tryAgainElement);
+      }
+  
+      if (showNoOrderIdButton) {
+        addNoOrderIdButton();
+      }
+  
+      scrollToBottom();
+    }
+  
+    const inputArea = document.querySelector('.chat-input-area');
+    if (inputArea) {
+      inputArea.innerHTML = '';
+      if (!showRatingSystem && !isConversationEnded) {
+        const newInputArea = createInputArea();
+        inputArea.appendChild(newInputArea);
+      }
+    }
+  
+    const newInputField = document.querySelector('.chat-input');
+    if (newInputField) {
+      newInputField.value = inputText;
+      newInputField.setSelectionRange(cursorPosition, cursorPosition);
+      newInputField.focus();
+    }
+  
+    saveConversation();
+  }
+  
+  async function initializeChat() {
+    log('Initializing chat');
+    if (!isInitialized) {
+      const initialMessage = "Hey! \n My name is Elliot and I'm your virtual assistant here at Boxbollen";
+      await showLoadingThenMessage(initialMessage);
+      const followUpMessage = 'How can I help you today?😊';
+      await showLoadingThenMessage(followUpMessage);
+      showInitialOptions = true;
+      isInitialized = true;
+      updateChatWindow();
+    }
+  }
+
+  async function showLoadingThenMessage(message) {
+    log(`Showing loading then message: ${message}`);
+    addMessage('', true, true, getStockholmTimestamp());
+    updateChatWindow();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    messages[messages.length - 1] = { text: message, isBot: true, isLoading: false, timestamp: getStockholmTimestamp() };
+    conversationHistory.push({"role": "assistant", "content": message, "timestamp": getStockholmTimestamp()});
+    updateChatWindow();
+  }
+
+  function saveConversation() {
+    log('Saving conversation');
+    localStorage.setItem('boxbollenChatMessages', JSON.stringify(messages));
+    localStorage.setItem('boxbollenChatHistory', JSON.stringify(conversationHistory));
+    localStorage.setItem('boxbollenChatId', window.conversationId || '');
+    localStorage.setItem('boxbollenChatShowInitialOptions', JSON.stringify(showInitialOptions));
+    localStorage.setItem('boxbollenChatShowFollowUp', JSON.stringify(showFollowUp));
+    localStorage.setItem('boxbollenChatShowRatingSystem', JSON.stringify(showRatingSystem));
+    localStorage.setItem('boxbollenChatIsConversationEnded', JSON.stringify(isConversationEnded));
+    localStorage.setItem('boxbollenChatShowTryAgainButtons', JSON.stringify(showTryAgainButtons));
+    localStorage.setItem('boxbollenChatIsWaitingForOrderInfo', JSON.stringify(isWaitingForOrderInfo));
+    localStorage.setItem('boxbollenChatOrderNumber', orderNumber);
+    localStorage.setItem('boxbollenChatOrderEmail', orderEmail);
+    localStorage.setItem('boxbollenChatShowNoOrderIdButton', JSON.stringify(showNoOrderIdButton));
+    localStorage.setItem('boxbollenChatIsWaitingForCardDigits', JSON.stringify(isWaitingForCardDigits));
+    localStorage.setItem('boxbollenChatCardLastFourDigits', cardLastFourDigits);
+    localStorage.setItem('boxbollenChatIsWaitingForEmail', JSON.stringify(isWaitingForEmail));
+    localStorage.setItem('boxbollenChatShownProductCard', JSON.stringify(shownProductCard));
+
+    if (isLoading) {
+      localStorage.setItem('boxbollenChatIsLoading', JSON.stringify(isLoading));
+    } else {
+      localStorage.removeItem('boxbollenChatIsLoading');
+    }
+
+    localStorage.setItem('boxbollenChatLastSaved', new Date().toISOString());
+  }
+
+  function loadConversation() {
+    log('Loading conversation');
+    const storedMessages = localStorage.getItem('boxbollenChatMessages');
+    const storedHistory = localStorage.getItem('boxbollenChatHistory');
+    const storedId = localStorage.getItem('boxbollenChatId');
+    const storedShowInitialOptions = localStorage.getItem('boxbollenChatShowInitialOptions');
+    const storedShowFollowUp = localStorage.getItem('boxbollenChatShowFollowUp');
+    const storedLastMessage = localStorage.getItem('boxbollenChatLastMessage');
+    const storedIsLoading = localStorage.getItem('boxbollenChatIsLoading');
+    const storedShowRatingSystem = localStorage.getItem('boxbollenChatShowRatingSystem');
+    const storedIsConversationEnded = localStorage.getItem('boxbollenChatIsConversationEnded');
+    const storedShowTryAgainButtons = localStorage.getItem('boxbollenChatShowTryAgainButtons');
+    const storedIsWaitingForOrderInfo = localStorage.getItem('boxbollenChatIsWaitingForOrderInfo');
+    const storedOrderNumber = localStorage.getItem('boxbollenChatOrderNumber');
+    const storedOrderEmail = localStorage.getItem('boxbollenChatOrderEmail');
+    const storedShowNoOrderIdButton = localStorage.getItem('boxbollenChatShowNoOrderIdButton');
+    const storedIsWaitingForCardDigits = localStorage.getItem('boxbollenChatIsWaitingForCardDigits');
+    const storedCardLastFourDigits = localStorage.getItem('boxbollenChatCardLastFourDigits');
+    const storedIsWaitingForEmail = localStorage.getItem('boxbollenChatIsWaitingForEmail');
+    const storedShownProductCard = localStorage.getItem('boxbollenChatShownProductCard');
+  
+    function safeJSONParse(item, defaultValue) {
+      if (item === null || item === undefined) return defaultValue;
+      try {
+        return JSON.parse(item);
+      } catch (e) {
+        log(`Error parsing JSON: ${e.message}`, 'error');
+        return defaultValue;
+      }
+    }
+  
+    messages = safeJSONParse(storedMessages, []);
+    conversationHistory = safeJSONParse(storedHistory, []);
+    window.conversationId = storedId || generateUUID();
+    showInitialOptions = safeJSONParse(storedShowInitialOptions, false);
+    showFollowUp = safeJSONParse(storedShowFollowUp, false);
+    showRatingSystem = safeJSONParse(storedShowRatingSystem, false);
+    isConversationEnded = safeJSONParse(storedIsConversationEnded, false);
+    showTryAgainButtons = safeJSONParse(storedShowTryAgainButtons, false);
+    isWaitingForOrderInfo = safeJSONParse(storedIsWaitingForOrderInfo, false);
+    orderNumber = storedOrderNumber || '';
+    orderEmail = storedOrderEmail || '';
+    showNoOrderIdButton = safeJSONParse(storedShowNoOrderIdButton, false);
+    isWaitingForCardDigits = safeJSONParse(storedIsWaitingForCardDigits, false);
+    cardLastFourDigits = storedCardLastFourDigits || '';
+    isWaitingForEmail = safeJSONParse(storedIsWaitingForEmail, false);
+    shownProductCard = safeJSONParse(storedShownProductCard, false);
+  
+    isChatOpen = false;
+    isLoading = safeJSONParse(storedIsLoading, false);
+  
+    if (storedLastMessage) {
+      const lastMessage = safeJSONParse(storedLastMessage, null);
+      if (lastMessage && lastMessage.isBot && lastMessage.text === "Can I help you with anything else?") {
+        showFollowUp = true;
+      }
+    }
+  
+    isInitialized = messages.length > 0;
+  
+    if (isLoading) {
+      const errorMessage = 'An error occurred while generating the response, please try again later.';
+      addMessage(errorMessage, true, false, getStockholmTimestamp());
+    }
+  
+    updateChatWindow();
+  }
+  
+  function restartConversation() {
+    log('Restarting conversation');
+    messages = [];
+    conversationHistory = [];
+    isInitialized = false;
+    showInitialOptions = false;
+    showFollowUp = false;
+    isWaitingForOrderInfo = false;
+    orderNumber = '';
+    orderEmail = '';
+    window.conversationId = generateUUID();
+    showRatingSystem = false;
+    isConversationEnded = false;
+    showTryAgainButtons = false;
+    isEndConversationOverlayShown = false;
+    showNoOrderIdButton = false;
+    isWaitingForCardDigits = false;
+    cardLastFourDigits = '';
+    isWaitingForEmail = false;
+    shownProductCard = false;
+  
+    localStorage.removeItem('boxbollenChatMessages');
+    localStorage.removeItem('boxbollenChatHistory');
+    localStorage.removeItem('boxbollenChatId');
+    localStorage.removeItem('boxbollenChatShowInitialOptions');
+    localStorage.removeItem('boxbollenChatShowFollowUp');
+    localStorage.removeItem('boxbollenChatLastMessage');
+    localStorage.removeItem('boxbollenChatShowRatingSystem');
+    localStorage.removeItem('boxbollenChatIsConversationEnded');
+    localStorage.removeItem('boxbollenChatShowTryAgainButtons');
+    localStorage.removeItem('boxbollenChatIsWaitingForOrderInfo');
+    localStorage.removeItem('boxbollenChatOrderNumber');
+    localStorage.removeItem('boxbollenChatOrderEmail');
+    localStorage.removeItem('boxbollenChatShowNoOrderIdButton');
+    localStorage.removeItem('boxbollenChatIsWaitingForCardDigits');
+    localStorage.removeItem('boxbollenChatCardLastFourDigits');
+    localStorage.removeItem('boxbollenChatIsWaitingForEmail');
+    localStorage.removeItem('boxbollenChatShownProductCard');
+  
+    const overlay = document.querySelector('.chat-end-conversation-overlay');
+    if (overlay) {
+      overlay.remove();
+    }
+  
+    updateChatWindow();
+  
+    initializeChat();
+  }
+
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  function safelyFormatTimestamp(timestamp) {
+    if (!timestamp) return getStockholmTimestamp();
+    
+    try {
+      if (typeof timestamp === 'string' && timestamp.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
+        return timestamp;
+      }
+      
+      if (typeof timestamp === 'number') {
+        return new Date(timestamp).toISOString();
+      }
+      
+      const date = new Date(timestamp);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString();
+      }
+      
+      return getStockholmTimestamp();
+    } catch (error) {
+      log(`Error formatting timestamp: ${error.message}`, 'error');
+      return getStockholmTimestamp();
+    }
+  }
+    
+  async function sendConversationToAzure(messages) {
+    log('Sending conversation to Azure');
+    const url = CONVO_API_BASE;
+    const payload = {
+      operation: 'store',
+      conversationId: window.conversationId || (window.conversationId = generateUUID()),
+      messages: messages.map(msg => ({
+        text: msg.text,
+        isBot: msg.isBot,
+        timestamp: safelyFormatTimestamp(msg.timestamp)
+      })),
+      timestamp: getStockholmTimestamp(),
+      needsCustomerService: false,
+      HandledChat: false,
+      Tags: [],
+      Rating: null,
+      conversation_over: isConversationEnded,
+      userId: null,
+      name: '',
+      HandledTime: null
+    };
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-functions-key': CONVO_API_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+  
+      const result = await response.json();
+      log('Conversation sent to Azure successfully');
+      return result;
+    } catch (error) {
+      log(`Error sending conversation to Azure: ${error.message}`, 'error');
+      throw error;
+    }
+  }
+
+  function extractLastFourDigits(text) {
+    const match = text.match(/\b\d{4}\b/);
+    return match ? match[0] : null;
+  }
+sendRating
+  async function handleOrderInfo(text) {
+    log(`Handling order info: ${text}`);
+    if (!orderNumber && !isWaitingForCardDigits && !cardLastFourDigits && !isWaitingForEmail) {
+        showNoOrderIdButton = false;
+        
+        if (text.toLowerCase() === 'i don\'t have my order id') {
+            isWaitingForCardDigits = true;
+            await showLoadingThenMessage("No problem. Please enter the last four digits of your credit card.");
+        } else {
+            const extractedNumber = extractOrderNumber(text);
+            if (extractedNumber) {
+                orderNumber = extractedNumber;
+                isWaitingForEmail = true;
+                await showLoadingThenMessage("Great, I've got your order number. Now, please provide your email address associated with this order.");
+            } else {
+                showNoOrderIdButton = true;
+                await showLoadingThenMessage("I couldn't find a valid order number in your message. Please provide your order number.");
+            }
+        }
+    } else if (isWaitingForCardDigits) {
+        const extractedDigits = extractLastFourDigits(text);
+        if (extractedDigits && validateCardLastFourDigits(extractedDigits)) {
+            cardLastFourDigits = extractedDigits;
+            isWaitingForCardDigits = false;
+            isWaitingForEmail = true;
+            await showLoadingThenMessage("Thank you. Now, please provide your email address associated with this order.");
+        } else {
+            await showLoadingThenMessage("No problem. Please enter the last four digits of your credit card.");
+        }
+    } else if (isWaitingForEmail) {
+        if (validateEmail(text)) {
+            orderEmail = text;
+            isWaitingForEmail = false;
+            
+            addMessage("Searching for your order...", true, true, getStockholmTimestamp());
+            updateChatWindow();
+            sendConversationToAzure(messages);
+            
+            try {
+              const apiEndpoint = orderNumber ? 
+                  `${ORDER_API_BASE}?email=${orderEmail}&order_id=${orderNumber}` :
+                  `${ORDER_API_BASE}?email=${orderEmail}&lastFourDigits=${cardLastFourDigits}`;
+              
+              const response = await fetch(apiEndpoint, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'x-functions-key': ORDER_API_KEY
+                  }
+              });
+              
+              if (!response.ok) {
+                  throw new Error('API request failed');
+              }
+              
+              const data = await response.json();
+              const innerData = JSON.parse(data.response);
+              const trackingUrl = innerData.order.trackingUrl;
+              
+              messages.pop();
+              await showLoadingThenMessage(`Here is your tracking link: ${trackingUrl}`);
+          } catch (error) {
+                log(`Error fetching order info: ${error.message}`, 'error');
+                messages.pop();
+                await showLoadingThenMessage("I'm sorry, but I couldn't find an order matching the information you provided.");
+                askToTryAgain();
+            } finally {
+                resetOrderTracking();
+            }
+        } else {
+            await showLoadingThenMessage("The email address you provided doesn't seem to be valid. Please enter a valid email address.");
+        }
+    }
+    updateChatWindow();
+    sendConversationToAzure(messages);
+  }
+
+  function validateOrderId(orderId) {
+    const orderIdRegex = /^[A-Za-z0-9]{4,10}$/;
+    return orderIdRegex.test(orderId);
+  }
+  
+  function resetOrderTracking() {
+    log('Resetting order tracking');
+    orderNumber = '';
+    cardLastFourDigits = '';
+    isWaitingForOrderInfo = false;
+    isWaitingForCardDigits = false;
+    isWaitingForEmail = false;
+    showTryAgainButtons = false;
+    showNoOrderIdButton = false;
+    saveConversation();
+  }
+  
+  function createTryAgainButtons() {
+    log('Creating try again buttons');
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'chat-initial-options';
+    
+    const options = [
+        { text: 'Yes', response: true },
+        { text: 'No', response: false }
+    ];
+    
+    options.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option.text;
+        button.className = 'chat-option-button';
+        button.addEventListener('click', () => handleTryAgainResponse(option.response, option.text));
+        buttonsContainer.appendChild(button);
+    });
+    
+    return buttonsContainer;
+  }
+
+  function handleTryAgainResponse(tryAgain, responseText) {
+    log(`Handling try again response: ${responseText}`);
+    showTryAgainButtons = false;
+    addMessage(responseText, false, false, getStockholmTimestamp());
+    
+    conversationHistory.push({"role": "user", "content": responseText, "timestamp": getStockholmTimestamp()});
+    
+    if (tryAgain) {
+        resetOrderTracking();
+        handleOrderTracking();
+    } else {
+        isWaitingForOrderInfo = false;
+        showLoadingThenMessage("Is there anything else I can help you with?");
+    }
+    
+    updateChatWindow();
+    sendConversationToAzure(messages);
+  }
+
+  async function askToTryAgain() {
+    log('Asking to try again');
+    const tryAgainMessage = "Try again?";
+    await showLoadingThenMessage(tryAgainMessage);
+    showTryAgainButtons = true;
+    updateChatWindow();
+    sendConversationToAzure(messages);
+  }
+
+  function extractOrderNumber(text) {
+    const match = text.match(/\d+/);
+    return match ? match[0] : null;
+  }
+  
+  function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
+  function validateCardLastFourDigits(digits) {
+    return /^\d{4}$/.test(digits);
+  }
+
+  function addNoOrderIdButton() {
+    log('Adding no order ID button');
+    const existingButton = document.querySelector('.chat-option-button[data-no-order-id]');
+    if (existingButton) {
+      return;
+    }
+    
+    const button = document.createElement('button');
+    button.textContent = "I don't have my order id";
+    button.className = 'chat-option-button';
+    button.setAttribute('data-no-order-id', 'true');
+    button.addEventListener('click', handleNoOrderId);
+    
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'chat-initial-options';
+    optionsContainer.appendChild(button);
+    
+    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+    if (messagesWrapper) {
+      messagesWrapper.appendChild(optionsContainer);
+      scrollToBottom();
+    }
+  }
+
+  function handleNoOrderId() {
+    log('Handling no order ID');
+    isWaitingForCardDigits = true;
+    showNoOrderIdButton = false;
+    sendMessage("I don't have my order id");
+  }
+
+  function showProductCard() {
+    log('Showing product card');
+    const productCard = createProductCard();
+    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+    if (messagesWrapper) {
+      messagesWrapper.appendChild(productCard);
+      scrollToBottom();
+    }
+  }
+
+  function createProductCard() {
+    log('Creating product card');
+    const cardWrapper = document.createElement('div');
+    cardWrapper.className = 'chat-message-wrapper bot';
+  
+    const profileImage = document.createElement('img');
+    profileImage.src = config.logoUrl;
+    profileImage.alt = 'Bot Profile';
+    profileImage.className = 'chat-bot-profile-image-card';
+  
+    const card = document.createElement('div');
+    card.className = 'product-card';
+  
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'product-image';
+  
+    const img = document.createElement('img');
+    img.src = 'https://boxbollen.com/cdn/shop/products/boxbollen_packshot_2023_red_1100x.jpg?v=1669502961';
+    img.alt = 'Boxbollen product';
+    
+    imageContainer.appendChild(img);
+  
+    const info = document.createElement('div');
+    info.className = 'product-info';
+  
+    const title = document.createElement('h2');
+    title.className = 'product-title';
+    title.textContent = 'Boxbollen';
+  
+    const description = document.createElement('p');
+    description.className = 'product-description';
+    description.textContent = 'Complete Set With App License';
+  
+    const link = document.createElement('a');
+    link.href = 'https://boxbollen.com/products/boxbollen';
+    link.target = '_blank';
+    link.className = 'read-more-btn';
+    link.textContent = 'Read More';
+  
+    info.appendChild(title);
+    info.appendChild(description);
+    info.appendChild(link);
+  
+    card.appendChild(imageContainer);
+    card.appendChild(info);
+  
+    cardWrapper.appendChild(profileImage);
+    cardWrapper.appendChild(card);
+  
+    return cardWrapper;
+  }
+  
+  function addProductCardAsMessage() {
+    log('Adding product card as message');
+    const loadingMessage = { text: '', isBot: true, isLoading: true, timestamp: getStockholmTimestamp() };
+    messages.push(loadingMessage);
+    updateChatWindow();
+  
+    setTimeout(() => {
+      messages.pop();
+      
+      messages.push({
+        type: 'productCard',
+        isBot: true,
+        timestamp: getStockholmTimestamp()
+      });
+  
+      updateChatWindow();
+  
+      scrollToBottom();
+    }, 1500);
+  }
+  
+  function scrollToBottom() {
+    const messagesContainer = document.querySelector('.chat-messages-container');
+    if (messagesContainer) {
+      setTimeout(() => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }, 100);
+    }
+  }
+createInputArea
+  createChatbotUI();
+
+  window.openBoxbollenChat = function() {
+    log('Opening Boxbollen chat');
+    isChatOpen = true;
+    saveConversation();
+    renderChatbot();
+    initializeChat();
+  };
+
+})();
