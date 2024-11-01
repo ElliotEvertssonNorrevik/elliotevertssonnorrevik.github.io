@@ -99,6 +99,10 @@ sendConversationToAzure
         '.shopify-payment-button__button, ' +
         '[class*="cart-drawer"], ' +
         '[class*="cart-popup"], ' +
+        '.not_desktop, ' +
+        '.cart-functions, ' +
+        '.drawer, ' +
+        '[class*="drawer"], ' +
         '.add-to-cart-drawer'
     );
 
@@ -109,21 +113,25 @@ sendConversationToAzure
         if (isVisible(popup)) {
             const popupRect = popup.getBoundingClientRect();
             const chatRect = chatbotContainer.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
 
-            // Check if the popup overlaps with the chat bubble
-            const overlap = chatRect.bottom - popupRect.top;
-
-            if (overlap > 0) {
-                shouldAdjust = true;
-                if (overlap > maxOverlap) {
-                    maxOverlap = overlap;
+            // Check if we're on mobile
+            if (window.innerWidth <= 480) {
+                // If drawer is at the bottom, move chat up
+                if (popupRect.bottom >= viewportHeight - 100) {
+                    shouldAdjust = true;
+                    const overlap = viewportHeight - popupRect.top;
+                    if (overlap > maxOverlap) {
+                        maxOverlap = overlap;
+                    }
                 }
             }
         }
     });
 
-    // Smoothly adjust the position
-    chatbotContainer.style.bottom = shouldAdjust ? `${20 + maxOverlap}px` : '20px';
+    // Add smooth transition and adjust position
+    chatbotContainer.style.transition = 'bottom 0.3s ease';
+    chatbotContainer.style.bottom = shouldAdjust ? `${maxOverlap + 20}px` : '20px';
   }
 
   function renderChatbot() {
