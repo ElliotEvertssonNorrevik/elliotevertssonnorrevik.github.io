@@ -134,6 +134,8 @@ sendConversationToAzure
     if (isChatOpen) {
       const chatWindow = createChatWindow();
       chatbotContainer.appendChild(chatWindow);
+      // Add the visible class to trigger the animation
+      chatWindow.classList.add('visible');
       updateChatWindow();
     } else {
       const launchButton = createLaunchButton();
@@ -231,8 +233,6 @@ sendConversationToAzure
     reloadButton.innerHTML = '&#x21bb;';
     reloadButton.className = 'chat-button chat-reload-button';
     reloadButton.title = 'Restart conversation';
-    reloadButton.style.fontSize = '30px';
-    reloadButton.style.padding = '10px';
     reloadButton.addEventListener('click', () => {
       log('Reload button clicked');
       restartConversation();
@@ -241,8 +241,6 @@ sendConversationToAzure
     const closeButton = document.createElement('button');
     closeButton.textContent = '×';
     closeButton.className = 'chat-button chat-close-button';
-    closeButton.style.fontSize = '30px';
-    closeButton.style.padding = '10px';
     closeButton.addEventListener('click', () => {
       log('Close button clicked');
       isChatOpen = false;
@@ -407,13 +405,9 @@ function toggleEmojiPicker(event) {
   event.stopPropagation();
 
   const existingPicker = document.querySelector('.chat-emoji-picker');
-
+  
   if (existingPicker) {
-    // Start fade-out effect
-    existingPicker.classList.remove('show');
-    setTimeout(() => {
-      existingPicker.remove();
-    }, 300); // Match this duration with the CSS transition duration
+    existingPicker.remove();
     return;
   }
 
@@ -421,7 +415,7 @@ function toggleEmojiPicker(event) {
   emojiPicker.className = 'chat-emoji-picker';
 
   const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
-
+  
   emojis.forEach(emoji => {
     const emojiButton = document.createElement('button');
     emojiButton.textContent = emoji;
@@ -441,11 +435,6 @@ function toggleEmojiPicker(event) {
   const inputArea = event.target.closest('.chat-input-area');
   inputArea.appendChild(emojiPicker);
 
-  // Add the show class after appending to the DOM
-  setTimeout(() => {
-    emojiPicker.classList.add('show');
-  }, 0);
-
   const rect = event.target.getBoundingClientRect();
   const inputAreaRect = inputArea.getBoundingClientRect();
   emojiPicker.style.bottom = `${inputAreaRect.height}px`;
@@ -453,12 +442,8 @@ function toggleEmojiPicker(event) {
 
   function closeEmojiPicker(e) {
     if (!emojiPicker.contains(e.target) && e.target !== event.target) {
-      // Start fade-out effect
-      emojiPicker.classList.remove('show');
-      setTimeout(() => {
-        emojiPicker.remove();
-        document.removeEventListener('click', closeEmojiPicker);
-      }, 300); // Match this duration with the CSS transition duration
+      emojiPicker.remove();
+      document.removeEventListener('click', closeEmojiPicker);
     }
   }
 
@@ -469,11 +454,8 @@ function toggleEmojiPicker(event) {
   const chatWindow = document.querySelector('.chat-window');
   if (chatWindow) {
     chatWindow.addEventListener('scroll', () => {
-      emojiPicker.classList.remove('show');
-      setTimeout(() => {
-        emojiPicker.remove();
-        document.removeEventListener('click', closeEmojiPicker);
-      }, 300); // Match this duration with the CSS transition duration
+      emojiPicker.remove();
+      document.removeEventListener('click', closeEmojiPicker);
     }, { once: true });
   }
 }
@@ -1622,22 +1604,22 @@ createInputArea
     initializeChat();
   };
 
-  function adjustHeaderPosition() {
-    const header = document.querySelector('.chat-header');
-    if (header) {
-        const viewportHeight = window.innerHeight;
-        header.style.top = `${viewportHeight - header.offsetHeight}px`;
+  function exitChat() {
+    log('Exiting chat');
+    
+    const chatWindow = document.querySelector('.chat-window');
+    if (chatWindow) {
+      chatWindow.classList.add('hidden'); // Add the class to trigger the glide-out animation
+
+      // Remove the chat window after the animation completes
+      setTimeout(() => {
+        chatWindow.remove();
+        isChatOpen = false; // Update the chat state
+      }, 500); // Match this duration with the animation duration
     }
   }
 
-  // Add event listener for resize
-  window.addEventListener('resize', adjustHeaderPosition);
-
-  // Call this function when initializing the chat
-  initializeChat = async () => {
-    log('Initializing chat');
-    // ... existing initialization code ...
-    adjustHeaderPosition(); // Adjust header position on initialization
-  };
+  const exitButton = document.querySelector('.exit-button'); // Assuming you have an exit button
+  exitButton.addEventListener('click', exitChat);
 
 })();
