@@ -46,7 +46,22 @@
   display: flex !important;
   flex-direction: column !important;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
-  z-index: 2147483647 !important; /* Maximum z-index value */
+  z-index: 2147483647 !important;
+  transform-origin: bottom left !important;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+}
+
+.chat-window.hidden {
+  transform: scale(0) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.chat-window.visible {
+  transform: scale(1) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 .chat-header {
@@ -57,7 +72,6 @@
   align-items: center !important;
   background: linear-gradient(180deg,  #d30000 5%, #ff1f1f 35%, 60%, #d30000 95%) !important;
 }
-
 
 .chat-header-content {
   display: flex !important;
@@ -73,7 +87,7 @@
 
 .chat-header-text h1 {
   color: #fff !important;
-  font-size: 18px !important;
+  font-size: 24px !important;
   margin: 0 !important;
 }
 
@@ -135,6 +149,7 @@
   background-color: white !important;
   margin: 10px 0 10px 38px !important;
 }
+
 .product-image {
   width: 100% !important;
   max-height: 230px !important;
@@ -143,26 +158,30 @@
   align-items: center !important;
   background-color: #f0f0f0 !important;
   overflow: hidden !important;
-
 }
+
 .product-image img {
   max-width: 100% !important;
   max-height: 100% !important;
   overflow: hidden !important;
 }
+
 .product-info {
   padding: 15px !important;
 }
+
 .product-title {
   font-size: 18px !important;
   font-weight: 700 !important;
   margin: 0 0 10px 0 !important;
 }
+
 .product-description {
   font-size: 14px !important;
   color: #666 !important;
   margin: 0 0 15px 0 !important;
 }
+
 .read-more-btn {
   display: inline-block !important;
   background-color: #ffeeee !important;
@@ -178,6 +197,7 @@
   width: 100% !important;
   box-sizing: border-box !important;
 }
+
 .read-more-btn:hover {
   background-color: #ff3b30 !important;
   color: black !important;
@@ -225,8 +245,7 @@
   justify-content: flex-end !important;
 }
 
-
-.chat-bot-profile-image-card{
+.chat-bot-profile-image-card {
   width: 30px !important;
   height: 30px !important;
   border-radius: 50% !important;
@@ -235,9 +254,6 @@
   margin-bottom: 1rem !important; /* Adjust the margin-bottom to fine-tune the alignment */
 }
 
-
-
-
 .chat-bot-profile-image {
   width: 30px !important;
   height: 30px !important;
@@ -245,9 +261,6 @@
   margin-right: 8px !important;
   align-self: flex-end !important; /* Ensure the avatar aligns with the bottom of the card */
 }
-
-
-
 
 .chat-message {
   position: relative !important;
@@ -270,18 +283,6 @@
   color: #fff !important;
   border-radius: 18px 18px 0 18px !important;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 .chat-emoji-button {
   background: none !important;
@@ -316,18 +317,21 @@
 .chat-logo-text {
   text-align: center !important;
   margin-top: 10px !important;
+  font-weight: 900 !important;
 }
 
 .chat-logo-text h2 {
-  font-size: 18px !important;
+  font-size: 24px !important;
   margin: 0 !important;
   color: #333 !important;
+  font-weight: bold !important;
 }
 
 .chat-logo-text p {
   font-size: 14px !important;
-  margin: 5px 0 0 !important;
+  margin: 7px 0 0 !important;
   color: #666 !important;
+  font-weight: bold !important;
 }
 
 .chat-input {
@@ -355,7 +359,6 @@
   justify-content: center !important;
 }
 
-
 .chat-send-button:hover {
   opacity: 0.9 !important;
 }
@@ -376,6 +379,14 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
   z-index: 2147483647 !important; /* Maximum z-index value */
   margin-bottom: 5px !important;
+  opacity: 0; /* Start hidden */
+  transform: scale(0.9); /* Start slightly smaller */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* Add transition for smooth effect */
+}
+
+.chat-emoji-picker.show {
+  opacity: 1; /* Fully visible */
+  transform: scale(1); /* Scale to normal size */
 }
 
 .chat-emoji-picker button {
@@ -634,7 +645,6 @@
   color: black !important;
 }
 
-
 @media (max-width: 480px) {
   .chat-window {
     width: 100% !important;
@@ -679,6 +689,70 @@
   }
 }
 
+.chat-floating-message {
+  position: fixed !important;
+  background-color: #F80B00 !important;
+  color: #fff !important;
+  padding: 10px 15px !important;
+  border-radius: 18px 18px 0 18px !important;
+  font-size: 14px !important;
+  pointer-events: none !important;
+  z-index: 2147483648 !important;
+  transition: all 0.3s ease-out !important;
+  max-width: 70% !important;
+  word-wrap: break-word !important;
+}
 
+/* Add new animation keyframes */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Remove the animations from the base classes */
+.chat-message-wrapper.bot {
+  justify-content: flex-start !important;
+  display: flex !important;
+  align-items: flex-start !important;
+}
+
+.chat-message-wrapper.user {
+  justify-content: flex-end !important;
+}
+
+/* Add new classes for new messages */
+.chat-message-wrapper.bot.new-message {
+  animation: slideInFromLeft 0.3s ease-out !important;
+}
+
+.chat-message-wrapper.user.new-message {
+  animation: slideInFromRight 0.3s ease-out !important;
+}
