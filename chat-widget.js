@@ -41,7 +41,7 @@
 
   const config = {
     headerText: 'Boxbollen AI',
-    subHeaderText: 'Chat with our digital assistant',
+    subHeaderText: '',
     mainColor: '#F80B00',
     logoUrl: 'https://i.ibb.co/61kG13C/boxbollen.jpg',
     launchAvatarUrl: 'https://i.ibb.co/zQkKbfv/Chatbubble-removebg-preview-removebg-preview.png'
@@ -99,10 +99,6 @@ sendConversationToAzure
         '.shopify-payment-button__button, ' +
         '[class*="cart-drawer"], ' +
         '[class*="cart-popup"], ' +
-        '.not_desktop, ' +
-        '.cart-functions, ' +
-        '.drawer, ' +
-        '[class*="drawer"], ' +
         '.add-to-cart-drawer'
     );
 
@@ -113,25 +109,21 @@ sendConversationToAzure
         if (isVisible(popup)) {
             const popupRect = popup.getBoundingClientRect();
             const chatRect = chatbotContainer.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
 
-            // Check if we're on mobile
-            if (window.innerWidth <= 480) {
-                // If drawer is at the bottom, move chat up
-                if (popupRect.bottom >= viewportHeight - 100) {
-                    shouldAdjust = true;
-                    const overlap = viewportHeight - popupRect.top;
-                    if (overlap > maxOverlap) {
-                        maxOverlap = overlap;
-                    }
+            // Check if the popup overlaps with the chat bubble
+            const overlap = chatRect.bottom - popupRect.top;
+
+            if (overlap > 0) {
+                shouldAdjust = true;
+                if (overlap > maxOverlap) {
+                    maxOverlap = overlap;
                 }
             }
         }
     });
 
-    // Add smooth transition and adjust position
-    chatbotContainer.style.transition = 'bottom 0.3s ease';
-    chatbotContainer.style.bottom = shouldAdjust ? `${maxOverlap + 20}px` : '20px';
+    // Smoothly adjust the position
+    chatbotContainer.style.bottom = shouldAdjust ? `${20 + maxOverlap}px` : '20px';
   }
 
   function renderChatbot() {
@@ -220,6 +212,8 @@ sendConversationToAzure
   
     const title = document.createElement('h1');
     title.textContent = config.headerText;
+    title.style.fontSize = '24px';
+    title.style.fontWeight = 'bold';
   
     const subtitle = document.createElement('p');
     subtitle.textContent = config.subHeaderText;
@@ -237,6 +231,8 @@ sendConversationToAzure
     reloadButton.innerHTML = '&#x21bb;';
     reloadButton.className = 'chat-button chat-reload-button';
     reloadButton.title = 'Restart conversation';
+    reloadButton.style.fontSize = '30px';
+    reloadButton.style.padding = '10px';
     reloadButton.addEventListener('click', () => {
       log('Reload button clicked');
       restartConversation();
@@ -245,6 +241,8 @@ sendConversationToAzure
     const closeButton = document.createElement('button');
     closeButton.textContent = '×';
     closeButton.className = 'chat-button chat-close-button';
+    closeButton.style.fontSize = '30px';
+    closeButton.style.padding = '10px';
     closeButton.addEventListener('click', () => {
       log('Close button clicked');
       isChatOpen = false;
@@ -289,7 +287,7 @@ sendConversationToAzure
   
     const logoText = document.createElement('div');
     logoText.className = 'chat-logo-text';
-    logoText.innerHTML = `<h2>${config.headerText}</h2><p>${config.subHeaderText}</p>`;
+    logoText.innerHTML = `<h2 style="font-size: 24px; font-weight: bold;">${config.headerText}</h2><p>${config.subHeaderText}</p>`;
   
     logoContainer.appendChild(logo);
     logoContainer.appendChild(logoText);
@@ -343,10 +341,42 @@ sendConversationToAzure
         const message = input.value.trim();
         if (message !== '') {
           log(`User sending message: ${message}`);
+          
+          // Create a floating message element
+          const floatingMessage = document.createElement('div');
+          floatingMessage.className = 'chat-floating-message';
+          floatingMessage.textContent = message;
+          
+          // Get positions
+          const inputRect = input.getBoundingClientRect();
+          const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+          const wrapperRect = messagesWrapper.getBoundingClientRect();
+          
+          // Position the floating message at the input's position
+          floatingMessage.style.left = `${inputRect.left}px`;
+          floatingMessage.style.top = `${inputRect.top}px`;
+          
+          // Add the floating message to the body
+          document.body.appendChild(floatingMessage);
+          
+          // Clear input and update state
           input.value = '';
           pendingUserInput = '';
-          sendMessage(message);
-          sendButton.disabled = true;
+          
+          // Trigger the animation
+          requestAnimationFrame(() => {
+            floatingMessage.style.left = `${wrapperRect.right - 20}px`;
+            floatingMessage.style.top = `${wrapperRect.bottom - 100}px`;
+            floatingMessage.style.transform = 'scale(0)';
+            floatingMessage.style.opacity = '0';
+          });
+          
+          // Remove the floating message after animation
+          setTimeout(() => {
+            floatingMessage.remove();
+            sendMessage(message);
+            sendButton.disabled = true;
+          }, 300);
         }
       };
   
@@ -377,9 +407,13 @@ function toggleEmojiPicker(event) {
   event.stopPropagation();
 
   const existingPicker = document.querySelector('.chat-emoji-picker');
-  
+
   if (existingPicker) {
-    existingPicker.remove();
+    // Start fade-out effect
+    existingPicker.classList.remove('show');
+    setTimeout(() => {
+      existingPicker.remove();
+    }, 300); // Match this duration with the CSS transition duration
     return;
   }
 
@@ -387,7 +421,7 @@ function toggleEmojiPicker(event) {
   emojiPicker.className = 'chat-emoji-picker';
 
   const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
-  
+
   emojis.forEach(emoji => {
     const emojiButton = document.createElement('button');
     emojiButton.textContent = emoji;
@@ -407,6 +441,11 @@ function toggleEmojiPicker(event) {
   const inputArea = event.target.closest('.chat-input-area');
   inputArea.appendChild(emojiPicker);
 
+  // Add the show class after appending to the DOM
+  setTimeout(() => {
+    emojiPicker.classList.add('show');
+  }, 0);
+
   const rect = event.target.getBoundingClientRect();
   const inputAreaRect = inputArea.getBoundingClientRect();
   emojiPicker.style.bottom = `${inputAreaRect.height}px`;
@@ -414,8 +453,12 @@ function toggleEmojiPicker(event) {
 
   function closeEmojiPicker(e) {
     if (!emojiPicker.contains(e.target) && e.target !== event.target) {
-      emojiPicker.remove();
-      document.removeEventListener('click', closeEmojiPicker);
+      // Start fade-out effect
+      emojiPicker.classList.remove('show');
+      setTimeout(() => {
+        emojiPicker.remove();
+        document.removeEventListener('click', closeEmojiPicker);
+      }, 300); // Match this duration with the CSS transition duration
     }
   }
 
@@ -426,8 +469,11 @@ function toggleEmojiPicker(event) {
   const chatWindow = document.querySelector('.chat-window');
   if (chatWindow) {
     chatWindow.addEventListener('scroll', () => {
-      emojiPicker.remove();
-      document.removeEventListener('click', closeEmojiPicker);
+      emojiPicker.classList.remove('show');
+      setTimeout(() => {
+        emojiPicker.remove();
+        document.removeEventListener('click', closeEmojiPicker);
+      }, 300); // Match this duration with the CSS transition duration
     }, { once: true });
   }
 }
@@ -472,6 +518,14 @@ function toggleEmojiPicker(event) {
     log('Creating message element');
     const messageWrapper = document.createElement('div');
     messageWrapper.className = `chat-message-wrapper ${message.isBot ? 'bot' : 'user'}`;
+    
+    if (message.timestamp && new Date(message.timestamp).getTime() > Date.now() - 1000) {
+        messageWrapper.classList.add('new-message');
+        
+        setTimeout(() => {
+            messageWrapper.classList.remove('new-message');
+        }, 300);
+    }
     
     if (message.isBot && message.type === 'productCard') {
         const card = createProductCard();
@@ -948,36 +1002,55 @@ function toggleEmojiPicker(event) {
         messagesWrapper.appendChild(logoContainer);
       }
   
+      // Track if we're adding new content that needs scrolling
+      let needsScroll = false;
+      const previousHeight = messagesWrapper.scrollHeight;
+  
       messages.forEach(message => {
         const messageElement = createMessageElement(message);
         messagesWrapper.appendChild(messageElement);
+        
+        // Check if this is a new message that needs scrolling
+        if (message.timestamp && 
+            new Date(message.timestamp).getTime() > Date.now() - 1000) {
+          needsScroll = true;
+        }
       });
   
+      // Add additional elements if needed
       if (showInitialOptions) {
         const optionsElement = createInitialOptions();
         messagesWrapper.appendChild(optionsElement);
+        needsScroll = true;
       }
   
       if (showFollowUp) {
         const followUpElement = createFollowUpButtons();
         messagesWrapper.appendChild(followUpElement);
+        needsScroll = true;
       }
   
       if (showRatingSystem) {
         const ratingElement = createStarRating();
         messagesWrapper.appendChild(ratingElement);
+        needsScroll = true;
       }
   
       if (showTryAgainButtons) {
         const tryAgainElement = createTryAgainButtons();
         messagesWrapper.appendChild(tryAgainElement);
+        needsScroll = true;
       }
   
       if (showNoOrderIdButton) {
         addNoOrderIdButton();
+        needsScroll = true;
       }
   
-      scrollToBottom();
+      // Scroll if new content was added
+      if (needsScroll || messagesWrapper.scrollHeight > previousHeight) {
+        scrollToBottom(true); // Pass true to force immediate scroll
+      }
     }
   
     const inputArea = document.querySelector('.chat-input-area');
@@ -1516,16 +1589,26 @@ sendRating
   
       updateChatWindow();
   
-      scrollToBottom();
+      // Force immediate scroll after product card is added
+      requestAnimationFrame(() => {
+        scrollToBottom(true);
+      });
     }, 1500);
   }
   
-  function scrollToBottom() {
+  function scrollToBottom(immediate = false) {
     const messagesContainer = document.querySelector('.chat-messages-container');
     if (messagesContainer) {
-      setTimeout(() => {
+      const scrollOptions = {
+        top: messagesContainer.scrollHeight,
+        behavior: immediate ? 'auto' : 'smooth'
+      };
+      
+      if (immediate) {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }, 100);
+      } else {
+        messagesContainer.scrollTo(scrollOptions);
+      }
     }
   }
 createInputArea
@@ -1537,6 +1620,24 @@ createInputArea
     saveConversation();
     renderChatbot();
     initializeChat();
+  };
+
+  function adjustHeaderPosition() {
+    const header = document.querySelector('.chat-header');
+    if (header) {
+        const viewportHeight = window.innerHeight;
+        header.style.top = `${viewportHeight - header.offsetHeight}px`;
+    }
+  }
+
+  // Add event listener for resize
+  window.addEventListener('resize', adjustHeaderPosition);
+
+  // Call this function when initializing the chat
+  initializeChat = async () => {
+    log('Initializing chat');
+    // ... existing initialization code ...
+    adjustHeaderPosition(); // Adjust header position on initialization
   };
 
 })();
