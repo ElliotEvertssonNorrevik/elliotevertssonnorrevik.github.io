@@ -1,854 +1,1710 @@
-#chat-chatbot {
-  position: fixed !important;
-  font-family: Nunito, sans-serif !important;
-  bottom: 20px !important;
-  left: 20px !important;
-  z-index: 2147483647 !important;
-  transition: bottom 0.3s ease !important;
-}
+(function() {
+  const CONVO_API_BASE = 'https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/conversationoperations';   
+  const convo1 = '_sSpPVu8npJbLaeS1FJFbatmtVVShl0';
+  const convo2 = '_aDkcQEpUskHKAzFuyqYYOQ==';
+  const CONVO_API_KEY = `${convo1}${convo2}`; 
+  const ORDER_API_BASE = 'https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/recentordersemail';
+  const order1 = 'rcQ3VTXyDEiUNPaQJgKX'
+  const order2 = '_z6IGsvYm-a8n9t2TLVIF4qcAzFupYwYeA==';
+  const ORDER_API_KEY = `${order1}${order2}`;  
+  const API_BASE_URL = 'https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/AIResponse';
+  const apibase1 = '9rhFu3kfzEln8s_x9cHRbMvUYB'
+  const apibase2 = 'KriBP3LABZKcoGEbMAAzFuAVD41w=='
+  const API_KEY = `${apibase1}${apibase2}`;
+  const CONFIG_API_BASE = 'https://bb-h9dtdebje5fsg5en.z01.azurefd.net/api/configuration';
+  const configpart1 = 'EzFi0G7VjmsfU3JuSzORxqX'
+  const configpart2 = 'k21zmNLwORyD3EmX7fW9vAzFudY2gAA=='
+  const CONFIG_API_CODE = `${configpart1}${configpart2}`;
 
-#chat-chatbot.elevated {
-  bottom: 90px !important;
-}
 
-.chat-launch-button {
-  width: 80px !important;
-  height: 80px !important;
-  border-radius: 50% !important;
-  border: none !important;
-  cursor: pointer !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
-  transition: transform 0.2s !important;
-  overflow: hidden !important;
-  padding: 0 !important;
-  z-index: 2147483647 !important; /* Maximum z-index value */
-}
+  let shownProductCard = false;
+  let messages = [];
+  let conversationHistory = [];
+  let isInitialized = false;
+  let showNoOrderIdButton = false;
+  let isChatOpen = false;
+  let isWaitingForResponse = false;
+  let isLoading = false;
+  let pendingUserInput = '';
+  let showInitialOptions = false;
+  let showFollowUp = false;
+  let isWaitingForOrderInfo = false;
+  let orderNumber = '';
+  let orderEmail = '';
+  let isConversationEnded = false;
+  let showRatingSystem = false;
+  let isEndConversationOverlayShown = false;
+  let showTryAgainButtons = false;
+  let isWaitingForCardDigits = false;
+  let cardLastFourDigits = '';
+  let isWaitingForEmail = false;
 
-.chat-launch-button:hover {
-  transform: scale(1.05) !important;
-}
+  const config = {
+    headerText: 'Boxbollen AI',
+    subHeaderText: '',
+    mainColor: '#F80B00',
+    logoUrl: 'https://i.ibb.co/61kG13C/boxbollen.jpg',
+    launchAvatarUrl: 'https://i.ibb.co/zQkKbfv/Chatbubble-removebg-preview-removebg-preview.png'
+  };
 
-.chat-launch-avatar {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-}
+  function log(message, type = 'info') {
+    const timestamp = new Date().toISOString();
+    if (typeof type === 'object') {
+        console.log(`[${timestamp}] [ERROR]`, message, type);
+    } else {
+        console.log(`[${timestamp}] [${type.toUpperCase()}] ${message}`);
+    }
+  }
 
-.chat-window {
-  width: 440px !important;
-  height: 600px !important;
-  background-color: #fff !important;
-  border-radius: 15px !important;
-  overflow: hidden !important;
-  display: flex !important;
-  flex-direction: column !important;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
-  z-index: 2147483647 !important;
-  transform-origin: bottom left !important;
-  position: relative !important;
-  transform: translateY(100%); /* Start off-screen at the bottom */
-  opacity: 0; /* Start hidden */
-  transition: transform 0.5s ease-out, opacity 0.5s ease-out !important; /* Smooth transition */
-  overscroll-behavior: contain !important; /* Prevent scroll chaining */
-  touch-action: none !important; /* Prevent touch events from propagating */
-}
+  function createChatbotUI() {
+    log('Creating chatbot UI');
+    const chatbotContainer = document.createElement('div');
+    chatbotContainer.id = 'chat-chatbot';
+    chatbotContainer.style.position = 'fixed';
+    chatbotContainer.style.bottom = '20px';
+    chatbotContainer.style.left = '20px';
+    chatbotContainer.style.fontFamily = 'Nunito, sans-serif';
+    chatbotContainer.style.transition = 'bottom 0.3s ease';
 
-.chat-window.hidden {
-  transform: scale(0) !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  animation: glideOutToBottom 0.5s ease-out forwards; /* Apply glide-out animation */
-}
+    // Create and start the observer with more specific config
+    const observer = new MutationObserver(() => {
+        requestAnimationFrame(() => {
+            adjustChatButtonPosition(chatbotContainer);
+        });
+    });
 
-.chat-window.visible {
-  animation: glideInFromBottom 0.5s ease-out forwards; /* Apply glide-in animation */
-  transform: translateY(0); /* Move into view */
-  opacity: 1; /* Fade in */
-}
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        characterData: false
+    });
 
-.chat-window.closing {
-  transform: translateY(100%);
-  opacity: 0;
-}
+    // Check position on various events
+    window.addEventListener('load', () => adjustChatButtonPosition(chatbotContainer));
+    window.addEventListener('DOMContentLoaded', () => adjustChatButtonPosition(chatbotContainer));
 
-.chat-header {
-  padding: 15px !important;
-  border-radius: 15px !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  height: 85px !important; /* Set explicit height */
-  position: relative !important;
-}
+    document.body.appendChild(chatbotContainer);
+    loadConversation();
+    renderChatbot();
+  }
 
-.chat-header-content {
-  display: flex !important;
-  align-items: center !important;
-}
+  function isVisible(element) {
+    return element && (
+        element.offsetWidth > 0 || 
+        element.offsetHeight > 0 || 
+        element.getClientRects().length > 0
+    );
+  }
 
-.chat-header-image {
-  width: 40px !important;
-  height: 40px !important;
-  border-radius: 50% !important;
-  margin-right: 10px !important;
-}
+  function adjustChatButtonPosition(chatbotContainer) {
+    const popups = document.querySelectorAll(
+        '.cart-notification, ' +
+        '.shopify-payment-button__button, ' +
+        '[class*="cart-drawer"], ' +
+        '[class*="cart-popup"], ' +
+        '.add-to-cart-drawer'
+    );
 
-.chat-header-text h1 {
-  color: #fff !important;
-  font-size: 24px !important;
-  margin: 0 !important;
-}
+    let shouldAdjust = false;
+    let maxOverlap = 0;
 
-.chat-header-text p {
-  color: #fff !important;
-  font-size: 14px !important;
-  margin: 0 !important;
-}
+    popups.forEach(popup => {
+        if (isVisible(popup)) {
+            const popupRect = popup.getBoundingClientRect();
+            const chatRect = chatbotContainer.getBoundingClientRect();
 
-.chat-header-buttons {
-  display: flex !important;
-  align-items: center !important;
-}
+            // Check if the popup overlaps with the chat bubble
+            const overlap = chatRect.bottom - popupRect.top;
 
-.chat-try-again-buttons,
-.chat-button {
-  background: none !important;
-  border: none !important;
-  color: white !important;
-  font-size: 32px !important;
-  cursor: pointer !important;
-  padding: 5px !important;
-  margin-left: 10px !important;
-  font-weight: bold !important;
-}
+            if (overlap > 0) {
+                shouldAdjust = true;
+                if (overlap > maxOverlap) {
+                    maxOverlap = overlap;
+                }
+            }
+        }
+    });
 
-.chat-button:hover {
-  opacity: 0.8 !important;
-}
+    // Smoothly adjust the position
+    chatbotContainer.style.bottom = shouldAdjust ? `${20 + maxOverlap}px` : '20px';
+  }
 
-.chat-reload-button,
-.chat-close-button {
-  font-size: 28px !important;
-}
+  function renderChatbot() {
+    log('Rendering chatbot');
+    const chatbotContainer = document.getElementById('chat-chatbot');
+    chatbotContainer.innerHTML = '';
 
-.chat-messages-container {
-  flex-grow: 1 !important;
-  overflow-y: scroll !important;
-  overscroll-behavior: contain !important;
-  padding: 0 !important;
-  background-color: #fff !important;
-  width: 100% !important;
-  max-width: 600px !important;
-  margin: 0 auto !important;
-  -webkit-overflow-scrolling: touch !important;
-  touch-action: pan-y !important;
-  position: relative !important;
-  isolation: isolate !important;
+    if (isChatOpen) {
+      const chatWindow = createChatWindow();
+      chatbotContainer.appendChild(chatWindow);
+      // Add the visible class to trigger the animation
+      chatWindow.classList.add('visible');
+      updateChatWindow();
+    } else {
+      const launchButton = createLaunchButton();
+      chatbotContainer.appendChild(launchButton);
+    }
+  }
+
+  function createLaunchButton() {
+    log('Creating launch button');
+    const button = document.createElement('button');
+    button.className = 'chat-launch-button';
+    button.style.backgroundColor = 'transparent';
+    button.style.width = '70px';
+    button.style.height = '70px';
+    button.style.padding = '0';
+    button.style.border = 'none';
+    button.style.cursor = 'pointer';
+    button.style.display = 'flex';
+    button.style.alignItems = 'center';
+    button.style.justifyContent = 'center';
+    button.style.margin = '0';
+    button.style.lineHeight = '0';
+    button.style.fontSize = '0';
+    button.style.outline = 'none';
+    
+    const svg = `<svg width="100%" height="100%" viewBox="0 0 54 53" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="27" cy="26.5" rx="27" ry="26.5" fill="#06AFFF"/>
+        <ellipse cx="27.1373" cy="24.853" rx="10.9477" ry="9.85296" fill="white"/>
+        <path d="M14.7197 33.6722L18 30L19.6909 27.5482L22.5176 32.4848L14.7197 33.6722Z" fill="white"/>
+    </svg>`;
+    
+    button.innerHTML = svg;
+    button.addEventListener('click', () => {
+        log('Launch button clicked');
+        isChatOpen = true;
+        saveConversation();
+        renderChatbot();
+        initializeChat();
+    });
+
+    return button;
+  }
+
+  function createChatWindow() {
+    log('Creating chat window');
+    const chatWindow = document.createElement('div');
+    chatWindow.className = 'chat-window';
   
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  &::-webkit-scrollbar {
-    display: none !important;
+    // Add event listener to prevent scroll propagation
+    chatWindow.addEventListener('wheel', (e) => {
+        e.stopPropagation();
+    }, { passive: true });
+  
+    const header = createChatHeader();
+    const messagesContainer = createMessagesContainer();
+    const inputArea = createInputArea();
+  
+    chatWindow.appendChild(header);
+    chatWindow.appendChild(messagesContainer);
+    chatWindow.appendChild(inputArea);
+  
+    return chatWindow;
+  }
+
+  function createChatHeader() {
+    log('Creating chat header');
+    const header = document.createElement('div');
+    header.className = 'chat-header';
+    
+    // Updated SVG with responsive width and height
+    const svg = `<svg width="100%" height="90%" viewBox="0 0 375 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g filter="url(#filter0_i_13484_14502)">
+        <rect width="375" height="60" rx="12" fill="#F80B00"/>
+      </g>
+      <defs>
+        <filter id="filter0_i_13484_14502" x="-1" y="0" width="376" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+          <feMorphology radius="4" operator="erode" in="SourceAlpha" result="effect1_innerShadow_13484_14502"/>
+          <feOffset dx="-1"/>
+          <feGaussianBlur stdDeviation="7.8"/>
+          <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+          <feBlend mode="normal" in2="shape" result="effect1_innerShadow_13484_14502"/>
+        </filter>
+      </defs>
+    </svg>
+    `;
+    
+    // Create SVG container with updated dimensions
+    const svgContainer = document.createElement('div');
+    svgContainer.style.position = 'absolute';
+    svgContainer.style.top = '0';
+    svgContainer.style.left = '0';
+    svgContainer.style.width = '100%';
+    svgContainer.style.height = '100%';
+    svgContainer.style.zIndex = '0';
+    svgContainer.innerHTML = svg;
+    
+    header.appendChild(svgContainer);
+  
+    // Header Content
+    const headerContent = document.createElement('div');
+    headerContent.className = 'chat-header-content';
+    headerContent.style.position = 'relative';
+    headerContent.style.zIndex = '1';
+  
+    const headerImage = document.createElement('img');
+    headerImage.src = config.logoUrl;
+    headerImage.alt = 'Boxbollen';
+    headerImage.className = 'chat-header-image';
+  
+    const headerText = document.createElement('div');
+    headerText.className = 'chat-header-text';
+  
+    const title = document.createElement('h1');
+    title.textContent = config.headerText;
+    title.style.fontSize = '24px';
+    title.style.fontWeight = 'bold';
+  
+    const subtitle = document.createElement('p');
+    subtitle.textContent = config.subHeaderText;
+  
+    headerText.appendChild(title);
+    headerText.appendChild(subtitle);
+  
+    headerContent.appendChild(headerImage);
+    headerContent.appendChild(headerText);
+  
+    // Buttons Container
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'chat-header-buttons';
+
+    const reloadButton = document.createElement('button');
+    reloadButton.innerHTML = '&#x21bb;';
+    reloadButton.className = 'chat-button chat-reload-button';
+    reloadButton.title = 'Restart conversation';
+    reloadButton.addEventListener('click', () => {
+      log('Reload button clicked');
+      restartConversation();
+    });
+  
+    const closeButton = document.createElement('button');
+    closeButton.textContent = '×';
+    closeButton.className = 'chat-button chat-close-button';
+    closeButton.addEventListener('click', () => {
+      log('Close button clicked');
+      isChatOpen = false;
+      saveConversation();
+      renderChatbot();
+    });
+  
+    buttonsContainer.appendChild(reloadButton);
+    buttonsContainer.appendChild(closeButton);
+  
+    header.appendChild(headerContent);
+    header.appendChild(buttonsContainer);
+  
+    return header;
+  }
+
+  function createMessagesContainer() {
+    log('Creating messages container');
+    const container = document.createElement('div');
+    container.className = 'chat-messages-container';
+    
+    // Add event listeners to prevent scroll propagation
+    container.addEventListener('wheel', (e) => {
+        e.stopPropagation();
+    }, { passive: true });
+    
+    container.addEventListener('touchmove', (e) => {
+        e.stopPropagation();
+    }, { passive: true });
+  
+    const messagesWrapper = document.createElement('div');
+    messagesWrapper.className = 'chat-messages-wrapper';
+  
+    const logoContainer = createChatLogo();
+    messagesWrapper.appendChild(logoContainer);
+  
+    container.appendChild(messagesWrapper);
+  
+    return container;
+  }
+
+  function createChatLogo() {
+    log('Creating chat logo');
+    const logoContainer = document.createElement('div');
+    logoContainer.className = 'chat-logo-container';
+  
+    const logo = document.createElement('img');
+    logo.src = config.logoUrl;
+    logo.alt = 'Boxbollen Logo';
+    logo.className = 'chat-logo';
+  
+    const logoText = document.createElement('div');
+    logoText.className = 'chat-logo-text';
+    logoText.innerHTML = `<h2 style="font-size: 24px; font-weight: bold;">${config.headerText}</h2><p>${config.subHeaderText}</p>`;
+  
+    logoContainer.appendChild(logo);
+    logoContainer.appendChild(logoText);
+  
+    return logoContainer;
+  }
+
+  function createInputArea() {
+    log('Creating input area');
+    const inputArea = document.createElement('div');
+    inputArea.className = 'chat-input-area';
+  
+    if (!isConversationEnded && !showRatingSystem) {
+      const inputContainer = document.createElement('div');
+      inputContainer.className = 'chat-input-container';
+      
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Write a message...';
+      input.className = 'chat-input';
+      input.value = pendingUserInput;
+      input.disabled = false;
+      
+      const smileySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round">
+      <circle cx="50" cy="50" r="42" />
+      <path d="M30 60 Q50 75 70 60" />
+      <circle cx="35" cy="40" r="6" fill="currentColor" stroke="none" />
+      <circle cx="65" cy="40" r="6" fill="currentColor" stroke="none" />
+      </svg>`;
+    
+      const emojiButton = document.createElement('button');
+      emojiButton.innerHTML = smileySvg; 
+      emojiButton.className = 'chat-emoji-button';
+      emojiButton.addEventListener('click', toggleEmojiPicker);
+      emojiButton.disabled = isWaitingForResponse;
+      
+      const sendSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+      </svg>`;
+  
+      const sendButton = document.createElement('button');
+      sendButton.innerHTML = sendSvg;
+      sendButton.className = 'chat-send-button';
+      sendButton.style.backgroundColor = 'transparent';
+      sendButton.style.border = 'none';
+      sendButton.style.cursor = 'pointer';
+      sendButton.disabled = isWaitingForResponse;
+  
+      const handleSendMessage = () => {
+        if (isWaitingForResponse) return;
+        const message = input.value.trim();
+        if (message !== '') {
+          log(`User sending message: ${message}`);
+          
+          // Create a floating message element
+          const floatingMessage = document.createElement('div');
+          floatingMessage.className = 'chat-floating-message';
+          floatingMessage.textContent = message;
+          
+          // Get positions
+          const inputRect = input.getBoundingClientRect();
+          const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+          const wrapperRect = messagesWrapper.getBoundingClientRect();
+          
+          // Position the floating message at the input's position
+          floatingMessage.style.left = `${inputRect.left}px`;
+          floatingMessage.style.top = `${inputRect.top}px`;
+          
+          // Add the floating message to the body
+          document.body.appendChild(floatingMessage);
+          
+          // Clear input and update state
+          input.value = '';
+          pendingUserInput = '';
+          
+          // Trigger the animation
+          requestAnimationFrame(() => {
+            floatingMessage.style.left = `${wrapperRect.right - 20}px`;
+            floatingMessage.style.top = `${wrapperRect.bottom - 100}px`;
+            floatingMessage.style.transform = 'scale(0)';
+            floatingMessage.style.opacity = '0';
+          });
+          
+          // Remove the floating message after animation
+          setTimeout(() => {
+            floatingMessage.remove();
+            sendMessage(message);
+            sendButton.disabled = true;
+          }, 300);
+        }
+      };
+  
+      sendButton.addEventListener('click', handleSendMessage);
+      
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !isWaitingForResponse) {
+          handleSendMessage();
+        }
+      });
+  
+      input.addEventListener('input', (e) => {
+        pendingUserInput = e.target.value;
+        sendButton.disabled = e.target.value.trim() === '' || isWaitingForResponse;
+      });
+  
+      inputContainer.appendChild(input);
+      inputContainer.appendChild(emojiButton);
+      inputContainer.appendChild(sendButton);
+      inputArea.appendChild(inputContainer);
+    }
+  
+    return inputArea;
+  }
+
+function toggleEmojiPicker(event) {
+  log('Toggling emoji picker');
+  event.stopPropagation();
+
+  const existingPicker = document.querySelector('.chat-emoji-picker');
+  
+  if (existingPicker) {
+    existingPicker.remove();
+    return;
+  }
+
+  const emojiPicker = document.createElement('div');
+  emojiPicker.className = 'chat-emoji-picker';
+
+  const emojis = ['😊', '😂', '🤔', '👍', '❤️', '😍', '🙏', '👀', '🎉', '🔥', '👋', '🤷‍♂️', '🤷‍♀️', '🙌', '👏', '🎈', '🌟', '💡', '✅', '❓'];
+  
+  emojis.forEach(emoji => {
+    const emojiButton = document.createElement('button');
+    emojiButton.textContent = emoji;
+    emojiButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const input = document.querySelector('.chat-input');
+      const startPos = input.selectionStart;
+      const endPos = input.selectionEnd;
+      input.value = input.value.substring(0, startPos) + emoji + input.value.substring(endPos);
+      input.focus();
+      input.selectionStart = input.selectionEnd = startPos + emoji.length;
+      pendingUserInput = input.value; // Update pending input
+      emojiPicker.remove();
+    });
+    emojiPicker.appendChild(emojiButton);
+  });
+
+  const inputContainer = event.target.closest('.chat-input-container');
+  inputContainer.appendChild(emojiPicker);
+
+  // Position the picker and make it visible
+  requestAnimationFrame(() => {
+    emojiPicker.classList.add('show');
+  });
+
+  // Close picker when clicking outside
+  function closeEmojiPicker(e) {
+    if (!emojiPicker.contains(e.target) && !event.target.contains(e.target)) {
+      emojiPicker.classList.remove('show');
+      setTimeout(() => emojiPicker.remove(), 300);
+      document.removeEventListener('click', closeEmojiPicker);
+    }
+  }
+
+  setTimeout(() => {
+    document.addEventListener('click', closeEmojiPicker);
+  }, 0);
+}
+
+
+  function debugMessageProcessing(message) {
+    log(`Processing message: ${message}`);
+    let formattedMessage = formatMessage(message);
+    
+    let tempDiv = document.createElement('div');
+    tempDiv.innerHTML = formattedMessage;
+    
+    return formattedMessage;
   }
   
-  /* Hide scrollbar for IE, Edge and Firefox */
-  -ms-overflow-style: none !important;  /* IE and Edge */
-  scrollbar-width: none !important;     /* Firefox */
-}
-
-.chat-messages-wrapper {
-  display: flex !important;
-  flex-direction: column !important;
-  padding: 10px !important;
-  isolation: isolate !important;
-  position: relative !important;
-  min-height: 100% !important;
-}
-
-/* Updated Product Card Styles */
-.product-card {
-  width: 320px !important;
-  border: 1px solid #e0e0e0 !important;
-  border-radius: 5px !important;
-  overflow: hidden !important;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
-  background-color: white !important;
-  margin: 10px 0 10px 38px !important;
-}
-
-.product-image {
-  width: 100% !important;
-  max-height: 230px !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  background-color: #f0f0f0 !important;
-  overflow: hidden !important;
-}
-
-.product-image img {
-  max-width: 100% !important;
-  max-height: 100% !important;
-  overflow: hidden !important;
-}
-
-.product-info {
-  padding: 15px !important;
-}
-
-.product-title {
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  margin: 0 0 10px 0 !important;
-}
-
-.product-description {
-  font-size: 14px !important;
-  color: #666 !important;
-  margin: 0 0 15px 0 !important;
-}
-
-.read-more-btn {
-  display: inline-block !important;
-  background-color: #ffeeee !important;
-  color: black !important;
-  border: 2px solid #ff3b30 !important;
-  padding: 10px 20px !important;
-  border-radius: 10px !important;
-  text-decoration: none !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  transition: all 0.3s ease !important;
-  text-align: center !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.read-more-btn:hover {
-  background-color: #ff3b30 !important;
-  color: black !important;
-}
-
-.chat-input-area {
-  position: relative !important;
-  padding: 10px !important;
-  background-color: #fff !important;
-}
-
-.chat-input-container {
-  display: flex !important;
-  align-items: center !important;
-  background-color: #fff !important;
-  border: 1px solid #ccc !important;
-  border-radius: 20px !important;
-  overflow: hidden !important;
-  height: 37px !important; /* Adjust this value to change the height */
-}
-
-.chat-logo-container {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  padding: 20px 10px !important;
-  background-color: #fff !important;
-  margin-bottom: 20px !important;
-}
-
-.chat-message-wrapper {
-  display: flex !important;
-  align-items: flex-end !important;
-  margin-bottom: 10px !important;
-  width: 100% !important;
-}
-
-.chat-message-wrapper.bot {
-  justify-content: flex-start !important;
-  display: flex !important;
-  align-items: flex-end !important; /* Ensure alignment to the bottom */
-}
-
-.chat-message-wrapper.user {
-  justify-content: flex-end !important;
-}
-
-.chat-bot-profile-image-card {
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 50% !important;
-  margin-right: 8px !important;
-  align-self: flex-end !important; /* Ensure the avatar aligns with the bottom of the card */
-  margin-bottom: 1rem !important; /* Adjust the margin-bottom to fine-tune the alignment */
-}
-
-.chat-bot-profile-image {
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 50% !important;
-  margin-right: 8px !important;
-  align-self: flex-end !important; /* Ensure the avatar aligns with the bottom of the card */
-}
-
-.chat-message {
-  position: relative !important;
-  max-width: 70% !important;
-  padding: 10px 15px !important;
-  font-size: 14px !important;
-  line-height: 1.4 !important;
-  border-radius: 18px !important;
-  word-wrap: break-word !important;
-}
-
-.chat-message.bot {
-  background-color: #DEECE7 !important;
-  color: #000 !important;
-  border-radius: 18px 18px 18px 0 !important;
-}
-
-.chat-message.user {
-  background-color: #F80B00 !important;
-  color: #fff !important;
-  border-radius: 18px 18px 0 18px !important;
-}
-
-.chat-emoji-button {
-  background: none !important;
-  border: none !important;
-  cursor: pointer !important;
-  padding: 0 !important;
-  transition: transform 0.2s !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 22px !important;
-  height: 22px !important;
-  margin-right: 8px !important;
-}
-
-.chat-emoji-button svg {
-  width: 100% !important;
-  height: 100% !important;
-  color: #000000 !important;
-}
-
-.chat-emoji-button:hover {
-  transform: scale(1.1) !important;
-}
-
-.chat-logo {
-  width: 60px !important;
-  height: 60px !important;
-  border-radius: 50% !important;
-}
-
-.chat-logo-text {
-  text-align: center !important;
-  margin-top: 10px !important;
-  font-weight: 900 !important;
-}
-
-.chat-logo-text h2 {
-  font-size: 24px !important;
-  margin: 0 !important;
-  color: #333 !important;
-  font-weight: bold !important;
-}
-
-.chat-logo-text p {
-  font-size: 14px !important;
-  margin: 7px 0 0 !important;
-  color: #666 !important;
-  font-weight: bold !important;
-}
-
-.chat-input {
-  flex-grow: 1 !important;
-  border: none !important;
-  padding: 10px 15px !important;
-  font-size: 14px !important;
-  outline: none !important;
-  height: 100% !important; /* Make the input fill the container height */
-  background: #fff !important;
-}
-
-.chat-send-button {
-  border: none !important;
-  background-color: #F80B00 !important;
-  color: #fff !important;
-  font-size: 14px !important;
-  font-weight: bold !important;
-  cursor: pointer !important;
-  padding: 0 15px !important;
-  transition: background-color 0.2s !important;
-  height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.chat-send-button:hover {
-  opacity: 0.9 !important;
-}
-
-.chat-emoji-picker {
-  position: absolute !important;
-  bottom: 100% !important;
-  right: 0 !important;
-  background-color: white !important;
-  border: 1px solid #ccc !important;
-  border-radius: 8px !important;
-  padding: 8px !important;
-  display: grid !important;
-  grid-template-columns: repeat(5, 1fr) !important;
-  gap: 5px !important;
-  width: 220px !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
-  z-index: 2147483647 !important;
-  margin-bottom: 5px !important;
-  opacity: 0 !important;
-  transform: translateY(10px) !important;
-  transition: opacity 0.3s ease, transform 0.3s ease !important;
-  pointer-events: none !important;
-}
-
-.chat-emoji-picker.show {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-  pointer-events: all !important;
-}
-
-.chat-emoji-picker button {
-  background: none !important;
-  border: none !important;
-  font-size: 20px !important;
-  cursor: pointer !important;
-  padding: 5px !important;
-  transition: transform 0.1s !important;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.chat-emoji-picker button:hover {
-  transform: scale(1.2) !important;
-  background-color: #f0f0f0 !important;
-  border-radius: 4px !important;
-}
-
-.chat-initial-options,
-.chat-follow-up-options {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 8px !important;
-  margin-top: 8px !important;
-  justify-content: flex-start !important;
-  padding: 0 15px 0 38px !important;
-}
-
-.chat-option-button {
-  background-color: #fff !important;
-  border: 1px solid #60463C !important;
-  color: #000 !important;
-  padding: 0px 12px !important;
-  border-radius: 20px !important;
-  font-size: 14px !important;
-  cursor: pointer !important;
-  transition: background-color 0.2s, color 0.2s !important;
-  font-weight: 500 !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  height: 32px !important; /* Added specific height */
-}
-
-.chat-option-button:hover {
-  background-color: #F80B00 !important;
-  color: #fff !important;
-}
-
-.chat-loading-dots {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  height: 20px !important;
-}
-
-.chat-loading-dots div {
-  width: 8px !important;
-  height: 8px !important;
-  background-color: #888 !important;
-  border-radius: 50% !important;
-  margin: 0 3px !important;
-  animation: chat-bounce 0.6s infinite alternate !important;
-}
-
-.chat-loading-dots div:nth-child(2) {
-  animation-delay: 0.2s !important;
-}
-
-.chat-loading-dots div:nth-child(3) {
-  animation-delay: 0.4s !important;
-}
-
-@keyframes chat-bounce {
-  to {
-    opacity: 0.3;
-    transform: translate3d(0, -4px, 0);
-  }
-}
-
-.chat-message-text img.emoji {
-  height: 1em !important;
-  width: 1em !important;
-  border-radius: 50% !important;
-  margin: 0 .05em 0 .1em !important;
-  vertical-align: -0.1em !important;
-}
-
-.chat-message a {
-  color: #0066cc !important;
-  text-decoration: underline !important;
-  word-break: break-word !important;
-}
-
-.chat-message.user a {
-  color: #ffffff !important;
-}
-
-.chat-message a:hover {
-  text-decoration: none !important;
-}
-
-.chat-message .email {
-  font-style: italic !important;
-}
-
-.chat-messages-container::-webkit-scrollbar,
-.chat-emoji-picker::-webkit-scrollbar {
-  width: 6px !important;
-}
-
-.chat-messages-container::-webkit-scrollbar-track,
-.chat-emoji-picker::-webkit-scrollbar-track {
-  background: #f1f1f1 !important;
-}
-
-.chat-messages-container::-webkit-scrollbar-thumb,
-.chat-emoji-picker::-webkit-scrollbar-thumb {
-  background: #888 !important;
-  border-radius: 3px !important;
-}
-
-.chat-messages-container::-webkit-scrollbar-thumb:hover,
-.chat-emoji-picker::-webkit-scrollbar-thumb:hover {
-  background: #555 !important;
-}
-
-.chat-rating-container {
-  background: linear-gradient(90deg, #F80B00 0%, #cd0202 100%) !important;
-  border-radius: 8px !important;
-  padding: 10px !important;
-  height: 120px !important;
-  width: 400px !important;
-  margin-top: 15px !important;
-  text-align: center !important;
-}
-
-.chat-rating-container p {
-  font-size: 25px !important;
-  margin-bottom: 5px !important;
-  font-weight: bold !important;
-  color: #ffffff !important;
-}
-
-.chat-stars-container {
-  display: flex !important;
-  justify-content: center !important;
-  margin-top: 10px !important;
-}
-
-.chat-star {
-  transition: color 0.2s !important;
-  color: #FFD700 !important;
-  cursor: pointer !important;
-  font-size: 60px !important;
-}
-
-.chat-stars-container .chat-star {
-  direction: rtl !important;
-  unicode-bidi: bidi-override !important;
-}
-
-.chat-end-conversation-overlay {
-  position: absolute !important;
-  bottom: -100% !important;
-  left: 0 !important;
-  right: 0 !important;
-  background-color: white !important;
-  padding: 20px !important;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
-  transition: bottom 1s ease-out !important;
-  z-index: 2147483647 !important;
-}
-
-.chat-end-conversation-overlay.show {
-  bottom: 0 !important;
-}
-
-.chat-end-conversation-content {
-  text-align: center !important;
-}
-
-.chat-end-conversation-content p {
-  font-size: 16px !important; /* Increased from default */
-  line-height: 1.5 !important;
-  margin-bottom: 15px !important;
-}
-
-.chat-chat-ended {
-  font-style: italic !important;
-  color: #666 !important;
-  margin: 10px 0 !important;
-  font-size: 16px !important; /* Increased from default */
-}
-
-.chat-new-conversation-button {
-  padding: 10px 20px !important;
-  background-color: #F80B00 !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 5px !important;
-  cursor: pointer !important;
-  font-weight: bold !important;
-  margin-top: 10px !important;
-  font-size: 20px !important;
-  height: 60px !important; /* Added specific height */
-}
-
-.chat-message-wrapper.bot {
-  justify-content: flex-start !important;
-  display: flex !important;
-  align-items: flex-start !important; /* Aligns bot avatar with the product card */
-}
-
-.product-card {
-  width: 320px !important;
-  border: 1px solid #e0e0e0 !important;
-  border-radius: 5px !important;
-  overflow: hidden !important;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
-  background-color: white !important;
-  margin: 10px 0 !important;
-  display: inline-block !important;
-}
-
-.product-image {
-  width: 100% !important;
-  max-height: 190px !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  background-color: #f0f0f0 !important;
-  overflow: hidden !important;
-}
-
-.product-image img {
-  max-width: 100% !important;
-  overflow: hidden !important;
-}
-
-.product-info {
-  padding: 15px !important;
-}
-
-.product-title {
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  margin: 0 0 10px 0 !important;
-}
-
-.product-description {
-  font-size: 14px !important;
-  color: #666 !important;
-  margin: 0 0 15px 0 !important;
-}
-
-.read-more-btn {
-  display: inline-block !important;
-  background-color: #ffeeee !important;
-  color: black !important;
-  border: 2px solid #ff3b30 !important;
-  padding: 10px 20px !important;
-  border-radius: 10px !important;
-  text-decoration: none !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  transition: all 0.3s ease !important;
-  text-align: center !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.read-more-btn:hover {
-  background-color: #ff3b30 !important;
-  color: black !important;
-}
-
-@media (max-width: 480px) {
-  .chat-window {
-    width: 100% !important;
-    height: 100% !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    border-radius: 0 !important;
-    z-index: 2147483647 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    transform: translateY(100%); /* Start off-screen at the bottom */
-    opacity: 0; /* Start hidden */
-    transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth transition */
+  function formatMessage(message) {
+    log('Formatting message');
+    const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
+    message = message.replace(markdownLinkRegex, (match, text, url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    });
+  
+    const urlRegex = /(https?:\/\/\S+)/g;
+    message = message.split(urlRegex).map((part, index) => {
+        if (index % 2 === 1) {
+            if (!part.startsWith('<a href=')) {
+                return `<a href="${part}" target="_blank" rel="noopener noreferrer">${part}</a>`;
+            }
+        }
+        return part;
+    }).join('');
+  
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+    message = message.replace(emailRegex, (email) => {
+        return `<a href="mailto:${email}">${email}</a>`;
+    });
+  
+    return message;
   }
 
-  .chat-launch-button {
-    width: 60px !important;
-    height: 60px !important;
-    z-index: 2147483647 !important; /* Maximum z-index value */
+  function createMessageElement(message) {
+    log('Creating message element');
+    const messageWrapper = document.createElement('div');
+    messageWrapper.className = `chat-message-wrapper ${message.isBot ? 'bot' : 'user'}`;
+    
+    if (message.timestamp && new Date(message.timestamp).getTime() > Date.now() - 1000) {
+        messageWrapper.classList.add('new-message');
+        
+        setTimeout(() => {
+            messageWrapper.classList.remove('new-message');
+        }, 300);
+    }
+    
+    if (message.isBot && message.type === 'productCard') {
+        const card = createProductCard();
+        messageWrapper.appendChild(card);
+        return messageWrapper;
+    }
+
+    if (message.isBot) {
+        const profileImage = document.createElement('img');
+        profileImage.src = config.logoUrl;
+        profileImage.alt = 'Bot Profile';
+        profileImage.className = 'chat-bot-profile-image';
+        messageWrapper.appendChild(profileImage);
+    }
+
+    const messageElement = document.createElement('div');
+    messageElement.className = `chat-message ${message.isBot ? 'bot' : 'user'}`;
+    
+    if (message.className) {
+        messageElement.classList.add(message.className);
+    }
+
+    const textElement = document.createElement('div');
+    textElement.className = 'chat-message-text';
+    
+    if (message.isLoading) {
+        textElement.innerHTML = '<div class="chat-loading-dots"><div></div><div></div><div></div></div>';
+    } else if (message.isBot) {
+        const formattedMessage = formatMessage(message.text);
+        textElement.innerHTML = formattedMessage;
+    } else {
+        textElement.innerHTML = message.text;
+    }
+
+    messageElement.appendChild(textElement);
+    messageWrapper.appendChild(messageElement);
+
+    return messageWrapper;
   }
 
-  .chat-header {
-    height: 85px !important; /* Maintain height on mobile */
-    position: sticky !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    z-index: 2147483646 !important;
-    border-radius: 0 0 8px 8px !important;
+  function extractEmail(text) {
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
+    const match = text.match(emailRegex);
+    return match ? match[0] : null;
   }
 
-  .chat-messages-container {
-    flex: 1 1 auto !important; /* Allow container to flex */
-    height: auto !important; /* Remove fixed height */
-    min-height: 0 !important; /* Allow container to shrink */
-    padding-top: 0 !important; /* Remove padding since header is sticky */
-    margin-top: 0 !important;
-    overflow-y: auto !important;
+  function createInitialOptions() {
+    log('Creating initial options');
+    const optionsElement = document.createElement('div');
+    optionsElement.className = 'chat-initial-options';
+
+    const options = ['Track my order'];
+    options.forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      button.className = 'chat-option-button';
+      button.addEventListener('click', () => {
+        log(`Initial option selected: ${option}`);
+        sendMessage(option);
+        showInitialOptions = false;
+        updateChatWindow();
+      });
+      optionsElement.appendChild(button);
+    });
+
+    return optionsElement;
   }
 
-  .chat-input-area {
-    position: sticky !important; /* Change from fixed to sticky */
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    background: white !important;
-    z-index: 2147483646 !important;
+  function createFollowUpButtons() {
+    log('Creating follow-up buttons');
+    const followUpElement = document.createElement('div');
+    followUpElement.className = 'chat-follow-up-options';
+    
+    const options = [
+      { text: 'Yes', response: 'yes' },
+      { text: 'No', response: 'no' }
+    ];
+    
+    options.forEach(option => {
+      const button = document.createElement('button');
+      button.textContent = option.text;
+      button.className = 'chat-option-button';
+      button.addEventListener('click', () => handleFollowUpResponse(option.response));
+      followUpElement.appendChild(button);
+    });
+  
+    return followUpElement;
   }
 
-  .chat-window.visible {
-    transform: translateY(0); /* Move into view */
-    opacity: 1; /* Fade in */
+  async function handleFollowUpResponse(response) {
+    log(`Handling follow-up response: ${response}`);
+    showFollowUp = false;
+    updateChatWindow();
+  
+    const userResponse = response === "yes" ? "Yes" : "No";
+    addMessage(userResponse, false, false, getStockholmTimestamp());
+    
+    if (response === "yes") {
+      await showLoadingThenMessage("Great! What else can I help you with?");
+      updateChatWindow();
+      sendConversationToAzure(messages);
+    } else {
+      await showLoadingThenMessage("Alright, thank you for chatting with me! If you need any more help, feel free to ask.");
+      updateChatWindow();
+      await sendConversationToAzure(messages);
+      showRatingSystem = true;
+      updateChatWindow();
+    }
   }
+
+  function endConversation() {
+    log('Ending conversation');
+    isConversationEnded = true;
+    updateChatWindow();
+  }
+  
+  function handleStarClick(rating) {
+    log(`Star rating clicked: ${rating}`);
+    updateStars(rating);
+    
+    const ratingContainer = document.querySelector('.chat-rating-container');
+    if (ratingContainer) {
+      ratingContainer.remove();
+    }
+  
+    isConversationEnded = true;
+  
+    createEndConversationOverlay();
+  
+    sendRating(rating);
+  }
+  
+  async function sendRating(rating) {
+    log(`Sending rating: ${rating}`);
+    const url = CONVO_API_BASE;
+    const payload = {
+      operation: 'store',
+      conversationId: window.conversationId,
+      Rating: rating,
+      timestamp: getStockholmTimestamp(),
+      conversation_over: true
+    };
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-functions-key': CONVO_API_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+    
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const responseData = await response.json();
+      log('Rating sent successfully');
+      
+      await sendConversationToAzure(messages);
+      
+    } catch (error) {
+      log(`Error sending rating: ${error.message}`, 'error');
+    }
+  }
+  
+  
+  function createEndConversationOverlay() {
+    log('Creating end conversation overlay');
+    if (isEndConversationOverlayShown) return;
+  
+    isEndConversationOverlayShown = true;
+    const chatWindow = document.querySelector('.chat-window');
+    const overlay = document.createElement('div');
+    overlay.className = 'chat-end-conversation-overlay';
+    
+    const content = document.createElement('div');
+    content.className = 'chat-end-conversation-content';
+    
+    const message = document.createElement('p');
+    message.textContent = "Okay, thanks for chatting! If you have any questions in the future, don't hesitate to contact us. We at Boxbollen wish you a fantastic day! 👋";
+    
+    const endedMessage = document.createElement('p');
+    endedMessage.className = 'chat-chat-ended';
+    endedMessage.textContent = 'Chat ended';
+    
+    const newChatButton = document.createElement('button');
+    newChatButton.textContent = 'New conversation';
+    newChatButton.className = 'chat-new-conversation-button';
+    newChatButton.addEventListener('click', () => {
+      log('New conversation button clicked');
+      restartConversation();
+      overlay.remove();
+    });
+    
+    content.appendChild(message);
+    content.appendChild(endedMessage);
+    content.appendChild(newChatButton);
+    overlay.appendChild(content);
+    
+    chatWindow.appendChild(overlay);
+  
+    // Changed timeout from 50ms to 100ms for a smoother start
+    setTimeout(() => {
+      overlay.classList.add('show');
+    }, 100);
+  }
+
+  function createStarRating() {
+    log('Creating star rating');
+    const ratingContainer = document.createElement('div');
+    ratingContainer.className = 'chat-rating-container';
+    ratingContainer.style.textAlign = 'center';
+    ratingContainer.style.padding = '15px';
+    ratingContainer.style.display = 'flex';
+    ratingContainer.style.flexDirection = 'column';
+    ratingContainer.style.alignItems = 'center';
+    ratingContainer.style.justifyContent = 'center';
+    ratingContainer.style.gap = '0';
+    ratingContainer.style.height = '90px';
+    ratingContainer.style.width = '350px';
+
+    const ratingPrompt = document.createElement('p');
+    ratingPrompt.textContent = 'Rate your experience:';
+    ratingPrompt.style.margin = '0';
+    ratingPrompt.style.padding = '0';
+    ratingPrompt.style.display = 'flex';
+    ratingPrompt.style.alignItems = 'center';
+    ratingPrompt.style.height = '35px';
+    ratingPrompt.style.color = '#ffffff';
+    ratingPrompt.style.fontWeight = 'bold';
+    ratingPrompt.style.fontSize = '22px';
+
+    const starsContainer = document.createElement('div');
+    starsContainer.className = 'chat-stars-container';
+    starsContainer.style.margin = '0';
+    starsContainer.style.padding = '0';
+    starsContainer.style.lineHeight = '1';
+
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement('span');
+      star.className = 'chat-star';
+      star.innerHTML = '☆';
+      star.setAttribute('data-rating', i);
+      star.style.fontSize = '50px';
+      star.style.cursor = 'pointer';
+      star.style.color = '#ffd700';
+      
+      star.addEventListener('click', () => handleStarClick(i));
+      
+      star.addEventListener('mouseover', (e) => {
+        // Fill in this star and all previous stars
+        const stars = document.querySelectorAll('.chat-star');
+        stars.forEach((s, index) => {
+          if (index < i) {
+            s.innerHTML = '★';
+            s.style.color = '#ffd700';  // Keep gold color on hover
+          } else {
+            s.innerHTML = '☆';
+            s.style.color = '#ffd700';  // Keep gold color on hover
+          }
+        });
+      });
+    
+      star.addEventListener('mouseout', () => {
+        const currentRating = document.querySelector('.chat-star.active')?.getAttribute('data-rating') || 0;
+        updateStars(currentRating);
+      });
+    
+      starsContainer.appendChild(star);
+    }
+  
+    ratingContainer.appendChild(ratingPrompt);
+    ratingContainer.appendChild(starsContainer);
+  
+    return ratingContainer;
+  }
+
+  function updateStars(rating) {
+    log(`Updating stars: ${rating}`);
+    const stars = document.querySelectorAll('.chat-star');
+    stars.forEach((star, index) => {
+      if (index < rating) {
+        star.innerHTML = '★';
+        star.style.color = '#ffd700';  // Keep gold color
+      } else {
+        star.innerHTML = '☆';
+        star.style.color = '#ffd700';  // Keep gold color
+      }
+      star.classList.toggle('active', index < rating);
+    });
+  }
+
+  function getConfigApiUrl(operation) {
+    const url = new URL(CONFIG_API_BASE);
+    url.searchParams.append('code', CONFIG_API_CODE);
+    url.searchParams.append('operation', operation);
+    return url.toString();
+  }
+  
+  async function getMainAnswerPrompt() {
+    log('Getting main answer prompt');
+    try {
+      const response = await fetch(getConfigApiUrl('get'));
+      const data = await response.json();
+      
+      const prompt = data.prompt;
+      const timestamp = data.timestamp;
+  
+      return { prompt, timestamp };
+    } catch (error) {
+      log(`Error getting main answer prompt: ${error.message}`, 'error');
+    }
+  }
+
+  function getStockholmTimestamp() {
+    return new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Stockholm' });
+  }
+
+  async function sendMessage(text) {
+    log(`Sending message: ${text}`);
+    if (showTryAgainButtons) {
+        showTryAgainButtons = false;
+        updateChatWindow();
+        saveConversation();
+    }
+
+    if (text.trim() === '' || showRatingSystem || isConversationEnded || isWaitingForResponse) return;
+
+    const currentTime = getStockholmTimestamp();
+
+    addMessage(text, false, false, currentTime);
+    showInitialOptions = false;
+    showFollowUp = false;
+
+    conversationHistory.push({"role": "user", "content": text, "timestamp": currentTime});
+
+    if (text.toLowerCase() === 'track my order') {
+        await handleOrderTracking();
+        return;
+    }
+
+    if (isWaitingForOrderInfo) {
+        await handleOrderInfo(text);
+        return;
+    }
+
+    isLoading = true;
+    isWaitingForResponse = true;
+    
+    addMessage('', true, true);
+    updateChatWindow();
+
+    try {
+      const formattedHistory = conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join(' ');
+
+      const { prompt } = await getMainAnswerPrompt();
+
+      const response = await callAIResponseAPI(prompt, text, formattedHistory);
+      const data = await response.json();
+      let answer = data.answer;
+      let product_card = data.product_card;
+      let action = data.action;
+
+      const responseTime = getStockholmTimestamp();
+
+      if (action === 'check_order_status') {
+          messages.pop();
+          await handleOrderTracking();
+          return;
+      }
+
+      if (answer.includes('####WANTS_ORDER_INFO####')) {
+          messages.pop();
+          
+          isWaitingForOrderInfo = true;
+          orderNumber = '';
+          orderEmail = '';
+          isWaitingForCardDigits = false;
+          cardLastFourDigits = '';
+          isWaitingForEmail = false;
+          
+          await showLoadingThenMessage("To track your order, please provide your order number.");
+          
+          showNoOrderIdButton = true;
+          
+          updateChatWindow();
+      } else {
+          conversationHistory.push({"role": "assistant", "content": answer, "timestamp": responseTime});
+          
+          messages[messages.length - 1] = { text: answer, isBot: true, isLoading: false, timestamp: responseTime };
+
+          if (product_card.toLowerCase().includes('yes') && !shownProductCard) {
+              addProductCardAsMessage();
+              shownProductCard = true;
+          }
+
+          await sendConversationToAzure(messages.filter(msg => !msg.isLoading));
+
+          if (!answer.includes('?') && Math.random() < 0.5 && !shownProductCard) {
+              setTimeout(() => {
+                  const followUpTime = getStockholmTimestamp();
+                  addMessage("Can I help you with anything else?", true, false, followUpTime);
+                  conversationHistory.push({"role": "assistant", "content": "Can I help you with anything else?", "timestamp": followUpTime});
+                  showFollowUp = true;
+                  updateChatWindow();
+                  sendConversationToAzure(messages);
+              }, 1000);
+          } else {
+              showFollowUp = false;
+          }
+      }
+    } catch (error) {
+        log(`Error sending message: ${error.message}`, 'error');
+        const errorTime = getStockholmTimestamp();
+        const errorMessage = "Unfortunately I couldn't connect right now, please try again later or contact us at https://boxbollen.com/pages/contact-us";
+        
+        messages[messages.length - 1] = { 
+            text: errorMessage, 
+            isBot: true, 
+            isLoading: false,
+            timestamp: errorTime
+        };
+        
+        conversationHistory.push({"role": "assistant", "content": errorMessage, "timestamp": errorTime});
+        
+        await sendConversationToAzure(messages.filter(msg => !msg.isLoading));
+    } finally {
+        isLoading = false;
+        isWaitingForResponse = false;
+        
+        updateChatWindow();
+    }
+  }
+
+  async function callAIResponseAPI(prompt, question, conversation_history) {
+    const url = API_BASE_URL;
+    
+    const requestBody = {
+        prompt,
+        question,
+        conversation_history
+    };
+
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-functions-key': API_KEY
+        },
+        body: JSON.stringify(requestBody)
+    });
 }
 
-.chat-floating-message {
-  position: fixed !important;
-  background-color: #F80B00 !important;
-  color: #fff !important;
-  padding: 10px 15px !important;
-  border-radius: 18px 18px 0 18px !important;
-  font-size: 14px !important;
-  pointer-events: none !important;
-  z-index: 2147483648 !important;
-  transition: all 0.3s ease-out !important;
-  max-width: 70% !important;
-  word-wrap: break-word !important;
-}
-
-/* Add new animation keyframes */
-@keyframes slideInFromLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
+  async function handleOrderTracking() {
+    log('Handling order tracking');
+    isWaitingForOrderInfo = true;
+    orderNumber = '';
+    orderEmail = '';
+    cardLastFourDigits = '';
+    isWaitingForCardDigits = false;
+    isWaitingForEmail = false;
+    
+    await showLoadingThenMessage("Sure, I can help you track your order. Please provide your order number.");
+    showNoOrderIdButton = true;
+    updateChatWindow();
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+
+  function addMessage(text, isBot, isLoading = false, timestamp = getStockholmTimestamp()) {
+    log(`Adding message: ${text}, isBot: ${isBot}, isLoading: ${isLoading}`);
+    let processedText = debugMessageProcessing(text);
+    messages.push({ text: processedText, isBot, isLoading, timestamp });
+    updateChatWindow();
+    saveConversation();
   }
-}
 
-@keyframes slideInFromRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
+  function updateChatWindow() {
+    log('Updating chat window');
+    const inputField = document.querySelector('.chat-input');
+    let inputText = '';
+    let cursorPosition = 0;
+  
+    if (inputField) {
+      inputText = inputField.value;
+      cursorPosition = inputField.selectionStart;
+    }
+  
+    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+    if (messagesWrapper) {
+      const logoContainer = messagesWrapper.querySelector('.chat-logo-container');
+      messagesWrapper.innerHTML = '';
+      if (logoContainer) {
+        messagesWrapper.appendChild(logoContainer);
+      }
+  
+      // Track if we're adding new content that needs scrolling
+      let needsScroll = false;
+      const previousHeight = messagesWrapper.scrollHeight;
+  
+      messages.forEach(message => {
+        const messageElement = createMessageElement(message);
+        messagesWrapper.appendChild(messageElement);
+        
+        // Check if this is a new message or product card that needs scrolling
+        if ((message.timestamp && 
+             new Date(message.timestamp).getTime() > Date.now() - 1000) ||
+            message.type === 'productCard') {
+            needsScroll = true;
+        }
+      });
+  
+      // Add additional elements if needed
+      if (showInitialOptions) {
+        const optionsElement = createInitialOptions();
+        messagesWrapper.appendChild(optionsElement);
+        needsScroll = true;
+      }
+  
+      if (showFollowUp) {
+        const followUpElement = createFollowUpButtons();
+        messagesWrapper.appendChild(followUpElement);
+        needsScroll = true;
+      }
+  
+      if (showRatingSystem) {
+        const ratingElement = createStarRating();
+        messagesWrapper.appendChild(ratingElement);
+        needsScroll = true;
+      }
+  
+      if (showTryAgainButtons) {
+        const tryAgainElement = createTryAgainButtons();
+        messagesWrapper.appendChild(tryAgainElement);
+        needsScroll = true;
+      }
+  
+      if (showNoOrderIdButton) {
+        addNoOrderIdButton();
+        needsScroll = true;
+      }
+  
+      // Scroll if new content was added
+      if (needsScroll || messagesWrapper.scrollHeight > previousHeight) {
+        scrollToBottom(true); // Pass true to force immediate scroll
+      }
+    }
+  
+    const inputArea = document.querySelector('.chat-input-area');
+    if (inputArea) {
+      inputArea.innerHTML = '';
+      if (!showRatingSystem && !isConversationEnded) {
+        const newInputArea = createInputArea();
+        inputArea.appendChild(newInputArea);
+      }
+    }
+  
+    const newInputField = document.querySelector('.chat-input');
+    if (newInputField) {
+      newInputField.value = inputText;
+      newInputField.setSelectionRange(cursorPosition, cursorPosition);
+      newInputField.focus();
+    }
+  
+    saveConversation();
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  
+  async function initializeChat() {
+    log('Initializing chat');
+    if (!isInitialized) {
+      const initialMessage = "Hey! \n My name is Elliot and I'm your virtual assistant here at Boxbollen";
+      await showLoadingThenMessage(initialMessage);
+      const followUpMessage = 'How can I help you today?😊';
+      await showLoadingThenMessage(followUpMessage);
+      showInitialOptions = true;
+      isInitialized = true;
+      updateChatWindow();
+    }
   }
-}
 
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
+  async function showLoadingThenMessage(message) {
+    log(`Showing loading then message: ${message}`);
+    addMessage('', true, true, getStockholmTimestamp());
+    updateChatWindow();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    messages[messages.length - 1] = { text: message, isBot: true, isLoading: false, timestamp: getStockholmTimestamp() };
+    conversationHistory.push({"role": "assistant", "content": message, "timestamp": getStockholmTimestamp()});
+    updateChatWindow();
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+
+  function saveConversation() {
+    log('Saving conversation');
+    localStorage.setItem('boxbollenChatMessages', JSON.stringify(messages));
+    localStorage.setItem('boxbollenChatHistory', JSON.stringify(conversationHistory));
+    localStorage.setItem('boxbollenChatId', window.conversationId || '');
+    localStorage.setItem('boxbollenChatShowInitialOptions', JSON.stringify(showInitialOptions));
+    localStorage.setItem('boxbollenChatShowFollowUp', JSON.stringify(showFollowUp));
+    localStorage.setItem('boxbollenChatShowRatingSystem', JSON.stringify(showRatingSystem));
+    localStorage.setItem('boxbollenChatIsConversationEnded', JSON.stringify(isConversationEnded));
+    localStorage.setItem('boxbollenChatShowTryAgainButtons', JSON.stringify(showTryAgainButtons));
+    localStorage.setItem('boxbollenChatIsWaitingForOrderInfo', JSON.stringify(isWaitingForOrderInfo));
+    localStorage.setItem('boxbollenChatOrderNumber', orderNumber);
+    localStorage.setItem('boxbollenChatOrderEmail', orderEmail);
+    localStorage.setItem('boxbollenChatShowNoOrderIdButton', JSON.stringify(showNoOrderIdButton));
+    localStorage.setItem('boxbollenChatIsWaitingForCardDigits', JSON.stringify(isWaitingForCardDigits));
+    localStorage.setItem('boxbollenChatCardLastFourDigits', cardLastFourDigits);
+    localStorage.setItem('boxbollenChatIsWaitingForEmail', JSON.stringify(isWaitingForEmail));
+    localStorage.setItem('boxbollenChatShownProductCard', JSON.stringify(shownProductCard));
+
+    if (isLoading) {
+      localStorage.setItem('boxbollenChatIsLoading', JSON.stringify(isLoading));
+    } else {
+      localStorage.removeItem('boxbollenChatIsLoading');
+    }
+
+    localStorage.setItem('boxbollenChatLastSaved', new Date().toISOString());
   }
-}
 
-/* Remove the animations from the base classes */
-.chat-message-wrapper.bot {
-  justify-content: flex-start !important;
-  display: flex !important;
-  align-items: flex-start !important;
-}
-
-.chat-message-wrapper.user {
-  justify-content: flex-end !important;
-}
-
-/* Add new classes for new messages */
-.chat-message-wrapper.bot.new-message {
-  animation: slideInFromLeft 0.3s ease-out !important;
-}
-
-.chat-message-wrapper.user.new-message {
-  animation: slideInFromRight 0.3s ease-out !important;
-}
-
-/* Add new animation keyframes for glide-in effect */
-@keyframes glideInFromBottom {
-  from {
-    transform: translateY(100%); /* Start off-screen at the bottom */
-    opacity: 0; /* Start hidden */
+  function loadConversation() {
+    log('Loading conversation');
+    const storedMessages = localStorage.getItem('boxbollenChatMessages');
+    const storedHistory = localStorage.getItem('boxbollenChatHistory');
+    const storedId = localStorage.getItem('boxbollenChatId');
+    const storedShowInitialOptions = localStorage.getItem('boxbollenChatShowInitialOptions');
+    const storedShowFollowUp = localStorage.getItem('boxbollenChatShowFollowUp');
+    const storedLastMessage = localStorage.getItem('boxbollenChatLastMessage');
+    const storedIsLoading = localStorage.getItem('boxbollenChatIsLoading');
+    const storedShowRatingSystem = localStorage.getItem('boxbollenChatShowRatingSystem');
+    const storedIsConversationEnded = localStorage.getItem('boxbollenChatIsConversationEnded');
+    const storedShowTryAgainButtons = localStorage.getItem('boxbollenChatShowTryAgainButtons');
+    const storedIsWaitingForOrderInfo = localStorage.getItem('boxbollenChatIsWaitingForOrderInfo');
+    const storedOrderNumber = localStorage.getItem('boxbollenChatOrderNumber');
+    const storedOrderEmail = localStorage.getItem('boxbollenChatOrderEmail');
+    const storedShowNoOrderIdButton = localStorage.getItem('boxbollenChatShowNoOrderIdButton');
+    const storedIsWaitingForCardDigits = localStorage.getItem('boxbollenChatIsWaitingForCardDigits');
+    const storedCardLastFourDigits = localStorage.getItem('boxbollenChatCardLastFourDigits');
+    const storedIsWaitingForEmail = localStorage.getItem('boxbollenChatIsWaitingForEmail');
+    const storedShownProductCard = localStorage.getItem('boxbollenChatShownProductCard');
+  
+    function safeJSONParse(item, defaultValue) {
+      if (item === null || item === undefined) return defaultValue;
+      try {
+        return JSON.parse(item);
+      } catch (e) {
+        log(`Error parsing JSON: ${e.message}`, 'error');
+        return defaultValue;
+      }
+    }
+  
+    messages = safeJSONParse(storedMessages, []);
+    conversationHistory = safeJSONParse(storedHistory, []);
+    window.conversationId = storedId || generateUUID();
+    showInitialOptions = safeJSONParse(storedShowInitialOptions, false);
+    showFollowUp = safeJSONParse(storedShowFollowUp, false);
+    showRatingSystem = safeJSONParse(storedShowRatingSystem, false);
+    isConversationEnded = safeJSONParse(storedIsConversationEnded, false);
+    showTryAgainButtons = safeJSONParse(storedShowTryAgainButtons, false);
+    isWaitingForOrderInfo = safeJSONParse(storedIsWaitingForOrderInfo, false);
+    orderNumber = storedOrderNumber || '';
+    orderEmail = storedOrderEmail || '';
+    showNoOrderIdButton = safeJSONParse(storedShowNoOrderIdButton, false);
+    isWaitingForCardDigits = safeJSONParse(storedIsWaitingForCardDigits, false);
+    cardLastFourDigits = storedCardLastFourDigits || '';
+    isWaitingForEmail = safeJSONParse(storedIsWaitingForEmail, false);
+    shownProductCard = safeJSONParse(storedShownProductCard, false);
+  
+    isChatOpen = false;
+    isLoading = safeJSONParse(storedIsLoading, false);
+  
+    if (storedLastMessage) {
+      const lastMessage = safeJSONParse(storedLastMessage, null);
+      if (lastMessage && lastMessage.isBot && lastMessage.text === "Can I help you with anything else?") {
+        showFollowUp = true;
+      }
+    }
+  
+    isInitialized = messages.length > 0;
+  
+    if (isLoading) {
+      const errorMessage = 'An error occurred while generating the response, please try again later.';
+      addMessage(errorMessage, true, false, getStockholmTimestamp());
+    }
+  
+    updateChatWindow();
   }
-  to {
-    transform: translateY(0); /* Move into view */
-    opacity: 1; /* Fade in */
+  
+  function restartConversation() {
+    log('Restarting conversation');
+    messages = [];
+    conversationHistory = [];
+    isInitialized = false;
+    showInitialOptions = false;
+    showFollowUp = false;
+    isWaitingForOrderInfo = false;
+    orderNumber = '';
+    orderEmail = '';
+    window.conversationId = generateUUID();
+    showRatingSystem = false;
+    isConversationEnded = false;
+    showTryAgainButtons = false;
+    isEndConversationOverlayShown = false;
+    showNoOrderIdButton = false;
+    isWaitingForCardDigits = false;
+    cardLastFourDigits = '';
+    isWaitingForEmail = false;
+    shownProductCard = false;
+  
+    localStorage.removeItem('boxbollenChatMessages');
+    localStorage.removeItem('boxbollenChatHistory');
+    localStorage.removeItem('boxbollenChatId');
+    localStorage.removeItem('boxbollenChatShowInitialOptions');
+    localStorage.removeItem('boxbollenChatShowFollowUp');
+    localStorage.removeItem('boxbollenChatLastMessage');
+    localStorage.removeItem('boxbollenChatShowRatingSystem');
+    localStorage.removeItem('boxbollenChatIsConversationEnded');
+    localStorage.removeItem('boxbollenChatShowTryAgainButtons');
+    localStorage.removeItem('boxbollenChatIsWaitingForOrderInfo');
+    localStorage.removeItem('boxbollenChatOrderNumber');
+    localStorage.removeItem('boxbollenChatOrderEmail');
+    localStorage.removeItem('boxbollenChatShowNoOrderIdButton');
+    localStorage.removeItem('boxbollenChatIsWaitingForCardDigits');
+    localStorage.removeItem('boxbollenChatCardLastFourDigits');
+    localStorage.removeItem('boxbollenChatIsWaitingForEmail');
+    localStorage.removeItem('boxbollenChatShownProductCard');
+  
+    const overlay = document.querySelector('.chat-end-conversation-overlay');
+    if (overlay) {
+      overlay.remove();
+    }
+  
+    updateChatWindow();
+    
+    // Initialize the chat after everything is reset
+    initializeChat();
   }
+
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  function safelyFormatTimestamp(timestamp) {
+    if (!timestamp) return getStockholmTimestamp();
+    
+    try {
+      if (typeof timestamp === 'string' && timestamp.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
+        return timestamp;
+      }
+      
+      if (typeof timestamp === 'number') {
+        return new Date(timestamp).toISOString();
+      }
+      
+      const date = new Date(timestamp);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString();
+      }
+      
+      return getStockholmTimestamp();
+    } catch (error) {
+      log(`Error formatting timestamp: ${error.message}`, 'error');
+      return getStockholmTimestamp();
+    }
+  }
+    
+  async function sendConversationToAzure(messages) {
+    log('Sending conversation to Azure');
+    const url = CONVO_API_BASE;
+    const payload = {
+      operation: 'store',
+      conversationId: window.conversationId || (window.conversationId = generateUUID()),
+      messages: messages.map(msg => ({
+        text: msg.text,
+        isBot: msg.isBot,
+        timestamp: safelyFormatTimestamp(msg.timestamp)
+      })),
+      timestamp: getStockholmTimestamp(),
+      needsCustomerService: false,
+      HandledChat: false,
+      Tags: [],
+      Rating: null,
+      conversation_over: isConversationEnded,
+      userId: null,
+      name: '',
+      HandledTime: null
+    };
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-functions-key': CONVO_API_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+  
+      const result = await response.json();
+      log('Conversation sent to Azure successfully');
+      return result;
+    } catch (error) {
+      log(`Error sending conversation to Azure: ${error.message}`, 'error');
+      throw error;
+    }
+  }
+
+  function extractLastFourDigits(text) {
+    const match = text.match(/\b\d{4}\b/);
+    return match ? match[0] : null;
+  }
+
+  async function handleOrderInfo(text) {
+    log(`Handling order info: ${text}`);
+    
+    // Extract email and order number from text
+    const email = extractEmail(text);
+    const extractedOrderNumber = extractOrderNumber(text);
+
+    // Check if this is a new email attempt after previous email was sent
+    if (!isWaitingForOrderInfo && !isWaitingForEmail && email) {
+        orderEmail = email;
+        await showLoadingThenMessage("Thank you. Now sending email...");
+
+        fetch(ORDER_API_BASE, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-functions-key': ORDER_API_KEY
+            },
+            body: JSON.stringify({ email: orderEmail })
+        }).catch(error => {
+            log('API call error (non-blocking)', { error });
+        });
+
+        addMessage('', true, true, getStockholmTimestamp());
+        updateChatWindow();
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        messages.pop();
+
+        await showLoadingThenMessage("If you did not receive an email, please double check that you provided the correct email address.");
+        showTryAgainButtons = true;
+        isWaitingForOrderInfo = false;
+        orderEmail = '';
+        updateChatWindow();
+        return;
+    }
+
+    // If we're showing try again buttons but user typed a message instead of clicking button
+    if (showTryAgainButtons) {
+        showTryAgainButtons = false;
+        isWaitingForOrderInfo = false;
+        await sendMessage(text);
+        return;
+    }
+
+    if (!orderNumber && !isWaitingForEmail) {
+        showNoOrderIdButton = false;
+
+        if (text.toLowerCase() === 'i don\'t have my order id') {
+            isWaitingForEmail = true;
+            await showLoadingThenMessage("No problem. Please provide the email address you used for your purchase.");
+        } else if (extractedOrderNumber) {
+            orderNumber = extractedOrderNumber;
+            isWaitingForEmail = true;
+            await showLoadingThenMessage("Great, I've got your order number. Now, please provide your email address associated with this order.");
+        } else {
+            // If no order number found, send to AI
+            isWaitingForOrderInfo = false;
+            await sendMessage(text);
+        }
+    } else if (isWaitingForEmail) {
+        if (email) {
+            orderEmail = email;
+            isWaitingForEmail = false;
+
+            await showLoadingThenMessage("Thank you. Now sending email...");
+
+            fetch(ORDER_API_BASE, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-functions-key': ORDER_API_KEY
+                },
+                body: JSON.stringify({ email: orderEmail })
+            }).catch(error => {
+                log('API call error (non-blocking)', { error });
+            });
+
+            addMessage('', true, true, getStockholmTimestamp());
+            updateChatWindow();
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            messages.pop();
+
+            await showLoadingThenMessage("If you did not receive an email, please double check that you provided the correct email address.");
+            showTryAgainButtons = true;
+            isWaitingForOrderInfo = false;
+            orderNumber = '';
+            orderEmail = '';
+            updateChatWindow();
+        } else {
+            // If no email found, send to AI
+            isWaitingForOrderInfo = false;
+            await sendMessage(text);
+        }
+    } else {
+        isWaitingForOrderInfo = false;
+        await sendMessage(text);
+    }
+    updateChatWindow();
+    sendConversationToAzure(messages);
 }
 
-/* Update the chat-window class to include the glide-in animation */
-.chat-window.visible {
-  animation: glideInFromBottom 0.5s ease-out forwards; /* Apply glide-in animation */
-  transform: translateY(0); /* Move into view */
-  opacity: 1; /* Fade in */
-}
-
-/* Add new animation keyframes for glide-out effect */
-@keyframes glideOutToBottom {
-  from {
-    transform: translateY(0); /* Start at the current position */
-    opacity: 1; /* Fully visible */
+  function validateOrderId(orderId) {
+    const orderIdRegex = /^[A-Za-z0-9]{4,10}$/;
+    return orderIdRegex.test(orderId);
   }
-  to {
-    transform: translateY(100%); /* Move off-screen at the bottom */
-    opacity: 0; /* Fade out */
+  
+  function resetOrderTracking() {
+    log('Resetting order tracking');
+    orderNumber = '';
+    isWaitingForOrderInfo = false;
+    isWaitingForEmail = false;
+    showTryAgainButtons = false;
+    showNoOrderIdButton = false;
+    saveConversation();
   }
-}
+  
+  function createTryAgainButtons() {
+    log('Creating try again button');
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'chat-initial-options';
+    
+    const button = document.createElement('button');
+    button.textContent = "I did not get an email";
+    button.className = 'chat-option-button';
+    button.addEventListener('click', () => handleTryAgainResponse(true, "I did not get an email"));
+    buttonsContainer.appendChild(button);
+    
+    return buttonsContainer;
+  }
 
-/* Update the chat-window class to include the glide-out animation */
-.chat-window.hidden {
-  animation: glideOutToBottom 0.5s ease-out forwards; /* Apply glide-out animation */
-  pointer-events: none !important; /* Prevent interaction when hidden */
-}
+  function handleTryAgainResponse(tryAgain, responseText) {
+    log(`Handling try again response: ${responseText}`);
+    showTryAgainButtons = false;
+    addMessage(responseText, false, false, getStockholmTimestamp());
+    
+    conversationHistory.push({"role": "user", "content": responseText, "timestamp": getStockholmTimestamp()});
+    
+    resetOrderTracking();
+    isWaitingForEmail = true;
+    showLoadingThenMessage("Please provide the email address you used for your purchase.");
+    
+    updateChatWindow();
+    sendConversationToAzure(messages);
+  }
+
+  async function askToTryAgain() {
+    log('Asking to try again');
+    const tryAgainMessage = "Try again?";
+    await showLoadingThenMessage(tryAgainMessage);
+    showTryAgainButtons = true;
+    updateChatWindow();
+    sendConversationToAzure(messages);
+  }
+
+  function extractOrderNumber(text) {
+    // Look for sequences of digits (minimum 4 digits)
+    const orderRegex = /\b\d{4,}\b/;
+    const match = text.match(orderRegex);
+    return match ? match[0] : null;
+  }
+  
+  function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
+  function validateCardLastFourDigits(digits) {
+    return /^\d{4}$/.test(digits);
+  }
+
+  function addNoOrderIdButton() {
+    log('Adding no order ID button');
+    const existingButton = document.querySelector('.chat-option-button[data-no-order-id]');
+    if (existingButton) {
+      return;
+    }
+    
+    const button = document.createElement('button');
+    button.textContent = "I don't have my order id";
+    button.className = 'chat-option-button';
+    button.setAttribute('data-no-order-id', 'true');
+    button.addEventListener('click', handleNoOrderId);
+    
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'chat-initial-options';
+    optionsContainer.appendChild(button);
+    
+    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+    if (messagesWrapper) {
+      messagesWrapper.appendChild(optionsContainer);
+      scrollToBottom();
+    }
+  }
+
+  function handleNoOrderId() {
+    log('Handling no order ID');
+    isWaitingForCardDigits = true;
+    showNoOrderIdButton = false;
+    sendMessage("I don't have my order id");
+  }
+
+  function showProductCard() {
+    log('Showing product card');
+    const productCard = createProductCard();
+    const messagesWrapper = document.querySelector('.chat-messages-wrapper');
+    if (messagesWrapper) {
+      messagesWrapper.appendChild(productCard);
+      scrollToBottom();
+    }
+  }
+
+  function createProductCard() {
+    log('Creating product card');
+    const cardWrapper = document.createElement('div');
+    cardWrapper.className = 'chat-message-wrapper bot';
+  
+    const profileImage = document.createElement('img');
+    profileImage.src = config.logoUrl;
+    profileImage.alt = 'Bot Profile';
+    profileImage.className = 'chat-bot-profile-image-card';
+  
+    const card = document.createElement('div');
+    card.className = 'product-card';
+  
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'product-image';
+  
+    const img = document.createElement('img');
+    img.src = 'https://boxbollen.com/cdn/shop/products/boxbollen_packshot_2023_red_1100x.jpg?v=1669502961';
+    img.alt = 'Boxbollen product';
+    
+    imageContainer.appendChild(img);
+  
+    const info = document.createElement('div');
+    info.className = 'product-info';
+  
+    const title = document.createElement('h2');
+    title.className = 'product-title';
+    title.textContent = 'Boxbollen';
+  
+    const description = document.createElement('p');
+    description.className = 'product-description';
+    description.textContent = 'Complete Set With App License';
+  
+    const link = document.createElement('a');
+    link.href = 'https://boxbollen.com/products/boxbollen';
+    link.target = '_blank';
+    link.className = 'read-more-btn';
+    link.textContent = 'Read More';
+  
+    info.appendChild(title);
+    info.appendChild(description);
+    info.appendChild(link);
+  
+    card.appendChild(imageContainer);
+    card.appendChild(info);
+  
+    cardWrapper.appendChild(profileImage);
+    cardWrapper.appendChild(card);
+  
+    return cardWrapper;
+  }
+  
+  function addProductCardAsMessage() {
+    log('Adding product card as message');
+    const loadingMessage = { text: '', isBot: true, isLoading: true, timestamp: getStockholmTimestamp() };
+    messages.push(loadingMessage);
+    updateChatWindow();
+  
+    setTimeout(() => {
+      messages.pop();
+      
+      messages.push({
+        type: 'productCard',
+        isBot: true,
+        timestamp: getStockholmTimestamp()
+      });
+  
+      updateChatWindow();
+  
+      // Force immediate scroll after product card is added
+      requestAnimationFrame(() => {
+        scrollToBottom(true);
+      });
+    }, 1500);
+  }
+  
+  function scrollToBottom(immediate = false) {
+    const messagesContainer = document.querySelector('.chat-messages-container');
+    if (messagesContainer) {
+      const scrollOptions = {
+        top: messagesContainer.scrollHeight,
+        behavior: immediate ? 'auto' : 'smooth'
+      };
+      
+      if (immediate) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      } else {
+        messagesContainer.scrollTo(scrollOptions);
+      }
+    }
+  }
+
+  createChatbotUI();
+
+  window.openBoxbollenChat = function() {
+    log('Opening Boxbollen chat');
+    isChatOpen = true;
+    saveConversation();
+    renderChatbot();
+    initializeChat();
+  };
+
+  function exitChat() {
+    log('Exiting chat');
+    
+    const chatWindow = document.querySelector('.chat-window');
+    if (chatWindow) {
+      // Add the hidden class to trigger the glideOutToBottom animation
+      chatWindow.classList.add('hidden');
+      
+      // Wait for the animation to complete before removing the element
+      chatWindow.addEventListener('animationend', () => {
+        chatWindow.remove();
+        isChatOpen = false;
+      }, { once: true });
+    }
+  }
+
+  const exitButton = document.querySelector('.exit-button'); // Assuming you have an exit button
+  exitButton.addEventListener('click', exitChat);
+
+})();
