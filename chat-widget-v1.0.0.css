@@ -80,7 +80,8 @@
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  background: linear-gradient(180deg,  #d30000 5%, #ff1f1f 35%, 60%, #d30000 95%) !important;
+  height: 85px !important; /* Set explicit height */
+  position: relative !important;
 }
 
 .chat-header-content {
@@ -714,13 +715,13 @@
   }
 
   .chat-header {
-    position: sticky !important; /* Change from fixed to sticky */
+    height: 85px !important; /* Maintain height on mobile */
+    position: sticky !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     z-index: 2147483646 !important;
-    background: linear-gradient(180deg, #d30000 5%, #ff1f1f 35%, 60%, #d30000 95%) !important; /* Ensure background is visible */
-    border-radius: 0 0 8px 8px !important; /* Minimal rounded corners only at bottom */
+    border-radius: 0 0 8px 8px !important;
   }
 
   .chat-messages-container {
