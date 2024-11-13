@@ -562,13 +562,9 @@ function toggleEmojiPicker(event) {
   }
 
   function extractEmail(text) {
-    log('Extracting email from text');
     const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
     const match = text.match(emailRegex);
-    if (match) {
-        return match[0];
-    }
-    return null;
+    return match ? match[0] : null;
   }
 
   function createInitialOptions() {
@@ -1346,11 +1342,13 @@ function toggleEmojiPicker(event) {
   async function handleOrderInfo(text) {
     log(`Handling order info: ${text}`);
     
+    // Extract email and order number from text
+    const email = extractEmail(text);
+    const extractedOrderNumber = extractOrderNumber(text);
+
     // Check if this is a new email attempt after previous email was sent
-    const containsEmail = validateEmail(text);
-    if (!isWaitingForOrderInfo && !isWaitingForEmail && containsEmail) {
-        // Restart email sending process with new email
-        orderEmail = text;
+    if (!isWaitingForOrderInfo && !isWaitingForEmail && email) {
+        orderEmail = email;
         await showLoadingThenMessage("Thank you. Now sending email...");
 
         fetch(ORDER_API_BASE, {
@@ -1371,7 +1369,7 @@ function toggleEmojiPicker(event) {
 
         await showLoadingThenMessage("If you did not receive an email, please double check that you provided the correct email address.");
         showTryAgainButtons = true;
-        isWaitingForOrderInfo = false; // Reset this flag to allow normal AI conversation
+        isWaitingForOrderInfo = false;
         orderEmail = '';
         updateChatWindow();
         return;
@@ -1380,8 +1378,8 @@ function toggleEmojiPicker(event) {
     // If we're showing try again buttons but user typed a message instead of clicking button
     if (showTryAgainButtons) {
         showTryAgainButtons = false;
-        isWaitingForOrderInfo = false; // Reset order tracking
-        await sendMessage(text); // Send to AI instead
+        isWaitingForOrderInfo = false;
+        await sendMessage(text);
         return;
     }
 
@@ -1391,20 +1389,18 @@ function toggleEmojiPicker(event) {
         if (text.toLowerCase() === 'i don\'t have my order id') {
             isWaitingForEmail = true;
             await showLoadingThenMessage("No problem. Please provide the email address you used for your purchase.");
+        } else if (extractedOrderNumber) {
+            orderNumber = extractedOrderNumber;
+            isWaitingForEmail = true;
+            await showLoadingThenMessage("Great, I've got your order number. Now, please provide your email address associated with this order.");
         } else {
-            const extractedNumber = extractOrderNumber(text);
-            if (extractedNumber) {
-                orderNumber = extractedNumber;
-                isWaitingForEmail = true;
-                await showLoadingThenMessage("Great, I've got your order number. Now, please provide your email address associated with this order.");
-            } else {
-                showNoOrderIdButton = true;
-                await showLoadingThenMessage("I couldn't find a valid order number in your message. Please provide your order number.");
-            }
+            // If no order number found, send to AI
+            isWaitingForOrderInfo = false;
+            await sendMessage(text);
         }
     } else if (isWaitingForEmail) {
-        if (validateEmail(text)) {
-            orderEmail = text;
+        if (email) {
+            orderEmail = email;
             isWaitingForEmail = false;
 
             await showLoadingThenMessage("Thank you. Now sending email...");
@@ -1432,7 +1428,9 @@ function toggleEmojiPicker(event) {
             orderEmail = '';
             updateChatWindow();
         } else {
-            await showLoadingThenMessage("The email address you provided doesn't seem to be valid. Please enter a valid email address.");
+            // If no email found, send to AI
+            isWaitingForOrderInfo = false;
+            await sendMessage(text);
         }
     } else {
         isWaitingForOrderInfo = false;
@@ -1496,7 +1494,9 @@ function toggleEmojiPicker(event) {
   }
 
   function extractOrderNumber(text) {
-    const match = text.match(/\d+/);
+    // Look for sequences of digits (minimum 4 digits)
+    const orderRegex = /\b\d{4,}\b/;
+    const match = text.match(orderRegex);
     return match ? match[0] : null;
   }
   
