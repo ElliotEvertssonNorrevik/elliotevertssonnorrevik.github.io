@@ -2,13 +2,14 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: 9999; /* High z-index to ensure it's above other elements */
 }
 
+/* Update the chat window styles */
 .chat-chat-window,
 .chat-initial-page {
   position: absolute;
-  bottom: 20px;
+  bottom: 20px; /* Adjust based on the size of your launch button */
   right: 0;
   width: 440px;
   height: 600px;
@@ -18,10 +19,8 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  z-index: 9999;
+  z-index: 9999; /* Ensure it's above other elements */
 }
-
-
 
 /* Update the launch button styles */
 .chat-launch-button {
@@ -509,13 +508,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 15px;
+  padding: 10px 15px;
   border-radius: 15px 15px 15px 15px;
-  background: linear-gradient(135deg, #3f2b20 0%, #5a3d2c 100%);
-  height: 70px; /* Set a fixed height for the header */
-  min-height: 70px; /* Ensure minimum height */
-  box-sizing: border-box;
-  flex-shrink: 0;
+  position: relative;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #3f2b20 0%, #5a3d2c 100%); /* Gradient from darker to lighter brown */
 }
 
 .chat-back-button {
@@ -737,10 +734,12 @@
     margin-top: 15px;
   }
 
-  .chat-stars-container {
-    display: flex;
-    justify-content: center;
-  }
+.chat-stars-container {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Center items vertically */
+  font-size: 24px; /* Increase font size for stars */
+}
 
   .chat-star {
     transition: color 0.2s;
@@ -1033,9 +1032,7 @@
   .chat-emoji-picker::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
-  
 
-  
 
 
 
