@@ -208,10 +208,44 @@
     log('Creating chat header');
     const header = document.createElement('div');
     header.className = 'chat-header';
-    header.style.backgroundColor = config.mainColor;
+    
+    // Updated SVG with responsive width and height
+    const svg = `<svg width="100%" height="100%" viewBox="0 0 375 85" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g filter="url(#filter0_i_13484_14502)">
+        <rect width="375" height="85" rx="12" fill="#F80B00"/>
+      </g>
+      <defs>
+        <filter id="filter0_i_13484_14502" x="-1" y="0" width="376" height="85" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+          <feMorphology radius="4" operator="erode" in="SourceAlpha" result="effect1_innerShadow_13484_14502"/>
+          <feOffset dx="-1"/>
+          <feGaussianBlur stdDeviation="7.8"/>
+          <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+          <feBlend mode="normal" in2="shape" result="effect1_innerShadow_13484_14502"/>
+        </filter>
+      </defs>
+    </svg>
+    `;
+    
+    // Create SVG container with updated dimensions
+    const svgContainer = document.createElement('div');
+    svgContainer.style.position = 'absolute';
+    svgContainer.style.top = '0';
+    svgContainer.style.left = '0';
+    svgContainer.style.width = '100%';
+    svgContainer.style.height = '100%';
+    svgContainer.style.zIndex = '0';
+    svgContainer.innerHTML = svg;
+    
+    header.appendChild(svgContainer);
   
     const headerContent = document.createElement('div');
     headerContent.className = 'chat-header-content';
+    headerContent.style.position = 'relative';
+    headerContent.style.zIndex = '1';
   
     const headerImage = document.createElement('img');
     headerImage.src = config.logoUrl;
