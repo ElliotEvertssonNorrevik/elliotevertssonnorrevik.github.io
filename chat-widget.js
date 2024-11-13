@@ -210,12 +210,12 @@
     header.className = 'chat-header';
     
     // Updated SVG with responsive width and height
-    const svg = `<svg width="100%" height="100%" viewBox="0 0 375 85" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    const svg = `<svg width="100%" height="90%" viewBox="0 0 375 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g filter="url(#filter0_i_13484_14502)">
-        <rect width="375" height="85" rx="12" fill="#F80B00"/>
+        <rect width="375" height="60" rx="12" fill="#F80B00"/>
       </g>
       <defs>
-        <filter id="filter0_i_13484_14502" x="-1" y="0" width="376" height="85" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <filter id="filter0_i_13484_14502" x="-1" y="0" width="376" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
           <feFlood flood-opacity="0" result="BackgroundImageFix"/>
           <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
           <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -242,6 +242,7 @@
     
     header.appendChild(svgContainer);
   
+    // Header Content
     const headerContent = document.createElement('div');
     headerContent.className = 'chat-header-content';
     headerContent.style.position = 'relative';
@@ -269,6 +270,7 @@
     headerContent.appendChild(headerImage);
     headerContent.appendChild(headerText);
   
+    // Buttons Container
     const buttonsContainer = document.createElement('div');
     buttonsContainer.className = 'chat-header-buttons';
 
@@ -293,7 +295,7 @@
   
     buttonsContainer.appendChild(reloadButton);
     buttonsContainer.appendChild(closeButton);
-
+  
     header.appendChild(headerContent);
     header.appendChild(buttonsContainer);
   
